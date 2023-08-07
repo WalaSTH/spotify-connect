@@ -22,7 +22,7 @@ class Room(models.Model):
         return self.code
 
 class User(models.Model):
-    id = models.IntegerField(unique=True, primary_key=True)
+    id = models.IntegerField(unique=True, primary_key=True, auto_created=True)
     username = models.CharField(max_length=15, unique=True)
     password = models.CharField(max_length=30)
     verified = models.BooleanField(default=False)
