@@ -3,8 +3,8 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import RoomSerializer, UserSerializer
-from .models import Room, User
+from .serializers import RoomSerializer, UserSerializer, UserCreateSerializer, UserLoginSerializer
+from .models import *
 
 USER_MIN_LEN = 4
 USER_MAX_LEN = 16
@@ -12,6 +12,9 @@ PASSWORD_MIN_LEN = 8
 PASSWORD_MAX_LEN = 60
 EMAIL_MIN_LEN = 4
 EMAIL_MAX_LEN = 60
+
+
+
 
 
 class RoomView(generics.ListAPIView):
@@ -31,9 +34,13 @@ class UserTaken(APIView):
                 return Response({'data':False}, status=status.HTTP_200_OK)
         return Response({'Bad Requiest': 'Username not in request'}, status=status.HTTP_400_BAD_REQUEST)
 
+class UserView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
 
 class CreateUser(APIView):
-    serializer_class = UserSerializer
+    serializer_class = UserCreateSerializer
 
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
@@ -53,7 +60,7 @@ class CreateUser(APIView):
             # Check unique fields
             queryset = User.objects.filter(username=username)
             if (queryset.exists()):
-                return Response({'Bad Request': 'Usermae already exists'},status=status.HTTP_400_BAD_REQUEST)
+                return Response({'Bad Request': 'Username already exists'},status=status.HTTP_400_BAD_REQUEST)
             queryset = User.objects.filter(email=email)
             if (queryset.exists()):
                 return Response({'Bad Request': 'Email already registered'},status=status.HTTP_400_BAD_REQUEST)
@@ -63,4 +70,28 @@ class CreateUser(APIView):
             user.save()
             return Response({'Msg':'User created successfully'}, status=status.HTTP_201_CREATED)
         else:
+            return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Login(APIView):
+    serializer_class = UserLoginSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            username = serializer.data.get('username')
+            password = serializer.data.get('password')
+            if not user_name_exists(username):
+                return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Auth user
+            if not user_match_pass(username, password):
+                return Response({'Msg':'Invalid credentials'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+            user_id = get_user_id(username)
+            print(user_id)
+            return Response({'data':user_id}, status=status.HTTP_200_OK)
+
+        else:
+
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
