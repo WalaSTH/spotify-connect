@@ -1,8 +1,11 @@
 import * as React from "react";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
@@ -10,32 +13,30 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
+import SnackbarWrapper from "./utils/Snackbar";
+import { Snackbar, Alert } from "@mui/material";
 
-export default function SignUp() {
+const INVALID_CREDENTAILS_CODE = 406;
+const NOT_FOUND = 404;
+
+const defaultTheme = createTheme();
+
+export default function Login() {
+  const [badCredentials, setBadCredentials] = useState(false);
+  const navigate = useNavigate();
+  const loginEndpoint = "http://127.0.0.1:8000/api/login";
   const initialFormState = {
     username: "",
-    email: "",
     password: "",
-    repeatPassword: "",
   };
-  const createUserEndpoint = "http://127.0.0.1:8000/api/create-user";
-  const userTakenEndpoint = "http://127.0.0.1:8000/api/username-taken";
+
   const formValidation = Yup.object().shape({
     username: Yup.string()
       .min(4, "Username must be at least 3 characters long")
       .max(16, "Username can't be longer than 16 characters")
-      .required("Required")
-      .test("Unique Username", "Username already exists", function (value) {
-        return new Promise((resolve) => {
-          axios
-            .get(userTakenEndpoint + "?username=" + value)
-            .then((response) => {
-              resolve(!response.data["data"]);
-            });
-        });
-      }),
-    email: Yup.string().email("Invalid email").required("Required"),
+      .required("Required"),
     password: Yup.string()
       .min(8, "Password must be at least 8 characters")
       .matches(
@@ -43,25 +44,36 @@ export default function SignUp() {
         "Must Contain 8 Characters, one Uppercase, one Lowercase and one Number"
       )
       .required("Required"),
-    repeatPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Passwords must match")
-      .required("Required"),
   });
 
-  async function createUser(values) {
+  async function handleLogin(values) {
     const formData = new FormData();
     formData.append("username", values.username);
     formData.append("password", values.password);
-    formData.append("email", values.email);
-
-    await axios.post(createUserEndpoint, formData);
+    await axios
+      .post(loginEndpoint, formData)
+      .then((response) => {
+        const userID = response.data["data"];
+        console.log(userID);
+        localStorage.setItem("userID", userID);
+        navigate("/");
+      })
+      .catch((error) => {
+        if (
+          error.response.status == INVALID_CREDENTAILS_CODE ||
+          error.response.status == NOT_FOUND
+        ) {
+          setBadCredentials(true);
+          console.log("Invalid credentials");
+        }
+      });
   }
 
   return (
     <Formik
       initialValues={initialFormState}
       validationSchema={formValidation}
-      onSubmit={createUser}
+      onSubmit={handleLogin}
     >
       {(formik) => {
         const {
@@ -76,6 +88,7 @@ export default function SignUp() {
         } = formik;
         return (
           <Container component="main" maxWidth="xs">
+            <CssBaseline />
             <Box
               sx={{
                 marginTop: 8,
@@ -88,13 +101,13 @@ export default function SignUp() {
                 <LockOutlinedIcon />
               </Avatar>
               <Typography component="h1" variant="h5">
-                Sign up
+                Log in
               </Typography>
               <Box
                 component="form"
-                noValidate
                 onSubmit={handleSubmit}
-                sx={{ mt: 3 }}
+                noValidate
+                sx={{ mt: 1 }}
               >
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
@@ -121,23 +134,6 @@ export default function SignUp() {
                     <TextField
                       required
                       fullWidth
-                      id="email"
-                      label="Email Address"
-                      name="email"
-                      autoComplete="email"
-                      value={values.email}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={errors.email && touched.email ? true : null}
-                      helperText={
-                        errors.email && touched.email ? errors.email : null
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
                       name="password"
                       label="Password"
                       type="password"
@@ -155,28 +151,20 @@ export default function SignUp() {
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      name="repeatPassword"
-                      label="Repeat password"
-                      type="password"
-                      id="repeatPassword"
-                      autoComplete="new-password"
-                      value={values.repeatPassword}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={
-                        errors.repeatPassword && touched.repeatPassword
-                          ? true
-                          : null
-                      }
-                      helperText={
-                        errors.repeatPassword && touched.repeatPassword
-                          ? errors.repeatPassword
-                          : null
-                      }
-                    />
+                    <Snackbar
+                      open={badCredentials}
+                      sx={{ position: "absolute" }}
+                      variant="filled"
+                      width="100%"
+                      severity="error"
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                      autoHideDuration={20}
+                    >
+                      <Alert severity="error">{"Invalid Credentials"}</Alert>
+                    </Snackbar>
                   </Grid>
                 </Grid>
                 <Button
@@ -185,17 +173,17 @@ export default function SignUp() {
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
                 >
-                  Sign Up
+                  Log In
                 </Button>
                 <Grid container>
                   <Grid item xs>
-                    <Link type="button" href="/" variant="body2">
+                    <Link href="/" variant="body2">
                       Back
                     </Link>
                   </Grid>
                   <Grid item>
-                    <Link type="button" href="/sign-in" variant="body2">
-                      Already have an account? Sign in
+                    <Link href="/sign-up" variant="body2">
+                      {"Don't have an account? Sign Up"}
                     </Link>
                   </Grid>
                 </Grid>
