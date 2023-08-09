@@ -15,7 +15,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
-import SnackbarWrapper from "./utils/Snackbar";
 import { Snackbar, Alert } from "@mui/material";
 
 const INVALID_CREDENTAILS_CODE = 406;
@@ -23,9 +22,8 @@ const NOT_FOUND = 404;
 
 const defaultTheme = createTheme();
 
-export default function Login() {
+export default function Login({ navigate }) {
   const [badCredentials, setBadCredentials] = useState(false);
-  const navigate = useNavigate();
   const loginEndpoint = "http://127.0.0.1:8000/api/login";
   const initialFormState = {
     username: "",

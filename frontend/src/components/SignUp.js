@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import axios from "axios";
 
-export default function SignUp() {
+export default function SignUp({ navigate }) {
   const initialFormState = {
     username: "",
     email: "",

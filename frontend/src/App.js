@@ -7,14 +7,13 @@ import Basic from "./components/Test";
 import BasicT from "./components/TestTwo";
 import SignInForm from "./components/SignUpTwo";
 import RoutesWrapper from "./routes/index";
+import { useParams, useNavigate } from "react-router-dom";
 
 function App() {
-  axios.get("api/room/").then((response) => {
-    console.log(response);
-  });
+  const navigate = useNavigate();
   return (
     <div className="center">
-      <RoutesWrapper />
+      <RoutesWrapper navigate={navigate} />
     </div>
   );
 }
