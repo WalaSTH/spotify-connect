@@ -24,3 +24,10 @@ class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'password')
+
+
+class TokensSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpotifyToken
+        fields = ('user', 'created_at', 'access_token', 'refresh_token',
+                  'expires_in', 'token_type')

@@ -14,6 +14,9 @@ EMAIL_MAX_LEN = 60
 ROOM_NAME_MAX_LEN = 30
 ROOM_CODE_MAX_LEN = 8
 
+# Other
+SESSION_KEY_LENGHT = 32
+
 # Models
 
 def generate_unique_code():
@@ -58,11 +61,15 @@ class User(models.Model):
 
 class SpotifyToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
     access_token = models.CharField(max_length=150)
     refresh_token = models.CharField(max_length=150)
     expires_in = models.DateTimeField()
     token_type = models.CharField(max_length=50)
 
+class UserFrontendSession(models.Model):
+    key = models.CharField(max_length=SESSION_KEY_LENGHT)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
 # Helper functions
 
@@ -71,7 +78,7 @@ def user_name_exists(username):
     return users.exists()
 
 
-def user_id_exists(username):
+def user_id_exists(id):
     users = User.objects.filter(id=id)
     return users.exists()
 

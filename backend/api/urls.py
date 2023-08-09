@@ -1,5 +1,6 @@
 from django.urls import path, include
-from .views import *
+from .views.api_views import *
+from .views.spotify_views import *
 
 
 urlpatterns = [
@@ -8,4 +9,8 @@ urlpatterns = [
     path('username-taken', UserTaken.as_view()),
     path('create-user', CreateUser.as_view()),
     path('login', Login.as_view()),
+    path('get-auth-url', AuthURL.as_view()),
+    path('spotify-redirect', spotify_callback),
+    path('is-authenticated', IsAuthenticated.as_view()),
+    path('token/', TokenView.as_view()),
 ]
