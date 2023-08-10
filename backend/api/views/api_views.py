@@ -3,6 +3,7 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import JsonResponse
 from ..serializers import *
 from ..models import *
 
@@ -122,11 +123,17 @@ class CreateRoomView(generics.ListAPIView):
                 return Response({'Bad Request': 'Invalid room name length'}, status=status.HTTP_400_BAD_REQUEST)
 
             if password:
-                if password > ROOM_MAX_PASSWORD or password < ROOM_MIN_PASSOWRD:
+                if len(password) > ROOM_MAX_PASSWORD or len(password) < ROOM_MIN_PASSOWRD:
                     return Response({'Bad Request': 'Invalid password length'}, status=status.HTTP_400_BAD_REQUEST)
 
             if (not password) and private_room:
                 return Response({'Bad Request': 'Private rooms must include a password'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if password and not private_room:
+                password = ""
+
+            if not password and not private_room:
+                password = ""
 
             queryset = Room.objects.filter(host=host)
             if queryset.exists():
@@ -141,6 +148,7 @@ class CreateRoomView(generics.ListAPIView):
                 room.password=password
                 room.show_lobby=show_lobby
                 room.guest_add_queue=guest_add_queue
+
                 room.save(update_fields=['room_name', 'guest_pause','guest_manage_queue',
                                         'guest_chat', 'guest_skip', 'private_room',
                                         'guest_add_queue', 'show_lobby', 'password'])
@@ -153,5 +161,46 @@ class CreateRoomView(generics.ListAPIView):
                             password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby)
                 room.save()
                 return Response({"Msg":"Room succesfully created"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RoomExists(APIView):
+
+    def get(self,request,format=None):
+        room_code = request.GET.get('code')
+        queryset = Room.objects.filter(code=room_code)
+        res = None
+        if queryset.exists():
+            res = queryset[0].private_room
+        return JsonResponse({'data':res}, status=status.HTTP_200_OK)
+
+class RoomJoin(APIView):
+    serializer_class = RoomEnterSerializer
+
+    def post(self, request, format=None):
+        print("HOLAAA VA REQUEST")
+
+        if True:
+            print("HOLA2")
+            user_id = request.data.get('user_id')
+            room_code = request.data.get('room_code')
+            password = request.data.get('password')
+
+        # Validate fields
+            if not user_id_exists(user_id):
+                return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            if not room_exists(room_code):
+                return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+            private_room = get_room_by_code(room_code).private_room
+            if private_room:
+                if not room_password_match(room_code,password):
+                    return Response({'Msg': 'Wrong password'}, status=status.HTTP_403_FORBIDDEN)
+            # User in room?
+            if user_in_room(room_code, user_id):
+                return Response({'Bad Request': 'User already in room'}, status=status.HTTP_400_BAD_REQUEST)
+        # Join user
+            join_user(room_code, user_id)
+            return Response({'Msg':'Room joined.'}, status=status.HTTP_200_OK)
         else:
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)

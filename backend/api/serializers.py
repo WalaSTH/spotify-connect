@@ -38,6 +38,10 @@ class RoomCreateSerializer(serializers.ModelSerializer):
                   'guest_manage_queue', 'guest_chat', 'guest_skip',
                   'private_room','show_lobby','guest_add_queue')
 
+class RoomEnterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ('user', 'room_code', 'password')
 
 # Spotify Serializers
 
@@ -46,3 +50,4 @@ class TokensSerializer(serializers.ModelSerializer):
         model = SpotifyToken
         fields = ('user', 'created_at', 'access_token', 'refresh_token',
                   'expires_in', 'token_type')
+        

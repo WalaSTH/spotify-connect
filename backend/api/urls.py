@@ -14,4 +14,6 @@ urlpatterns = [
     path('is-authenticated', IsAuthenticated.as_view()),
     path('token/', TokenView.as_view()),
     path('create-room/', CreateRoomView.as_view()),
+    path('room-exists', RoomExists.as_view()),
+    path('join-room', RoomJoin.as_view())
 ]

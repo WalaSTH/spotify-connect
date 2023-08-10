@@ -13,7 +13,7 @@ EMAIL_MAX_LEN = 60
 # Room constraints
 ROOM_NAME_MAX_LEN = 30
 ROOM_NAME_MIN_LEN = 2
-ROOM_CODE_MAX_LEN = 8
+ROOM_CODE_LENGTH = 32
 ROOM_MIN_PASSOWRD = 3
 ROOM_MAX_PASSWORD = 16
 
@@ -24,7 +24,7 @@ SESSION_KEY_LENGHT = 32
 # Models
 
 def generate_unique_code():
-    length = 32
+    length = ROOM_CODE_LENGTH
 
     while True:
         code = ''.join(random.choices(string.ascii_uppercase, k=length))
@@ -45,7 +45,7 @@ def generate_unique_id():
     return id
 
 class Room(models.Model):
-    code = models.CharField(max_length=8, default=generate_unique_code, unique=True, primary_key=True)
+    code = models.CharField(max_length=ROOM_CODE_LENGTH, default=generate_unique_code, unique=True, primary_key=True)
     host = models.CharField(max_length=64, default=None)
     password = models.CharField(max_length=ROOM_MAX_PASSWORD, null=True)
     room_name = models.CharField(max_length=30, default="Music Room")
@@ -67,7 +67,7 @@ class User(models.Model):
     password = models.CharField(max_length=PASSWORD_MAX_LEN)
     verified = models.BooleanField(default=False)
     authenticated = models.BooleanField(default=False)
-    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
+    room = models.CharField(max_length=ROOM_CODE_LENGTH, default="")
 
 class SpotifyToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -127,3 +127,33 @@ def get_room_by_host(host_id):
         if queryset.exists():
             room = queryset[0]
     return room
+
+def get_room_by_code(room_code):
+    room = None
+    print("EL CODE DE LA ROOM:")
+    print(room_code)
+    queryset = Room.objects.filter(code=room_code)
+    if queryset.exists():
+        room = queryset[0]
+    return room
+
+def room_exists(room_code):
+    queryset = Room.objects.filter(code=room_code)
+    return queryset.exists()
+
+def room_password_match(room_code, input_password):
+    room = Room.objects.filter(code=room_code)[0]
+    room_password = room.password
+    return input_password == room_password
+
+def join_user(room_code, user_id):
+    user = get_user_by_id(user_id)
+    user.room = room_code
+    user.save(update_fields=['room'])
+
+def user_in_room(room_code, user_id):
+    user = get_user_by_id(user_id)
+    res = False
+    if user.room:
+        res = user.room == room_code
+    return res
