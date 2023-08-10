@@ -5,7 +5,6 @@ import Login from "../components/Login";
 import SignUp from "../components/SignUp";
 import { useEffect, useState } from "react";
 import CreateRoom from "../components/CreateRoom";
-import NoUser from "../components/NoUser";
 
 export default function RoutesWrapper({ navigate }) {
   const [userId, setUserId] = useState(localStorage.getItem("userID"));
@@ -37,7 +36,6 @@ export default function RoutesWrapper({ navigate }) {
           )
         }
       />
-      <Route path="/no-user" element={<NoUser></NoUser>} />
     </Routes>
   );
 }
