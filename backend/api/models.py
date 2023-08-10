@@ -12,6 +12,7 @@ EMAIL_MAX_LEN = 60
 
 # Room constraints
 ROOM_NAME_MAX_LEN = 30
+ROOM_NAME_MIN_LEN = 2
 ROOM_CODE_MAX_LEN = 8
 
 # Other
@@ -42,10 +43,13 @@ def generate_unique_id():
 
 class Room(models.Model):
     code = models.CharField(max_length=8, default=generate_unique_code, unique=True)
-    host = models.IntegerField(unique=True)
+    host = models.CharField(max_length=64, unique=True, primary_key=True, default=None)
     room_name = models.CharField(max_length=30, default="Music Room")
     guest_can_pause = models.BooleanField(null=False, default=False)
     guest_can_queue = models.BooleanField(null=False, default=False)
+    guest_can_chat = models.BooleanField(null=False, default=False)
+    guest_can_skip = models.BooleanField(null=False, default=False)
+    private = models.BooleanField(null=False, default=False)
 
     def __str__(self):
         return self.code
@@ -57,7 +61,7 @@ class User(models.Model):
     password = models.CharField(max_length=PASSWORD_MAX_LEN)
     verified = models.BooleanField(default=False)
     authenticated = models.BooleanField(default=False)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True)
+    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
 
 class SpotifyToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -71,7 +75,7 @@ class UserFrontendSession(models.Model):
     key = models.CharField(max_length=SESSION_KEY_LENGHT)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
-# Helper functions
+# Helper User functions
 
 def user_name_exists(username):
     users = User.objects.filter(username=username)
@@ -107,3 +111,13 @@ def get_user_id(username):
     if user_name_exists(username):
         id = User.objects.filter(username=username)[0].id
     return id
+
+# Helper Room functions
+
+def get_room_by_host(host_id):
+    room = None
+    if user_id_exists(host_id):
+        queryset = Room.objects.filter(host=host_id)
+        if queryset.exists():
+            room = queryset[0]
+    return room

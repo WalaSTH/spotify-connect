@@ -13,4 +13,5 @@ urlpatterns = [
     path('spotify-redirect', spotify_callback),
     path('is-authenticated', IsAuthenticated.as_view()),
     path('token/', TokenView.as_view()),
+    path('create-room/', CreateRoomView.as_view()),
 ]
