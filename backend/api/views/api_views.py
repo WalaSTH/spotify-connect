@@ -105,37 +105,53 @@ class CreateRoomView(generics.ListAPIView):
         if serializer.is_valid():
             host = serializer.data.get('host')
             room_name = serializer.data.get('room_name')
-            guest_can_pause = serializer.data.get('guest_can_pause')
-            guest_can_queue = serializer.data.get('guest_can_queue')
-            guest_can_chat = serializer.data.get('guest_can_chat')
-            guest_can_skip = serializer.data.get('guest_can_skip')
-            private = serializer.data.get('private')
+            guest_pause = serializer.data.get('guest_pause')
+            guest_manage_queue = serializer.data.get('guest_manage_queue')
+            guest_chat = serializer.data.get('guest_chat')
+            guest_skip = serializer.data.get('guest_skip')
+            private_room = serializer.data.get('private_room')
+            show_lobby = serializer.data.get('show_lobby')
+            password = serializer.data.get('password')
+            guest_add_queue = serializer.data.get('guest_add_queue')
 
             # Validate entries
             if not user_id_exists(host):
                 return Response({'Msg': 'Host user not found'}, status=status.HTTP_404_NOT_FOUND)
+
             if len(room_name) > ROOM_NAME_MAX_LEN or len(room_name) < ROOM_NAME_MIN_LEN:
                 return Response({'Bad Request': 'Invalid room name length'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if password:
+                if password > ROOM_MAX_PASSWORD or password < ROOM_MIN_PASSOWRD:
+                    return Response({'Bad Request': 'Invalid password length'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if (not password) and private_room:
+                return Response({'Bad Request': 'Private rooms must include a password'}, status=status.HTTP_400_BAD_REQUEST)
 
             queryset = Room.objects.filter(host=host)
             if queryset.exists():
                 # Udpate room
                 room = queryset[0]
                 room.room_name=room_name
-                room.guest_can_pause=guest_can_pause
-                room.guest_can_chat=guest_can_chat
-                room.guest_can_queue=guest_can_queue
-                room.guest_can_skip=guest_can_skip
-                room.private=private
-                room.save(update_fiels=['room_name', 'guest_can_pause','guest_can_queue',
-                                        'guest_can_chat', 'guest_can_skip', 'private'])
-                return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+                room.guest_pause=guest_pause
+                room.guest_chat=guest_chat
+                room.guest_manage_queue=guest_manage_queue
+                room.guest_skip=guest_skip
+                room.private_room=private_room
+                room.password=password
+                room.show_lobby=show_lobby
+                room.guest_add_queue=guest_add_queue
+                room.save(update_fields=['room_name', 'guest_pause','guest_manage_queue',
+                                        'guest_chat', 'guest_skip', 'private_room',
+                                        'guest_add_queue', 'show_lobby', 'password'])
+                return Response({"Msg":"Room succesfully updated"}, status=status.HTTP_200_OK)
             else:
                 # Create room
-                room = Room(host=host, room_name=room_name, guest_can_pause=guest_can_pause,
-                            guest_can_chat=guest_can_chat, guest_can_skip=guest_can_skip,
-                            guest_can_queue=guest_can_queue, private=private)
+                room = Room(host=host, room_name=room_name, guest_pause=guest_pause,
+                            guest_chat=guest_chat, guest_skip=guest_skip,
+                            guest_manage_queue=guest_manage_queue, private_room=private_room,
+                            password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby)
                 room.save()
-                return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
+                return Response({"Msg":"Room succesfully created"}, status=status.HTTP_201_CREATED)
         else:
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)

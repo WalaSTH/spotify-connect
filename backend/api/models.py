@@ -14,6 +14,9 @@ EMAIL_MAX_LEN = 60
 ROOM_NAME_MAX_LEN = 30
 ROOM_NAME_MIN_LEN = 2
 ROOM_CODE_MAX_LEN = 8
+ROOM_MIN_PASSOWRD = 3
+ROOM_MAX_PASSWORD = 16
+
 
 # Other
 SESSION_KEY_LENGHT = 32
@@ -21,7 +24,7 @@ SESSION_KEY_LENGHT = 32
 # Models
 
 def generate_unique_code():
-    length = 6
+    length = 32
 
     while True:
         code = ''.join(random.choices(string.ascii_uppercase, k=length))
@@ -42,14 +45,17 @@ def generate_unique_id():
     return id
 
 class Room(models.Model):
-    code = models.CharField(max_length=8, default=generate_unique_code, unique=True)
-    host = models.CharField(max_length=64, unique=True, primary_key=True, default=None)
+    code = models.CharField(max_length=8, default=generate_unique_code, unique=True, primary_key=True)
+    host = models.CharField(max_length=64, default=None)
+    password = models.CharField(max_length=ROOM_MAX_PASSWORD, null=True)
     room_name = models.CharField(max_length=30, default="Music Room")
-    guest_can_pause = models.BooleanField(null=False, default=False)
-    guest_can_queue = models.BooleanField(null=False, default=False)
-    guest_can_chat = models.BooleanField(null=False, default=False)
-    guest_can_skip = models.BooleanField(null=False, default=False)
-    private = models.BooleanField(null=False, default=False)
+    guest_pause = models.BooleanField(null=False, default=False)
+    guest_add_queue = models.BooleanField(null=False, default=False)
+    guest_manage_queue = models.BooleanField(null=False, default=False)
+    guest_chat = models.BooleanField(null=False, default=False)
+    guest_skip = models.BooleanField(null=False, default=False)
+    show_lobby = models.BooleanField(null=False, default=False)
+    private_room = models.BooleanField(null=False, default=False)
 
     def __str__(self):
         return self.code
