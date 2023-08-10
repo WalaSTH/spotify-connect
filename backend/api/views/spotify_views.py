@@ -75,7 +75,7 @@ class IsAuthenticated(APIView):
 class GetTokens(generics.ListAPIView):
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
-    
+
 
 class TokenView(generics.ListAPIView):
     serializer_class = TokensSerializer

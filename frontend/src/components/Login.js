@@ -54,6 +54,7 @@ export default function Login({ navigate }) {
         const userID = response.data["data"];
         console.log(userID);
         localStorage.setItem("userID", userID);
+        localStorage.setItem("username", values.username);
         navigate("/");
       })
       .catch((error) => {

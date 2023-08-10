@@ -1,13 +1,17 @@
 import logo from "./logo.svg";
 import "./App.css";
 import RoutesWrapper from "./routes/index";
+import NavigationLayout from "./layouts/Main";
 import { useParams, useNavigate } from "react-router-dom";
 
 function App() {
   const navigate = useNavigate();
   return (
-    <div className="center">
-      <RoutesWrapper navigate={navigate} />
+    <div>
+      {/* <NavigationLayout navigate={navigate} avatar={null} /> */}
+      <div>
+        <RoutesWrapper navigate={navigate} />
+      </div>
     </div>
   );
 }

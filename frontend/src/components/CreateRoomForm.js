@@ -36,7 +36,8 @@ const ROOM_MAX_PASSWORD = 16;
 
 export default function CreateRoomForm({ userID }) {
   const username = localStorage.getItem("username");
-  const createRoomEndpoint = "http://127.0.0.1:8000/api/create-room";
+  const user = userID;
+  const createRoomEndpoint = "http://127.0.0.1:8000/api/create-room/";
   const initialRoomName = username + "'s Room";
   const initialFormState = {
     roomName: "",
@@ -83,24 +84,25 @@ export default function CreateRoomForm({ userID }) {
       values.roomName = initialRoomName;
     }
     const formData = new FormData();
-    formData.append("host", userID);
+    formData.append("host", user);
     formData.append("room_name", values.roomName);
     formData.append("guest_pause", values.guestPause);
     formData.append("guest_add_queue", values.guestAddQueue);
     formData.append("guest_manage_queue", values.guestManageQueue);
     formData.append("guest_chat", values.guestChat);
     formData.append("guest_skip", values.guestSkip);
-    formData.append("private", values.privateRoom);
+    formData.append("show_lobby", values.showLobby);
+    formData.append("private_room", values.privateRoom);
     formData.append("password", values.password);
     console.log(values);
-    /*     await axios
+    await axios
       .post(createRoomEndpoint, formData)
       .then((response) => {
         console.log(response);
       })
       .catch((error) => {
         console.log(error);
-      }); */
+      });
   }
   const renderCreateButtons = (handleSubmit) => {
     return (
@@ -147,7 +149,6 @@ export default function CreateRoomForm({ userID }) {
             <Grid container justifyContent="flex-end" spacing={1}>
               <Grid item xs={12}>
                 <TextField
-                  autoComplete="true"
                   placeholder={initialRoomName}
                   name="roomName"
                   fullWidth
@@ -280,7 +281,7 @@ export default function CreateRoomForm({ userID }) {
                     <Switch name="privateRoom" checked={values.privateRoom} />
                   }
                   name="privateRoom"
-                  value={values.private}
+                  value={values.privateRoom}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   label="Make Room Private"
@@ -290,7 +291,6 @@ export default function CreateRoomForm({ userID }) {
               {values.privateRoom ? (
                 <Grid item xs={12}>
                   <TextField
-                    autoComplete="true"
                     required
                     name="password"
                     fullWidth
