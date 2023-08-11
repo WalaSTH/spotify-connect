@@ -44,7 +44,6 @@ class CreateUser(APIView):
             username = serializer.data.get('username')
             email = serializer.data.get('email')
             password = serializer.data.get('password')
-
             # Validate fields
             if (len(username) < USER_MIN_LEN or len(email)> USER_MAX_LEN):
                 return Response({'Bad Request': 'Invalid username length'},status=status.HTTP_400_BAD_REQUEST)
@@ -62,7 +61,7 @@ class CreateUser(APIView):
                 return Response({'Bad Request': 'Email already registered'},status=status.HTTP_400_BAD_REQUEST)
 
             # Create user
-            user = User(username=username, password=password, verified=False, authenticated=False, room=None)
+            user = User(username=username, password=password, email=email, verified=False, authenticated=False, room="")
             user.save()
             return Response({'Msg':'User created successfully'}, status=status.HTTP_201_CREATED)
         else:
@@ -85,12 +84,42 @@ class Login(APIView):
                 return Response({'Msg':'Invalid credentials'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
             user_id = get_user_id(username)
-            print(user_id)
             return Response({'data':user_id}, status=status.HTTP_200_OK)
 
         else:
 
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserInRoom(APIView):
+    serializer_class = UserRoomSerializer
+
+    def get(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user_id = request.GET.get("id")
+            queryset = User.objects.filter(id=user_id)
+            if not queryset.exists():
+                return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            room_code = queryset[0].room
+            if room_code == "":
+                return Response({'Msg': 'User not in room'}, status=status.HTTP_204_NO_CONTENT)
+            room = Room.objects.filter(code=room_code)
+            if not room.exists():
+                return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+            room=room[0]
+            data={
+                'room_code':room.code,
+                'room_name':room.room_name,
+                'guest_pause':room.guest_pause,
+                'guest_add_queue':room.guest_add_queue,
+                'guest_manage_queue':room.guest_manage_queue,
+                'guest_chat':room.guest_chat,
+                'guest_skip':room.guest_skip,
+                'show_lobby':room.show_lobby,
+                'private_room':room.private_room,
+            }
+            return Response({'room': data}, status=status.HTTP_200_OK)
+        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
 # Room Views
 
@@ -159,7 +188,10 @@ class CreateRoomView(generics.ListAPIView):
                             guest_chat=guest_chat, guest_skip=guest_skip,
                             guest_manage_queue=guest_manage_queue, private_room=private_room,
                             password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby)
+                user = get_user_by_id(host)
                 room.save()
+                user.room=room.code
+                user.save(update_fields=['room'])
                 return Response({"Msg":"Room succesfully created"}, status=status.HTTP_201_CREATED)
         else:
             return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
@@ -179,28 +211,30 @@ class RoomJoin(APIView):
     serializer_class = RoomEnterSerializer
 
     def post(self, request, format=None):
-        print("HOLAAA VA REQUEST")
 
-        if True:
-            print("HOLA2")
-            user_id = request.data.get('user_id')
-            room_code = request.data.get('room_code')
-            password = request.data.get('password')
+        user_id = request.data.get('user_id')
+        room_code = request.data.get('room_code')
+        password = request.data.get('room_password')
 
         # Validate fields
-            if not user_id_exists(user_id):
-                return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-            if not room_exists(room_code):
-                return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
-            private_room = get_room_by_code(room_code).private_room
-            if private_room:
-                if not room_password_match(room_code,password):
-                    return Response({'Msg': 'Wrong password'}, status=status.HTTP_403_FORBIDDEN)
-            # User in room?
-            if user_in_room(room_code, user_id):
-                return Response({'Bad Request': 'User already in room'}, status=status.HTTP_400_BAD_REQUEST)
+        if not user_id_exists(user_id):
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        if not room_exists(room_code):
+            return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        private_room = get_room_by_code(room_code).private_room
+        if private_room:
+            if not room_password_match(room_code,password):
+                return Response({'Msg': 'Wrong password'}, status=status.HTTP_403_FORBIDDEN)
+
+        # User in room?
+        if user_in_room(room_code, user_id):
+            return Response({'Msg': 'User already in room'}, status=status.HTTP_208_ALREADY_REPORTED)
+        # User in another room?
+        user = get_user_by_id(user_id)
+        if user.room != "":
+            return Response({'Msg': 'User is in another room'}, status=status.HTTP_400_BAD_REQUEST)
+
         # Join user
-            join_user(room_code, user_id)
-            return Response({'Msg':'Room joined.'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+        join_user(room_code, user_id)
+        return Response({'Msg':'Room joined.'}, status=status.HTTP_200_OK)
+

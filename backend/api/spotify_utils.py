@@ -57,10 +57,11 @@ def refresh_spotify_token(user_id):
 def is_spotify_authenticated(session_id):
     tokens = get_user_tokens(session_id)
     if tokens:
+        print("HAY TOKENNNN")
         expiry = tokens.expires_in
         if expiry <= timezone.now():
             #Refresh token
             refresh_spotify_token(session_id)
         return True
-
+    print("NO HAY TOKENNN")
     return False

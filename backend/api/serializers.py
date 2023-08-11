@@ -20,6 +20,10 @@ class UserLoginSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'password')
 
+class UserRoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (['id'])
 
 # Room Serializers
 
