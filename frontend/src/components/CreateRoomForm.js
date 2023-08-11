@@ -34,7 +34,7 @@ const ROOM_CODE_MAX_LEN = 8;
 const ROOM_MIN_PASSOWRD = 3;
 const ROOM_MAX_PASSWORD = 16;
 
-export default function CreateRoomForm({ userID }) {
+export default function CreateRoomForm({ userID, navigate }) {
   const username = localStorage.getItem("username");
   const user = userID;
   const createRoomEndpoint = "http://127.0.0.1:8000/api/create-room/";
@@ -99,6 +99,7 @@ export default function CreateRoomForm({ userID }) {
       .post(createRoomEndpoint, formData)
       .then((response) => {
         console.log(response);
+        navigate("/room");
       })
       .catch((error) => {
         console.log(error);

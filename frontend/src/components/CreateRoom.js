@@ -17,22 +17,44 @@ import Review from "./Review";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
 import { Grid } from "@mui/material";
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const steps = ["Shipping address", "Payment details", "Review your order"];
+export default function CreateRoom({ userID, navigate }) {
+  useEffect(() => {
+    checkUserInRoom(userID).then(() => {
+      authenticateSpotify(userID);
+    });
+  }, []);
 
-export default function CreateRoom({ userID }) {
+  async function checkUserInRoom(userID) {
+    await axios
+      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .then((response) => {
+        if (response.status == 200) {
+          navigate("/room");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        navigate("/create-room");
+      });
+  }
+  async function authenticateSpotify(userID) {
+    await axios
+      .get("/api/is-authenticated" + "?user_id=" + userID)
+      .then(async function (data) {
+        console.log(data.data.status[0]);
+        if (!data.data.status[0]) {
+          await axios
+            .get("/api/get-auth-url" + "?user_id=" + userID)
+            .then((data) => {
+              window.location.replace(data.data.url);
+            });
+        }
+      });
+  }
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -50,7 +72,10 @@ export default function CreateRoom({ userID }) {
             Create Room
           </Typography>
           <React.Fragment>
-            <CreateRoomForm userID={userID}></CreateRoomForm>
+            <CreateRoomForm
+              userID={userID}
+              navigate={navigate}
+            ></CreateRoomForm>
           </React.Fragment>
         </Paper>
       </Container>

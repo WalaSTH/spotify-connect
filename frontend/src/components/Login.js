@@ -24,12 +24,24 @@ const defaultTheme = createTheme();
 
 export default function Login({ navigate }) {
   const [badCredentials, setBadCredentials] = useState(false);
+  const [userInRoom, setUserInRoom] = useState(false);
   const loginEndpoint = "http://127.0.0.1:8000/api/login";
   const initialFormState = {
     username: "",
     password: "",
   };
-
+  async function checkUserInRoom(userID) {
+    await axios
+      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .then((response) => {
+        if (response.status == 200) {
+          localStorage.setItem("userInRoom", "true");
+          setUserInRoom("true");
+        } else {
+        }
+      })
+      .catch((error) => {});
+  }
   const formValidation = Yup.object().shape({
     username: Yup.string()
       .min(4, "Username must be at least 3 characters long")
@@ -55,7 +67,13 @@ export default function Login({ navigate }) {
         console.log(userID);
         localStorage.setItem("userID", userID);
         localStorage.setItem("username", values.username);
-        navigate("/");
+        checkUserInRoom(userID).then(() => {
+          if (userInRoom) {
+            navigate("/room");
+          } else {
+            navigate("/");
+          }
+        });
       })
       .catch((error) => {
         if (

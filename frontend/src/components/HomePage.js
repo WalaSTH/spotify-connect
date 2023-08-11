@@ -19,22 +19,17 @@ import {
 import Login from "./Login";
 import SignUp from "./SignUp";
 import JoinCodeCard from "./singles/JoinCode";
+import axios from "axios";
 
-export default function HomePage({ navigate, userID }) {
-  const [userId, setUserId] = useState(userID);
-
-  useEffect(() => {
-    setUserId(localStorage.getItem("userID"));
-  }, []);
+export default function HomePage({ navigate, userID, userInRoom }) {
+  const [joinCode, setJoinCode] = useState(false);
+  const [roomName, setRoomName] = useState("");
 
   const handleLogout = () => {
     localStorage.clear();
-    setUserId(null);
     navigate("/");
   };
-  const handleJoinCode = () => {
-    return <JoinCodeCard></JoinCodeCard>;
-  };
+
   const renderHomePage = () => {
     return (
       <div>
@@ -43,9 +38,20 @@ export default function HomePage({ navigate, userID }) {
             <Typography variant="h3" component="h3">
               Spotify Connect
             </Typography>
+            {userInRoom && (
+              <div>
+                <Typography variant="h5" component="h5">
+                  Currently in a Room
+                </Typography>
+
+                <Button to="/room" component={Link}>
+                  Go to room
+                </Button>
+              </div>
+            )}
           </Grid>
           <Grid item xs={12}>
-            {!userId && (
+            {!userID && (
               <Grid container spacing={3} align="center">
                 <Grid item xs={12}>
                   <ButtonGroup
@@ -63,7 +69,7 @@ export default function HomePage({ navigate, userID }) {
                 </Grid>
               </Grid>
             )}
-            {userId && (
+            {userID && (
               <Grid container spacing={1} align="center">
                 <Grid item xs={12}>
                   <ButtonGroup
@@ -71,33 +77,43 @@ export default function HomePage({ navigate, userID }) {
                     variant="contained"
                     color="primary"
                   >
-                    <Button color="primary" to="/create-room" component={Link}>
-                      Create a Room
-                    </Button>
+                    {!userInRoom && (
+                      <Button
+                        color="primary"
+                        to="/create-room"
+                        component={Link}
+                      >
+                        Create a Room
+                      </Button>
+                    )}
 
-                    <Button
-                      color="secondary"
-                      to="/"
-                      component={Link}
-                      onClick={handleLogout}
-                    >
-                      Log Out
-                    </Button>
+                    {!joinCode && (
+                      <Button
+                        color="secondary"
+                        variant="contained"
+                        component={Link}
+                        onClick={() => {
+                          setJoinCode(true);
+                        }}
+                      >
+                        Join Room With Code
+                      </Button>
+                    )}
                   </ButtonGroup>
                 </Grid>
 
-                <Grid item xs={12}>
-                  <Button
-                    color="primary"
-                    component={Link}
-                    onClick={handleJoinCode}
-                  >
-                    Join with Code
-                  </Button>
-                </Grid>
-                <Grid item xs={12}>
-                  <JoinCodeCard userID={userId}></JoinCodeCard>
-                </Grid>
+                {joinCode && (
+                  <Grid item xs={12}>
+                    <JoinCodeCard
+                      navigate={navigate}
+                      userID={userID}
+                      active={joinCode}
+                      callback={() => {
+                        setJoinCode(false);
+                      }}
+                    ></JoinCodeCard>
+                  </Grid>
+                )}
               </Grid>
             )}
           </Grid>
