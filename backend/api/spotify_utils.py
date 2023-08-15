@@ -65,3 +65,18 @@ def is_spotify_authenticated(session_id):
         return True
     print("NO HAY TOKENNN")
     return False
+
+def execute_spotify_api_request(user_id, endpoint, post_=False, put_=False):
+    tokens = get_user_tokens(user_id)
+    header = {'Content-Type':'application/json', 'Authorization':'Bearer ' + tokens.access_token}
+
+    if post_:
+        post(BASE_URL + endpoint, headers=header)
+    if put_:
+        put(BASE_URL + endpoint, headers=header)
+    response = get(BASE_URL + endpoint, {}, headers=header)
+
+    try:
+        return response.json()
+    except:
+        return {'Error':'Issue with request'}

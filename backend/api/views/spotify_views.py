@@ -14,13 +14,6 @@ class AuthURL(APIView):
     lookup_karg = 'user_id'
     def get(self, request, format=None):
         user = request.GET.get(self.lookup_karg)
-        print("HOLA ACA VA EL USER:")
-        print(user)
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-        print(self.request.session.session_key)
-        print("front should be:")
-        print(self.request.session.session_key)
         scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
 
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
@@ -60,7 +53,7 @@ def spotify_callback(request, format=None):
 
     set_user_authenticated(user_id, True)
 
-    return redirect('http://localhost:3000/create-room')
+    return redirect('http://localhost:3000/room')
 
 
 class IsAuthenticated(APIView):
@@ -80,3 +73,57 @@ class GetTokens(generics.ListAPIView):
 class TokenView(generics.ListAPIView):
     serializer_class = TokensSerializer
     queryset = SpotifyToken.objects.all()
+
+class CurrentSong(APIView):
+    def get(self, request, format=None):
+        room_code = request.GET.get('room_code')
+        room = Room.objects.filter(code=room_code)
+        if room.exists():
+            room = room[0]
+        else:
+            return Response({'Msg':'No room found'}, status=status.HTTP_404_NOT_FOUND)
+        host_id = room.host.id
+        endpoint = "player/currently-playing"
+        response = execute_spotify_api_request(host_id, endpoint)
+
+        if 'error' in response or 'item' not in response:
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        item = response.get('item')
+        duration = item.get('duration_ms')
+        progress = response.get('progress_ms')
+        album_cover = item.get('album').get('images')[0].get('url')
+        is_playing = response.get('is_playing')
+        song_id = item.get('id')
+
+        artist_string = ""
+        for i, artist in enumerate(item.get('artists')):
+            if i > 0:
+                artist_string += ", "
+            name = artist.get('name')
+            artist_string += name
+        #votes = len(Vote.objects.filter(room=room, song_id=song_id))
+
+        song = {
+            'title': item.get('name'),
+            'artist': artist_string,
+            'duration': duration,
+            'time': progress,
+            'image_url': album_cover,
+            'is_playing': is_playing,
+            'votes': votes,
+            'votes_required': room.votes_to_skip,
+            'id': song_id
+        }
+
+        self.update_room_song(room, song_id)
+
+        return Response(song, status=status.HTTP_200_OK)
+
+    def update_room_song(self, room, song_id):
+        current_song = room.current_song
+
+        if current_song != song_id:
+            room.current_song = song_id
+            room.save(update_fields=['current_song'])
+            #votes = Vote.objects.filter(room=room).delete()
