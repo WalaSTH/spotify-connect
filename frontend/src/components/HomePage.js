@@ -21,15 +21,33 @@ import SignUp from "./SignUp";
 import JoinCodeCard from "./singles/JoinCode";
 import axios from "axios";
 
-export default function HomePage({ navigate, userID, userInRoom }) {
+export default function HomePage({ navigate, userID, userInsideRoom }) {
   const [joinCode, setJoinCode] = useState(false);
   const [roomName, setRoomName] = useState("");
+  const [userId, setUserId] = useState(userID);
+  const [userInRoom, setUserInRoom] = useState(userInsideRoom);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
+  useEffect(() => {
+    setUserId(localStorage.getItem("userID"));
+  }, []);
 
+  useEffect(() => {
+    if (userID) checkUserInRoom(userID);
+  });
+  async function checkUserInRoom(userID) {
+    await axios
+      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .then((response) => {
+        if (response.status == 200) {
+          setUserInRoom(true);
+        } else {
+          setUserInRoom(false);
+        }
+      })
+      .catch((error) => {
+        setUserInRoom(false);
+      });
+  }
   const renderHomePage = () => {
     return (
       <div>
@@ -38,7 +56,7 @@ export default function HomePage({ navigate, userID, userInRoom }) {
             <Typography variant="h3" component="h3">
               Spotify Connect
             </Typography>
-            {userInRoom && (
+            {userInRoom && userID && (
               <div>
                 <Typography variant="h5" component="h5">
                   Currently in a Room

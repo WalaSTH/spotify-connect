@@ -35,12 +35,13 @@ export default function Login({ navigate }) {
       .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
       .then((response) => {
         if (response.status == 200) {
-          localStorage.setItem("userInRoom", "true");
-          setUserInRoom("true");
+          setUserInRoom(true);
         } else {
         }
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log(error);
+      });
   }
   const formValidation = Yup.object().shape({
     username: Yup.string()
@@ -64,7 +65,6 @@ export default function Login({ navigate }) {
       .post(loginEndpoint, formData)
       .then((response) => {
         const userID = response.data["data"];
-        console.log(userID);
         localStorage.setItem("userID", userID);
         localStorage.setItem("username", values.username);
         checkUserInRoom(userID).then(() => {
@@ -81,7 +81,6 @@ export default function Login({ navigate }) {
           error.response.status == NOT_FOUND
         ) {
           setBadCredentials(true);
-          console.log("Invalid credentials");
         }
       });
   }

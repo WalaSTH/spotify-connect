@@ -28,18 +28,40 @@ import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import userInRoomEndpoint from "../static/endpoints";
+import MusicPlayer from "./MusicPlayer";
 
-export default function Room({ userID, navigate }) {
+export default function Room({ userID, navigate, userInRoom }) {
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
+  const [userInsideRoom, setUserInsideRoom] = useState(false);
+  const [song, setSong] = useState({});
+  const [songPlaying, setSongPlaying] = useState(true);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getRoomData(userID);
+    authenticateSpotify(userID);
+  }, []);
+
+  let interval;
+  useEffect(() => {
+    interval = setInterval(pull, 1000);
+  });
+
+  const pull = () => {
+    getRoomData(userID);
+    getCurrentSong(userID);
+  };
+
+  useEffect(() => {
+    return () => {
+      clearInterval(interval);
+    };
+  });
 
   async function authenticateSpotify(userID) {
     await axios
       .get("/api/is-authenticated" + "?user_id=" + userID)
       .then(async function (data) {
-        console.log(data.data.status[0]);
         if (!data.data.status[0]) {
           await axios
             .get("/api/get-auth-url" + "?user_id=" + userID)
@@ -49,37 +71,78 @@ export default function Room({ userID, navigate }) {
         }
       });
   }
-  useEffect(() => {
-    checkUserInRoom(userID).then(authenticateSpotify(userID));
-    getRoomInfo(roomCode, userID);
-  }, []);
+
+  async function getCurrentSong(userID) {
+    console.log("Getting Song");
+    await axios
+      .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
+      .then((response) => {
+        console.log(response.data);
+        setSong(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const setRoomInfo = (room) => {
     setRoomCode(room["room_code"]);
     setRoomName(room["room_name"]);
+    setUserInsideRoom(true);
   };
-  async function checkUserInRoom(userID) {
+  async function getRoomData(userID) {
+    console.log("GETTING DATA");
     await axios
       .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
       .then((response) => {
+        console.log("GETTING DATA");
         if (response.status == 200) {
-          console.log(response.data.room);
           setRoomInfo(response.data.room);
         } else {
-          navigate("/create-room");
+          navigate("/");
         }
       })
       .catch((error) => {
-        console.log(error);
         navigate("/");
       });
   }
-  async function getRoomInfo(roomCode, userID) {}
+
+  async function leaveRoom() {
+    const formData = new FormData();
+    formData.append("user_id", userID);
+    await axios
+      .post("http://127.0.0.1:8000/api/leave-room", formData)
+      .then((response) => {
+        navigate("/");
+      })
+      .catch((error) => {
+        navigate("/");
+      });
+  }
+  const goHome = () => {
+    if (!userInsideRoom) {
+      navigate("/");
+    }
+  };
   return (
     <div className="center">
-      <Grid container spacing={12}>
-        <Grid item xs={3}>
+      <Grid container spacing={1} align="center">
+        <Grid item xs={12}>
           <Typography variant="h4">{roomName}</Typography>
+          <Typography>{roomCode}</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <MusicPlayer
+            align="center"
+            song={song}
+            songPlaying={songPlaying}
+            userID={userID}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button color="secondary" component={Link} onClick={leaveRoom}>
+            Lave Room
+          </Button>
         </Grid>
       </Grid>
     </div>

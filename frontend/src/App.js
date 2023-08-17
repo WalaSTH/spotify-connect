@@ -3,17 +3,11 @@ import "./App.css";
 import RoutesWrapper from "./routes/index";
 import NavigationLayout from "./layouts/Main";
 import { useParams, useNavigate } from "react-router-dom";
+import MainApp from "./components/MainApp";
 
 function App() {
   const navigate = useNavigate();
-  return (
-    <div>
-      {/* <NavigationLayout navigate={navigate} avatar={null} /> */}
-      <div>
-        <RoutesWrapper navigate={navigate} />
-      </div>
-    </div>
-  );
+  return <MainApp />;
 }
 
 export default App;
