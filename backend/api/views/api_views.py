@@ -238,3 +238,42 @@ class RoomJoin(APIView):
         join_user(room_code, user_id)
         return Response({'Msg':'Room joined.'}, status=status.HTTP_200_OK)
 
+
+class LeaveRoom(APIView):
+
+    def post(self, request, format=None):
+        user_id = request.data.get("user_id")
+
+        # Validate fields
+
+        if not user_id_exists(user_id):
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user = get_user_by_id(user_id)
+        room_code = user.room
+        if room_code == "":
+            return Response({'Msg': 'User not in room_code'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        if not room_exists(room_code):
+            user.room=""
+            user.save(update_fields=['room'])
+            return Response({'Msg': 'Invalid user room'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete room for user
+        user.room=""
+        user.save(update_fields=['room'])
+
+        # Delete for all if user is host
+        room = get_room_by_code(room_code)
+        if user.id == room.host:
+            print("IS HOST!!!!!!!!!!!!!!!!!!!!!!")
+            queryset = User.objects.filter(room=room_code)
+            for i in range(len(queryset)):
+                queryset[i].room = ""
+                queryset[i].save(update_fields=['room'])
+            # Delete room
+            Room.objects.filter(code=room_code).delete()
+
+        return Response({'Msg':'Room leaved successfully'}, status=status.HTTP_200_OK)
+
+
+
