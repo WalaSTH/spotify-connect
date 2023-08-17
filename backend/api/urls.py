@@ -17,4 +17,11 @@ urlpatterns = [
     path('room-exists', RoomExists.as_view()),
     path('join-room', RoomJoin.as_view()),
     path('get-room', UserInRoom.as_view()),
+    path('leave-room', LeaveRoom.as_view()),
+
+    # Spotify
+
+    path('current-song', CurrentSong.as_view()),
+    path('pause', PauseSong.as_view()),
+    path('play', PlaySong.as_view()),
 ]

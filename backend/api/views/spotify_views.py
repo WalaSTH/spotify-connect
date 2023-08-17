@@ -76,13 +76,21 @@ class TokenView(generics.ListAPIView):
 
 class CurrentSong(APIView):
     def get(self, request, format=None):
-        room_code = request.GET.get('room_code')
-        room = Room.objects.filter(code=room_code)
-        if room.exists():
-            room = room[0]
-        else:
+        user_id = request.GET.get('user_id')
+
+        user=get_user_by_id(user_id)
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        host_id = room.host
+
+        if room == None:
             return Response({'Msg':'No room found'}, status=status.HTTP_404_NOT_FOUND)
-        host_id = room.host.id
         endpoint = "player/currently-playing"
         response = execute_spotify_api_request(host_id, endpoint)
 
@@ -111,8 +119,6 @@ class CurrentSong(APIView):
             'time': progress,
             'image_url': album_cover,
             'is_playing': is_playing,
-            'votes': votes,
-            'votes_required': room.votes_to_skip,
             'id': song_id
         }
 
@@ -127,3 +133,39 @@ class CurrentSong(APIView):
             room.current_song = song_id
             room.save(update_fields=['current_song'])
             #votes = Vote.objects.filter(room=room).delete()
+
+class PauseSong(APIView):
+    def get(self, response, format=None):
+        user_id = response.GET.get('user_id')
+        user=get_user_by_id(user_id)
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        host_id = room.host
+        execute_spotify_api_request(host_id, "player/pause", put_=True)
+
+        print(response)
+        return Response({}, status=status.HTTP_200_OK)
+
+class PlaySong(APIView):
+    def get(self, response, format=None):
+        user_id = response.GET.get('user_id')
+        user=get_user_by_id(user_id)
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        host_id = room.host
+        execute_spotify_api_request(host_id, "player/play", put_=True)
+
+        print(response)
+        return Response({}, status=status.HTTP_200_OK)

@@ -73,7 +73,8 @@ def execute_spotify_api_request(user_id, endpoint, post_=False, put_=False):
     if post_:
         post(BASE_URL + endpoint, headers=header)
     if put_:
-        put(BASE_URL + endpoint, headers=header)
+        response = put(BASE_URL + endpoint, headers=header)
+        print("HOLAA")
     response = get(BASE_URL + endpoint, {}, headers=header)
 
     try:
