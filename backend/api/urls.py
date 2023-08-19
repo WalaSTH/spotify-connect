@@ -26,4 +26,5 @@ urlpatterns = [
     path('play', PlaySong.as_view()),
     path('sync', SyncUser.as_view()),
     path('skip', SkipSong.as_view()),
+    path('search', SearchSong.as_view()),
 ]

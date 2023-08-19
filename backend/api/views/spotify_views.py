@@ -210,12 +210,39 @@ class SkipSong(APIView):
         host_id = room.host
         users = User.objects.filter(room=room_code)
         
-        execute_spotify_api_request(user_id, endpoint="player/next", post_=True)
-        """ for i in range(len(users)):
+        for i in range(len(users)):
             user_nid = users[i].id
-            tokens = get_user_tokens(user_nid)
-            res = execute_spotify_api_request(user_nid, "player/next", post_=True)
-            print(res)
-            print("HI")
- """
+            execute_spotify_api_request(user_nid, "player/next", post_=True)
+
         return Response({}, status=status.HTTP_200_OK)
+    
+class SearchSong(APIView):
+
+    def get(self,request, format=None):
+        limit = 5
+        result_list = []
+        key = request.GET.get('key')
+        user_id = request.GET.get('user_id')
+        endpoint = "search?q=track:" + key + "&type=track&limit="+str(limit)
+        list = execute_spotify_api_request(user_id, endpoint=endpoint, queue_=True)
+        if list:
+            results = list.get("tracks").get("items")
+            for i in range(len(results)):
+                result = results[i]
+                name = result.get("name")
+                image = result.get("album").get("images")[2].get("url")
+                id = result.get("id")
+                artist_string = ""
+                for i, artist in enumerate(result.get('artists')):
+                    if i > 0:
+                        artist_string += ", "
+                    name = artist.get('name')
+                    artist_string += name
+                song = {
+                    'title': name,
+                    'artist': artist_string,
+                    'image_url': image,
+                    'id': id
+                }
+                result_list.append(song)
+        return Response({"data":result_list}, status=status.HTTP_200_OK)
