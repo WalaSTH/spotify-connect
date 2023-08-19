@@ -30,18 +30,18 @@ import { useEffect, useState } from "react";
 import userInRoomEndpoint from "../static/endpoints";
 import MusicPlayer from "./MusicPlayer";
 
-export default function Room({ userID, navigate, userInRoom }) {
+export default function Room({ userID, navigate, userInRoom, song }) {
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
-  const [userInsideRoom, setUserInsideRoom] = useState(false);
-  const [song, setSong] = useState({});
-  const [songPlaying, setSongPlaying] = useState(true);
+
+  //const [song, setSong] = useState({});
+  //const [songPlaying, setSongPlaying] = useState(true);
 
   useEffect(() => {
     getRoomData(userID);
-    authenticateSpotify(userID);
+    //authenticateSpotify(userID);
   }, []);
-
+  /*
   let interval;
   useEffect(() => {
     interval = setInterval(pull, 1000);
@@ -56,7 +56,7 @@ export default function Room({ userID, navigate, userInRoom }) {
     return () => {
       clearInterval(interval);
     };
-  });
+  }); */
 
   async function authenticateSpotify(userID) {
     await axios
@@ -78,7 +78,7 @@ export default function Room({ userID, navigate, userInRoom }) {
       .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
       .then((response) => {
         console.log(response.data);
-        setSong(response.data);
+        //setSong(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -88,7 +88,6 @@ export default function Room({ userID, navigate, userInRoom }) {
   const setRoomInfo = (room) => {
     setRoomCode(room["room_code"]);
     setRoomName(room["room_name"]);
-    setUserInsideRoom(true);
   };
   async function getRoomData(userID) {
     console.log("GETTING DATA");
@@ -119,11 +118,21 @@ export default function Room({ userID, navigate, userInRoom }) {
         navigate("/");
       });
   }
-  const goHome = () => {
-    if (!userInsideRoom) {
-      navigate("/");
-    }
-  };
+  async function syncButton() {
+    const formData = new FormData();
+    formData.append("user_id", userID);
+    formData.append("track_id", song.id);
+    formData.append("position", song.time);
+    await axios
+      .post("http://127.0.0.1:8000/api/sync", formData)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   return (
     <div className="center">
       <Grid container spacing={1} align="center">
@@ -135,13 +144,18 @@ export default function Room({ userID, navigate, userInRoom }) {
           <MusicPlayer
             align="center"
             song={song}
-            songPlaying={songPlaying}
+            songPlaying={true}
             userID={userID}
           />
         </Grid>
         <Grid item xs={12}>
           <Button color="secondary" component={Link} onClick={leaveRoom}>
             Lave Room
+          </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <Button color="secondary" component={Link} onClick={syncButton}>
+            Sync
           </Button>
         </Grid>
       </Grid>

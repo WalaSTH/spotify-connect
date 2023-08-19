@@ -6,13 +6,20 @@ import axios from "axios";
 
 export default function MainApp() {
   const [userId, setUserId] = useState(localStorage.getItem("userID"));
+  const [song, setSong] = useState({});
+  const [prevSong, setPrevSong] = useState("");
+  const [songPlaying, setSongPlaying] = useState(true);
 
   useEffect(() => {
     setUserId(localStorage.getItem("userID"));
   });
 
   useEffect(() => {
-    if (userId) checkUserInRoom(userId);
+    if (userId) {
+      checkUserInRoom(userId);
+      getCurrentSong(userId);
+      authenticateSpotify(userId);
+    }
   });
 
   async function checkUserInRoom(userID) {
@@ -27,12 +34,58 @@ export default function MainApp() {
         console.log(error);
       });
   }
+  async function authenticateSpotify(userID) {
+    await axios
+      .get("/api/is-authenticated" + "?user_id=" + userID)
+      .then(async function (data) {
+        if (!data.data.status[0]) {
+          await axios
+            .get("/api/get-auth-url" + "?user_id=" + userID)
+            .then((data) => {
+              window.location.replace(data.data.url);
+            });
+        }
+      });
+  }
+  async function syncButton(id, time) {
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("track_id", id);
+    formData.append("position", time);
+    await axios
+      .post("http://127.0.0.1:8000/api/sync", formData)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  async function getCurrentSong(userID) {
+    console.log("Getting Song");
+    await axios
+      .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
+      .then((response) => {
+        console.log(response.data);
+        setSong(response.data);
+        if (response.data.id != prevSong) {
+          console.log("New song");
+          syncButton(response.data.id, response.data.time);
+          setPrevSong(response.data.id);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   const navigate = useNavigate();
   return (
     <div>
       <NavigationLayout navigate={navigate} avatar={null} />
       <div>
-        <RoutesWrapper navigate={navigate} userId={userId} />
+        <RoutesWrapper navigate={navigate} userId={userId} song={song} />
       </div>
     </div>
   );

@@ -6,28 +6,14 @@ import SignUp from "../components/SignUp";
 import { useEffect, useState } from "react";
 import CreateRoom from "../components/CreateRoom";
 import Room from "../components/Room";
+import axios from "axios";
 
-export default function RoutesWrapper({ navigate }) {
-  const [userId, setUserId] = useState(localStorage.getItem("userID"));
-  const [userInRoom, setUserInRoom] = useState(
-    localStorage.getItem("userInRoom")
-  );
-  useEffect(() => {
-    setUserId(localStorage.getItem("userID"));
-    setUserInRoom(localStorage.getItem("userInRoom"));
-  });
-
+export default function RoutesWrapper({ navigate, userId, song }) {
   return (
     <Routes>
       <Route
         path="/"
-        element={
-          <HomePage
-            userID={userId}
-            navigate={navigate}
-            userInRoom={userInRoom}
-          />
-        }
+        element={<HomePage userID={userId} navigate={navigate} />}
       />
       <Route
         path="/sign-up"
@@ -51,7 +37,7 @@ export default function RoutesWrapper({ navigate }) {
         path="/room"
         element={
           userId ? (
-            <Room userID={userId} navigate={navigate} />
+            <Room userID={userId} navigate={navigate} song={song} />
           ) : (
             <Navigate to="/login" />
           )
