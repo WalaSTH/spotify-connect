@@ -29,27 +29,18 @@ export default function MusicPlayer(props) {
     };
   });
 
-  const skipSong = () => {
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    };
-    fetch("/spotify/skip", requestOptions).then((response) => {
-      if (response.status == 208) {
-        setRevote(true);
-      } else {
-        setRevote(false);
-      }
-    });
-  };
+  async function skipSong() {
+    const formData = new FormData();
+    formData.append("user_id", props.userID);
+    formData.append("user_id", props.userID);
+    await axios.post("api/skip", formData).catch((error) => console.log(error));
+  }
 
-  const pauseSong = () => {
-    const requestOptions = {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-    };
-    axios.get("api/pause" + "?user_id=" + props.userID);
-  };
+  async function pauseSong() {
+    await axios
+      .get("api/pause" + "?user_id=" + props.userID)
+      .catch((error) => console.log(error));
+  }
 
   const playSong = () => {
     const requestOptions = {

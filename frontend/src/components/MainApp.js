@@ -17,7 +17,7 @@ export default function MainApp() {
   useEffect(() => {
     if (userId) {
       checkUserInRoom(userId);
-      getCurrentSong(userId);
+      getCurrentSong(userId).then(checkNew(song, prevSong));
       authenticateSpotify(userId);
     }
   });
@@ -63,21 +63,32 @@ export default function MainApp() {
   }
 
   async function getCurrentSong(userID) {
-    console.log("Getting Song");
     await axios
       .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
       .then((response) => {
-        console.log(response.data);
         setSong(response.data);
-        if (response.data.id != prevSong) {
+        /*         if (response.data.id != prevSong && userId != "WalaCAB") {
+          setPrevSong(response.data.id);
           console.log("New song");
           syncButton(response.data.id, response.data.time);
-          setPrevSong(response.data.id);
-        }
+        } */
       })
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  function checkNew(song, prevSong) {
+    if (song.id != prevSong && userId != "WalaCAB" && !prevSong) {
+      console.log(prevSong);
+      console.log("First song");
+      syncButton(song.id, song.time);
+      setPrevSong(song.id);
+    } else if (song.id != prevSong && userId != "WalaCAB" && prevSong != "") {
+      console.log("New song");
+      syncButton(song.id, 0);
+      setPrevSong(song.id);
+    }
   }
 
   const navigate = useNavigate();
