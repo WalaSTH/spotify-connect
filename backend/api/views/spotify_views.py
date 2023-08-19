@@ -3,12 +3,13 @@ from django.shortcuts import render, redirect
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from requests import Request, post
+from requests import Request, post, put, get
 from django.http import JsonResponse
 from ..spotify_utils import *
 from ..serializers import *
 from ..models import *
 from ..credentials import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
+import json
 
 class AuthURL(APIView):
     lookup_karg = 'user_id'
@@ -31,7 +32,6 @@ def spotify_callback(request, format=None):
     code = request.GET.get('code')
     user_id = request.GET.get('state')
     error = request.GET.get('error')
-    print(user_id)
     if not user_id_exists(user_id):
         return JsonResponse({'Msg':"user not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -134,6 +134,23 @@ class CurrentSong(APIView):
             room.save(update_fields=['current_song'])
             #votes = Vote.objects.filter(room=room).delete()
 
+class SyncUser(APIView):
+    def post(self, request, format=None):
+        user_id = request.data.get("user_id")
+        track_id = request.data.get("track_id")
+        position = request.data.get("position")
+        user = get_user_by_id(user_id)
+        room_code = user.room
+        host_id = get_room_by_code(room_code).host
+        data ={
+            "uris":["spotify:track:{}".format(track_id)],
+            "position_ms": position
+        }
+        if user_id != host_id:
+            res = execute_spotify_api_request(user_id=user_id,endpoint="player/play", put_=True, data_=True, data_body=json.dumps(data))
+            print(res)
+        return Response({}, status=status.HTTP_200_OK)
+
 class PauseSong(APIView):
     def get(self, response, format=None):
         user_id = response.GET.get('user_id')
@@ -148,8 +165,6 @@ class PauseSong(APIView):
         room = get_room_by_code(room_code)
         host_id = room.host
         execute_spotify_api_request(host_id, "player/pause", put_=True)
-
-        print(response)
         return Response({}, status=status.HTTP_200_OK)
 
 class PlaySong(APIView):
@@ -167,5 +182,4 @@ class PlaySong(APIView):
         host_id = room.host
         execute_spotify_api_request(host_id, "player/play", put_=True)
 
-        print(response)
         return Response({}, status=status.HTTP_200_OK)

@@ -131,8 +131,6 @@ def get_room_by_host(host_id):
 
 def get_room_by_code(room_code):
     room = None
-    print("EL CODE DE LA ROOM:")
-    print(room_code)
     queryset = Room.objects.filter(code=room_code)
     if queryset.exists():
         room = queryset[0]
