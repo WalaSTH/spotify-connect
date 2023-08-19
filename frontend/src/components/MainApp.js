@@ -15,12 +15,23 @@ export default function MainApp() {
   });
 
   useEffect(() => {
+    // Timer for alert
+    const timeId = setTimeout(() => {
+      polling();
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeId);
+    };
+  });
+
+  const polling = () => {
     if (userId) {
       checkUserInRoom(userId);
       getCurrentSong(userId).then(checkNew(song, prevSong));
       authenticateSpotify(userId);
     }
-  });
+  };
 
   async function checkUserInRoom(userID) {
     await axios

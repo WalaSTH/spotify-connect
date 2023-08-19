@@ -30,10 +30,9 @@ export default function MusicPlayer(props) {
   });
 
   async function skipSong() {
-    const formData = new FormData();
-    formData.append("user_id", props.userID);
-    formData.append("user_id", props.userID);
-    await axios.post("api/skip", formData).catch((error) => console.log(error));
+    await axios
+      .get("api/skip" + "?user_id=" + props.userID)
+      .catch((error) => console.log(error));
   }
 
   async function pauseSong() {
@@ -93,7 +92,7 @@ export default function MusicPlayer(props) {
 
   return (
     <Card>
-      <Grid container alignItems="center">
+      <Grid container alignItems="center" spacing={1}>
         <Grid item align="center" xs={4}>
           <img src={props.song.image_url} height="100%" width="100%" />
         </Grid>

@@ -54,7 +54,11 @@ export default function SignUp({ navigate }) {
     formData.append("password", values.password);
     formData.append("email", values.email);
 
-    await axios.post(createUserEndpoint, formData);
+    await axios.post(createUserEndpoint, formData).then((response) => {
+      if (response.status == 201) {
+        navigate("/login");
+      }
+    });
   }
 
   return (

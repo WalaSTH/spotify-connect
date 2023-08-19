@@ -29,6 +29,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import userInRoomEndpoint from "../static/endpoints";
 import MusicPlayer from "./MusicPlayer";
+import Search from "./singles/MusicSearch";
 
 export default function Room({ userID, navigate, userInRoom, song }) {
   const [roomCode, setRoomCode] = useState("");
@@ -135,10 +136,13 @@ export default function Room({ userID, navigate, userInRoom, song }) {
 
   return (
     <div className="center">
-      <Grid container spacing={1} align="center">
+      <Grid container spacing={1} align="center" justifyContent="center">
         <Grid item xs={12}>
           <Typography variant="h4">{roomName}</Typography>
           <Typography>{roomCode}</Typography>
+        </Grid>
+        <Grid item xs={12} justifyContent="center">
+          <Search userID={userID}></Search>
         </Grid>
         <Grid item xs={12}>
           <MusicPlayer
