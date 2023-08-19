@@ -164,11 +164,15 @@ class PauseSong(APIView):
         room_code = user.room
         room = get_room_by_code(room_code)
         host_id = room.host
-        execute_spotify_api_request(host_id, "player/pause", put_=True)
+        users = User.objects.filter(room=room_code)
+        for i in range(len(users)):
+            user_nid = users[i].id
+            execute_spotify_api_request(user_nid, "player/pause", put_=True)
         return Response({}, status=status.HTTP_200_OK)
 
 class PlaySong(APIView):
     def get(self, response, format=None):
+        
         user_id = response.GET.get('user_id')
         user=get_user_by_id(user_id)
         if user == None:
@@ -180,6 +184,38 @@ class PlaySong(APIView):
         room_code = user.room
         room = get_room_by_code(room_code)
         host_id = room.host
-        execute_spotify_api_request(host_id, "player/play", put_=True)
+        users = User.objects.filter(room=room_code)
+        for i in range(len(users)):
+            user_nid = users[i].id
+            execute_spotify_api_request(user_nid, "player/play", put_=True)
 
+        return Response({}, status=status.HTTP_200_OK)
+    
+class SkipSong(APIView):
+    def get(self, request, format=None):
+
+        
+        user_id = request.GET.get('user_id')
+        print("EL USER SKIPEANDO ES" )
+        print(user_id)
+        user=get_user_by_id(user_id)
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        host_id = room.host
+        users = User.objects.filter(room=room_code)
+        
+        execute_spotify_api_request(user_id, endpoint="player/next", post_=True)
+        """ for i in range(len(users)):
+            user_nid = users[i].id
+            tokens = get_user_tokens(user_nid)
+            res = execute_spotify_api_request(user_nid, "player/next", post_=True)
+            print(res)
+            print("HI")
+ """
         return Response({}, status=status.HTTP_200_OK)

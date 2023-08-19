@@ -7,9 +7,11 @@ from requests import post, put, get
 BASE_URL = "https://api.spotify.com/v1/me/"
 
 def get_user_tokens(user_id):
+    
     user = get_user_by_id(user_id)
     user_tokens = SpotifyToken.objects.filter(user=user)
     if user_tokens.exists():
+        print(user_tokens[0])
         return user_tokens[0]
     else:
         return None
@@ -69,7 +71,7 @@ def is_spotify_authenticated(session_id):
 def execute_spotify_api_request(user_id, endpoint, post_=False, put_=False, data_body={}, data_=False):
     tokens = get_user_tokens(user_id)
     header = {'Content-Type':'application/json', 'Authorization':'Bearer ' + tokens.access_token}
-
+    print(tokens.access_token)
     if post_:
         response = post(BASE_URL + endpoint, headers=header)
         return response.content
