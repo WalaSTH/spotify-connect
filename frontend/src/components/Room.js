@@ -139,12 +139,11 @@ export default function Room({ userID, navigate, userInRoom, song }) {
       <Grid container spacing={1} align="center" justifyContent="center">
         <Grid item xs={12}>
           <Typography variant="h4">{roomName}</Typography>
-          <Typography>{roomCode}</Typography>
         </Grid>
         <Grid item xs={12} justifyContent="center">
           <Search userID={userID}></Search>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={9}>
           <MusicPlayer
             align="center"
             song={song}

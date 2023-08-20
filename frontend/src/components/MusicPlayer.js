@@ -65,8 +65,8 @@ export default function MusicPlayer(props) {
               skipSong();
             }}
           >
-            <SkipNextIcon /> <p>&nbsp;</p>
-            {props.song.votes} / {props.song.votes_required}
+            <SkipNextIcon />
+            {props.song.votes} {props.song.votes_required}
           </IconButton>
           <Collapse
             in={reVote}
