@@ -4,9 +4,9 @@ import Drawer from "../Sidebar";
 import Navbar from "../Navbar";
 import { useEffect } from "react";
 import axios from "axios";
-const drawerWidth = 200;
+const drawerWidth = 250;
 
-export default function NavigationLayout({ navigate, avatar }) {
+export default function NavigationLayout({ navigate, avatar, song }) {
   const token = localStorage.getItem("username");
   const userID = localStorage.getItem("userID");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -53,6 +53,7 @@ export default function NavigationLayout({ navigate, avatar }) {
           sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
         >
           <Drawer
+            song={song}
             setMobileOpen={setMobileOpen}
             navigate={navigate}
             avatar={avatar}
@@ -67,6 +68,7 @@ export default function NavigationLayout({ navigate, avatar }) {
             }}
           />
           <Drawer
+            song={song}
             userInRoom={userInRoom}
             setMobileOpen={setMobileOpen}
             navigate={navigate}

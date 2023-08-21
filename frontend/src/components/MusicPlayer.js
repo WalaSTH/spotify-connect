@@ -6,6 +6,12 @@ import {
   IconButton,
   LinearProgress,
   Collapse,
+  Avatar,
+  Icon,
+  SvgIcon,
+  Box,
+  Button,
+  Link,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -13,6 +19,7 @@ import PauseIcon from "@mui/icons-material/Pause";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import { Alert } from "@mui/material";
 import axios from "axios";
+import CloudSyncIcon from "@mui/icons-material/CloudSync";
 
 export default function MusicPlayer(props) {
   const [reVote, setRevote] = useState(false);
@@ -68,6 +75,18 @@ export default function MusicPlayer(props) {
             <SkipNextIcon />
             {props.song.votes} {props.song.votes_required}
           </IconButton>
+          <Button
+            color="secondary"
+            sx={{
+              color: "black",
+
+              borderColor: "green",
+            }}
+            component={Link}
+            onClick={props.syncFunction}
+          >
+            <CloudSyncIcon></CloudSyncIcon>
+          </Button>
           <Collapse
             in={reVote}
             onExit={() => {
@@ -83,15 +102,18 @@ export default function MusicPlayer(props) {
 
   const renderProgress = () => {
     return (
-      <LinearProgress
-        variant="determinate"
-        value={songProgress}
-      ></LinearProgress>
+      <Box sx={{ width: "100%", color: "#1DB954" }}>
+        <LinearProgress
+          variant="determinate"
+          value={songProgress}
+          color="inherit"
+        ></LinearProgress>
+      </Box>
     );
   };
 
   return (
-    <Card>
+    <Card style={{}}>
       <Grid container alignItems="center" spacing={1}>
         <Grid item align="center" xs={4}>
           <img src={props.song.image_url} height="100%" width="100%" />
@@ -105,6 +127,7 @@ export default function MusicPlayer(props) {
           </Typography>
           {props.songPlaying ? renderButtons() : null}
         </Grid>
+        <Grid item xs={12}></Grid>
       </Grid>
       {props.songPlaying ? renderProgress() : null}
     </Card>

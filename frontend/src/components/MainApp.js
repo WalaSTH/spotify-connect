@@ -9,6 +9,18 @@ export default function MainApp() {
   const [song, setSong] = useState({});
   const [prevSong, setPrevSong] = useState("");
   const [songPlaying, setSongPlaying] = useState(true);
+  const [queue, setQueue] = useState([]);
+  async function getQueue(userID) {
+    await axios
+      .get("api/get-queue" + "?user_id=" + userID)
+      .then((response) => {
+        console.log(response.data.data);
+        setQueue(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   useEffect(() => {
     setUserId(localStorage.getItem("userID"));
@@ -91,23 +103,32 @@ export default function MainApp() {
 
   function checkNew(song, prevSong) {
     if (song.id != prevSong && userId != "WalaCAB" && !prevSong) {
+      // First Song
       console.log(prevSong);
       console.log("First song");
       syncButton(song.id, song.time);
       setPrevSong(song.id);
+      getQueue(userId);
     } else if (song.id != prevSong && userId != "WalaCAB" && prevSong != "") {
+      // New Song
       console.log("New song");
       syncButton(song.id, 0);
       setPrevSong(song.id);
+      getQueue(userId);
     }
   }
 
   const navigate = useNavigate();
   return (
     <div>
-      <NavigationLayout navigate={navigate} avatar={null} />
+      <NavigationLayout navigate={navigate} avatar={null} song={song} />
       <div>
-        <RoutesWrapper navigate={navigate} userId={userId} song={song} />
+        <RoutesWrapper
+          navigate={navigate}
+          userId={userId}
+          song={song}
+          queue={queue}
+        />
       </div>
     </div>
   );

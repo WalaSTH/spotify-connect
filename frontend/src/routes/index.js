@@ -8,7 +8,13 @@ import CreateRoom from "../components/CreateRoom";
 import Room from "../components/Room";
 import axios from "axios";
 
-export default function RoutesWrapper({ navigate, userId, song }) {
+export default function RoutesWrapper({
+  navigate,
+  userId,
+  song,
+  csrftoken,
+  queue,
+}) {
   return (
     <Routes>
       <Route
@@ -27,7 +33,11 @@ export default function RoutesWrapper({ navigate, userId, song }) {
         path="/create-room"
         element={
           userId ? (
-            <CreateRoom userID={userId} navigate={navigate} />
+            <CreateRoom
+              userID={userId}
+              navigate={navigate}
+              csrftoken={csrftoken}
+            />
           ) : (
             <Navigate to="/login" />
           )
@@ -37,7 +47,13 @@ export default function RoutesWrapper({ navigate, userId, song }) {
         path="/room"
         element={
           userId ? (
-            <Room userID={userId} navigate={navigate} song={song} />
+            <Room
+              userID={userId}
+              navigate={navigate}
+              song={song}
+              csrftoken={csrftoken}
+              queue={queue}
+            />
           ) : (
             <Navigate to="/login" />
           )

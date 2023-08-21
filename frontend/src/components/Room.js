@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import Checkbox from "@mui/material/Checkbox";
+import Cookies from "js-cookie";
 import {
   BrowserRouter,
   Routes,
@@ -22,6 +23,7 @@ import {
   RadioGroup,
   Typography,
   Switch,
+  Box,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
@@ -30,34 +32,34 @@ import { useEffect, useState } from "react";
 import userInRoomEndpoint from "../static/endpoints";
 import MusicPlayer from "./MusicPlayer";
 import Search from "./singles/MusicSearch";
+import CommingNext from "./singles/CommingNext";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-export default function Room({ userID, navigate, userInRoom, song }) {
+//Sync
+import ContactlessIcon from "@mui/icons-material/Contactless";
+import WifiProtectedSetupOutlinedIcon from "@mui/icons-material/WifiProtectedSetupOutlined";
+import RssFeedOutlinedIcon from "@mui/icons-material/RssFeedOutlined";
+import ContactlessOutlinedIcon from "@mui/icons-material/ContactlessOutlined";
+import CloudSyncIcon from "@mui/icons-material/CloudSync";
+import LeakAddIcon from "@mui/icons-material/LeakAdd";
+
+export default function Room({ userID, navigate, userInRoom, song, queue }) {
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
 
-  //const [song, setSong] = useState({});
-  //const [songPlaying, setSongPlaying] = useState(true);
+  const csrf = {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFTOKEN": Cookies.get("csrftoken"),
+    },
+  };
 
   useEffect(() => {
     getRoomData(userID);
     //authenticateSpotify(userID);
   }, []);
-  /*
-  let interval;
-  useEffect(() => {
-    interval = setInterval(pull, 1000);
-  });
-
-  const pull = () => {
-    getRoomData(userID);
-    getCurrentSong(userID);
-  };
-
-  useEffect(() => {
-    return () => {
-      clearInterval(interval);
-    };
-  }); */
 
   async function authenticateSpotify(userID) {
     await axios
@@ -110,8 +112,9 @@ export default function Room({ userID, navigate, userInRoom, song }) {
   async function leaveRoom() {
     const formData = new FormData();
     formData.append("user_id", userID);
+    formData.append("csrfmiddlewaretoken", "{{csrf_token}}");
     await axios
-      .post("http://127.0.0.1:8000/api/leave-room", formData)
+      .post("api/leave-room", formData, csrf)
       .then((response) => {
         navigate("/");
       })
@@ -135,33 +138,49 @@ export default function Room({ userID, navigate, userInRoom, song }) {
   }
 
   return (
-    <div className="center">
-      <Grid container spacing={1} align="center" justifyContent="center">
-        <Grid item xs={12}>
-          <Typography variant="h4">{roomName}</Typography>
-        </Grid>
-        <Grid item xs={12} justifyContent="center">
-          <Search userID={userID}></Search>
-        </Grid>
-        <Grid item xs={9}>
-          <MusicPlayer
-            align="center"
-            song={song}
-            songPlaying={true}
-            userID={userID}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button color="secondary" component={Link} onClick={leaveRoom}>
-            Lave Room
-          </Button>
-        </Grid>
-        <Grid item xs={12}>
-          <Button color="secondary" component={Link} onClick={syncButton}>
-            Sync
-          </Button>
+    <Grid
+      container
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+      className="center2"
+    >
+      <Grid item name="Player and search">
+        <Grid item xs={12} align="center" justifyContent="center">
+          <Grid item xs={12}>
+            <Typography variant="h4">{roomName}</Typography>
+          </Grid>
+          <Grid item xs={12} justifyContent="center">
+            <Search userID={userID}></Search>
+          </Grid>
+          <Grid item xs={9}>
+            <MusicPlayer
+              align="center"
+              song={song}
+              songPlaying={true}
+              userID={userID}
+              syncFunction={syncButton}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              color="secondary"
+              component={Link}
+              onClick={leaveRoom}
+              sx={{
+                color: "black",
+
+                borderColor: "green",
+              }}
+            >
+              <ExitToAppIcon></ExitToAppIcon>
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
-    </div>
+      <Grid item name="Queue" xs={3}>
+        <CommingNext queue={queue} song={song} userID={userID}></CommingNext>
+      </Grid>
+    </Grid>
   );
 }

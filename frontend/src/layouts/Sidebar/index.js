@@ -11,6 +11,7 @@ import {
   Avatar,
   ThemeProvider,
   createTheme,
+  Grid,
 } from "@mui/material";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import Home from "@mui/icons-material/Home";
@@ -26,6 +27,11 @@ import HistoryIcon from "@mui/icons-material/History";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import equalizer from "./giphy.gif";
+import { styled } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+
+import ButtonBase from "@mui/material/ButtonBase";
 
 const theme = createTheme({
   typography: {
@@ -36,6 +42,7 @@ const theme = createTheme({
 });
 
 export default function DrawerWrapper({
+  song,
   userInRoom,
   setMobileOpen,
   navigate,
@@ -55,7 +62,7 @@ export default function DrawerWrapper({
         <Box
           sx={{
             textAlign: "center",
-            backgroundColor: "#1976d2",
+            backgroundColor: "#121212",
             height: "100%",
           }}
         >
@@ -71,6 +78,69 @@ export default function DrawerWrapper({
               Spotify Connect
             </Typography>
           </Box>
+          <Typography align="left" marginLeft={1}>
+            <strog>Listening to</strog>
+          </Typography>
+          <Box>
+            <Grid marginLeft={0.5} container spacing={1} alignItems={"center"}>
+              <Grid item>
+                <img
+                  src={equalizer}
+                  style={{
+                    backgroundColor: "transparent",
+                    width: 25,
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <Avatar
+                  src={song.image_url || "none"}
+                  alt={username}
+                  sx={{
+                    color: "#fff",
+                    marginBottom: "3px",
+                    width: 40,
+                    height: 40,
+                    borderRadius: 0,
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <Grid item>
+                  <Typography
+                    variant="body1"
+                    align="left"
+                    color="#1DB954"
+                    noWrap
+                    sx={{
+                      width: 150,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {song.title}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography
+                    variant="body2"
+                    align="left"
+                    color="#808080"
+                    noWrap
+                    sx={{
+                      width: 150,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {song.artist}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Box>
           <Divider />
           <List>
             <Box
@@ -81,19 +151,7 @@ export default function DrawerWrapper({
                 flexDirection: "column",
                 alignItems: "center",
               }}
-            >
-              <Avatar
-                src={avatar || "none"}
-                alt={username}
-                sx={{
-                  color: "#fff",
-                  marginBottom: "3px",
-                  height: "60px",
-                  width: "60px",
-                }}
-              />
-              <Typography>{username}</Typography>
-            </Box>
+            ></Box>
             {userInRoom && (
               <ListItem disablePadding>
                 <ListItemButton onClick={() => navigate("/room")}>
