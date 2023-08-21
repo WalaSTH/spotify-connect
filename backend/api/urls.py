@@ -27,4 +27,6 @@ urlpatterns = [
     path('sync', SyncUser.as_view()),
     path('skip', SkipSong.as_view()),
     path('search', SearchSong.as_view()),
+    path('add-queue', AddToQueue.as_view()),
+    path('get-queue', GetQueue.as_view()),
 ]

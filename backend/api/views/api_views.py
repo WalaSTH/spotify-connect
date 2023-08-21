@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from ..serializers import *
 from ..models import *
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 USER_MIN_LEN = 4
 USER_MAX_LEN = 16
@@ -240,7 +242,6 @@ class RoomJoin(APIView):
 
 
 class LeaveRoom(APIView):
-
     def post(self, request, format=None):
         user_id = request.data.get("user_id")
 

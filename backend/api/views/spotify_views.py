@@ -148,7 +148,6 @@ class SyncUser(APIView):
         }
         if user_id != host_id:
             res = execute_spotify_api_request(user_id=user_id,endpoint="player/play", put_=True, data_=True, data_body=json.dumps(data))
-            print(res)
         return Response({}, status=status.HTTP_200_OK)
 
 class PauseSong(APIView):
@@ -196,8 +195,6 @@ class SkipSong(APIView):
 
         
         user_id = request.GET.get('user_id')
-        print("EL USER SKIPEANDO ES" )
-        print(user_id)
         user=get_user_by_id(user_id)
         if user == None:
             return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -219,25 +216,28 @@ class SkipSong(APIView):
 class SearchSong(APIView):
 
     def get(self,request, format=None):
-        limit = 5
+        limit = 10
         result_list = []
         key = request.GET.get('key')
         user_id = request.GET.get('user_id')
         endpoint = "search?q=track:" + key + "&type=track&limit="+str(limit)
         list = execute_spotify_api_request(user_id, endpoint=endpoint, queue_=True)
-        if list:
+        if not list is None:
             results = list.get("tracks").get("items")
             for i in range(len(results)):
                 result = results[i]
                 name = result.get("name")
+                if i == 0:
+                    print("NAME OF SONG ")
+                    print(name)
                 image = result.get("album").get("images")[2].get("url")
                 id = result.get("id")
                 artist_string = ""
                 for i, artist in enumerate(result.get('artists')):
                     if i > 0:
                         artist_string += ", "
-                    name = artist.get('name')
-                    artist_string += name
+                    artist_ind = artist.get('name')
+                    artist_string += artist_ind
                 song = {
                     'title': name,
                     'artist': artist_string,
@@ -246,3 +246,70 @@ class SearchSong(APIView):
                 }
                 result_list.append(song)
         return Response({"data":result_list}, status=status.HTTP_200_OK)
+
+class AddToQueue(APIView):
+    def get(self, request, format=None):
+        user_id = request.GET.get("user_id")
+        song_id = request.GET.get("song_id")
+
+        user = get_user_by_id(user_id)
+        #print(user_id)
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+
+        endpoint = "player/queue?uri=spotify:track:"+song_id
+        res = execute_spotify_api_request(user_id, endpoint=endpoint, post_=True)
+        print(res)
+        return Response({"Msg":"Song added"}, status=status.HTTP_200_OK)
+    
+
+class GetQueue(APIView):
+    def get(self, request, format=None):
+        max_queue = 4
+        user_id = request.GET.get('user_id')
+        user=get_user_by_id(user_id)
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+
+        room_code = user.room
+        room = get_room_by_code(room_code)
+
+        if room == None:
+            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        host_id = room.host
+
+
+        endpoint = "player/queue"
+        res = execute_spotify_api_request(host_id, endpoint=endpoint)
+
+        queue=[]
+        if not res is None:
+            if 'error' in res:
+                return Response({'Msg':'Error with request'}, status=status.HTTP_404_NOT_FOUND)
+            res_queue = res.get('queue')
+            size = min(max_queue, len(res_queue))
+            for i in range(size):
+                queue_elem = res_queue[i]
+                name = queue_elem.get('name')
+                id = queue_elem.get('id')
+                image_url = queue_elem.get('album').get('images')[0].get('url')
+                artist_string = ""
+                for i, artist in enumerate(queue_elem.get('artists')):
+                    if i > 0:
+                        artist_string += ", "
+                    artist_ind = artist.get('name')
+                    artist_string += artist_ind
+                song = {
+                    'title': name,
+                    'artist': artist_string,
+                    'image_url': image_url,
+                    'id': id
+                }
+                queue.append(song)
+        return Response({"data":queue}, status=status.HTTP_200_OK)
