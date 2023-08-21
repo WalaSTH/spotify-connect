@@ -15,7 +15,7 @@ class AuthURL(APIView):
     lookup_karg = 'user_id'
     def get(self, request, format=None):
         user = request.GET.get(self.lookup_karg)
-        scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
+        scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing user-library-read user-library-modify user-read-private'
 
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
             'scope': scopes,
@@ -227,9 +227,6 @@ class SearchSong(APIView):
             for i in range(len(results)):
                 result = results[i]
                 name = result.get("name")
-                if i == 0:
-                    print("NAME OF SONG ")
-                    print(name)
                 image = result.get("album").get("images")[2].get("url")
                 id = result.get("id")
                 artist_string = ""
@@ -253,7 +250,7 @@ class AddToQueue(APIView):
         song_id = request.GET.get("song_id")
 
         user = get_user_by_id(user_id)
-        #print(user_id)
+
         if user == None:
             return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -262,7 +259,7 @@ class AddToQueue(APIView):
 
         endpoint = "player/queue?uri=spotify:track:"+song_id
         res = execute_spotify_api_request(user_id, endpoint=endpoint, post_=True)
-        print(res)
+
         return Response({"Msg":"Song added"}, status=status.HTTP_200_OK)
     
 
@@ -313,3 +310,81 @@ class GetQueue(APIView):
                 }
                 queue.append(song)
         return Response({"data":queue}, status=status.HTTP_200_OK)
+
+class SaveSong(APIView):
+    def put(self, request, format=None):
+        user_id = request.data.get('user_id')
+        song_id = request.data.get('song_id')
+        user=get_user_by_id(user_id)
+
+        # Validate fields
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        if room == None:
+            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Execute Spotify endpoint
+        endpoint = "tracks?ids="+song_id
+        res = execute_spotify_api_request(user_id, endpoint=endpoint, put_=True)
+        return Response({"Msg":res}, status=status.HTTP_200_OK)
+
+class UnsaveSong(APIView):
+    def put(self, request, format=None):
+        user_id = request.data.get('user_id')
+        song_id = request.data.get('song_id')
+        user=get_user_by_id(user_id)
+
+        # Validate fields
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        if room == None:
+            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Execute Spotify endpoint
+        endpoint = "tracks?ids="+song_id
+        res = execute_spotify_api_request(user_id, endpoint=endpoint, delete_=True)
+        return Response({"Msg":"Song saved"}, status=status.HTTP_200_OK)
+    
+class CheckSaved(APIView):
+    def get(self,request,format=None):
+        user_id = request.GET.get('user_id')
+        song_id = request.GET.get('song_id')
+        user=get_user_by_id(user_id)
+
+        # Validate fields
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        if room == None:
+            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Execute Spotify endpoint
+        endpoint = "tracks/contains?ids="+song_id
+        res = execute_spotify_api_request(user_id, endpoint=endpoint)
+        return Response({"data":res}, status=status.HTTP_200_OK)
+    
+class GetRoomAvatar(APIView):
+    def get(self, request, format=None):
+        room_code = request.GET.get("room_code")
+        room = get_room_by_code(room_code)
+        if room == None:
+            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        host_id = room.host
+        # Execute Spotify endpoint
+        endpoint = ""
+        res = execute_spotify_api_request(host_id, endpoint=endpoint)
+        if  res is None:
+            return Response({'Bad request':'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+        avatar = res.get("images")[1].get("url")
+        return Response({"image":avatar}, status=status.HTTP_200_OK)

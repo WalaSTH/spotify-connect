@@ -2,7 +2,7 @@ from .models import *
 from django.utils import timezone
 from datetime import timedelta
 from .credentials import CLIENT_ID, CLIENT_SECRET
-from requests import post, put, get
+from requests import post, put, get, delete
 
 BASE_URL = "https://api.spotify.com/v1/me/"
 BASE_URL_QUEUE = "https://api.spotify.com/v1/"
@@ -69,7 +69,8 @@ def is_spotify_authenticated(session_id):
     
     return False
 
-def execute_spotify_api_request(user_id, endpoint, post_=False, put_=False, data_body={}, data_=False, queue_=False):
+def execute_spotify_api_request(user_id, endpoint, post_=False, 
+                                put_=False, data_body={}, data_=False, queue_=False, delete_=False):
     base_url = BASE_URL
     if queue_:
         base_url = BASE_URL_QUEUE
@@ -77,6 +78,7 @@ def execute_spotify_api_request(user_id, endpoint, post_=False, put_=False, data
     header = {'Content-Type':'application/json', 'Authorization':'Bearer ' + tokens.access_token}
     print(tokens.access_token)
     if post_:
+        print(tokens.access_token)
         response = post(base_url + endpoint, headers=header)
         return response.content
 
@@ -86,7 +88,10 @@ def execute_spotify_api_request(user_id, endpoint, post_=False, put_=False, data
 
     if put_:
         response = put(base_url + endpoint, headers=header)
-        
+        return response.content
+    
+    if delete_:
+        response = delete(base_url + endpoint, headers=header)
     
     response = get(base_url + endpoint, {}, headers=header)
 

@@ -18,6 +18,7 @@ urlpatterns = [
     path('join-room', RoomJoin.as_view()),
     path('get-room', UserInRoom.as_view()),
     path('leave-room', LeaveRoom.as_view()),
+    path('is-host', UserIsHost.as_view()),
 
     # Spotify
 
@@ -29,4 +30,8 @@ urlpatterns = [
     path('search', SearchSong.as_view()),
     path('add-queue', AddToQueue.as_view()),
     path('get-queue', GetQueue.as_view()),
+    path('save', SaveSong.as_view()),
+    path('unsave', UnsaveSong.as_view()),
+    path('check-saved', CheckSaved.as_view()),
+    path('get-room-avatar', GetRoomAvatar.as_view()),
 ]

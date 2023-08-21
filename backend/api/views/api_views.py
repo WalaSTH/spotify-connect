@@ -276,5 +276,18 @@ class LeaveRoom(APIView):
 
         return Response({'Msg':'Room leaved successfully'}, status=status.HTTP_200_OK)
 
+class UserIsHost(APIView):
+    def get(self, request, format=None):
+        user_id = request.GET.get("user_id")
+        if not user_id_exists(user_id):
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user = get_user_by_id(user_id)
 
+        room_code = user.room
 
+        if room_code == "":
+            return Response({"data":False}, status=status.HTTP_200_OK)
+
+        room = get_room_by_code(room_code)
+        res = room.host == user_id
+        return Response({"data":res}, status=status.HTTP_200_OK)
