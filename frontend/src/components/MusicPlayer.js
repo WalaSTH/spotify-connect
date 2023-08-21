@@ -12,6 +12,8 @@ import {
   Box,
   Button,
   Link,
+  Tooltip,
+  Fade,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -20,9 +22,11 @@ import SkipNextIcon from "@mui/icons-material/SkipNext";
 import { Alert } from "@mui/material";
 import axios from "axios";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
-
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 export default function MusicPlayer(props) {
   const [reVote, setRevote] = useState(false);
+
   const songProgress = (props.song.time / props.song.duration) * 100;
 
   useEffect(() => {
@@ -41,7 +45,26 @@ export default function MusicPlayer(props) {
       .get("api/skip" + "?user_id=" + props.userID)
       .catch((error) => console.log(error));
   }
+  async function saveSong() {
+    const formData = new FormData();
+    formData.append("user_id", props.userID);
+    formData.append("song_id", props.song.id);
+    await axios
+      .put("api/save", formData, props.csrf)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => console.log(error));
+  }
 
+  async function unsaveSong() {
+    const formData = new FormData();
+    formData.append("user_id", props.userID);
+    formData.append("song_id", props.song.id);
+    await axios
+      .put("api/unsave", formData, props.csrf)
+      .catch((error) => console.log(error));
+  }
   async function pauseSong() {
     await axios
       .get("api/pause" + "?user_id=" + props.userID)
@@ -59,34 +82,84 @@ export default function MusicPlayer(props) {
   const renderButtons = () => {
     return (
       <div>
-        <Grid variant="contained">
-          <IconButton
-            onClick={() => {
-              props.song.is_playing ? pauseSong() : playSong();
-            }}
+        <Grid item variant="contained">
+          <Tooltip
+            title={props.song.is_playing ? "Pause" : "Play"}
+            TransitionComponent={Fade}
+            TransitionProps={{ timeout: 600 }}
+            enterNextDelay={500}
           >
-            {props.song.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              skipSong();
-            }}
+            <IconButton
+              onClick={() => {
+                props.song.is_playing ? pauseSong() : playSong();
+              }}
+            >
+              {props.song.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip
+            title={"Skip song"}
+            TransitionComponent={Fade}
+            TransitionProps={{ timeout: 600 }}
+            enterNextDelay={500}
           >
-            <SkipNextIcon />
-            {props.song.votes} {props.song.votes_required}
-          </IconButton>
-          <Button
-            color="secondary"
-            sx={{
-              color: "black",
-
-              borderColor: "green",
-            }}
-            component={Link}
-            onClick={props.syncFunction}
-          >
-            <CloudSyncIcon></CloudSyncIcon>
-          </Button>
+            <IconButton
+              onClick={() => {
+                skipSong();
+              }}
+            >
+              <SkipNextIcon />
+              {props.song.votes} {props.song.votes_required}
+            </IconButton>
+          </Tooltip>
+          {!props.favorite && (
+            <Tooltip
+              title="Save to Spotify library"
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              enterNextDelay={500}
+            >
+              <IconButton
+                component={Link}
+                onClick={() => {
+                  props.setFavorite(true);
+                  saveSong();
+                }}
+              >
+                <FavoriteBorderIcon></FavoriteBorderIcon>
+              </IconButton>
+            </Tooltip>
+          )}
+          {props.favorite && (
+            <Tooltip
+              title="Unsave from Spotify library"
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              enterNextDelay={500}
+            >
+              <IconButton
+                component={Link}
+                onClick={() => {
+                  props.setFavorite(false);
+                  unsaveSong();
+                }}
+              >
+                <FavoriteIcon></FavoriteIcon>
+              </IconButton>
+            </Tooltip>
+          )}
+          {props.isHost && (
+            <Tooltip
+              title="Re-sync playback with host"
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              enterNextDelay={500}
+            >
+              <IconButton component={Link} onClick={props.syncFunction}>
+                <CloudSyncIcon></CloudSyncIcon>
+              </IconButton>
+            </Tooltip>
+          )}
           <Collapse
             in={reVote}
             onExit={() => {

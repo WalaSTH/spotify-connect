@@ -50,7 +50,6 @@ import equaliser from "./../equaliser.gif";
 export default function CommingNext({ song, userID, queue }) {
   return (
     <Box>
-      <Button onClick={() => {}}>Q</Button>
       <Card>
         <Grid container direction="column" spacing={0}>
           <Grid item>

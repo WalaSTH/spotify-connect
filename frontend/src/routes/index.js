@@ -14,6 +14,9 @@ export default function RoutesWrapper({
   song,
   csrftoken,
   queue,
+  favorite,
+  setFavorite,
+  isHost,
 }) {
   return (
     <Routes>
@@ -53,6 +56,9 @@ export default function RoutesWrapper({
               song={song}
               csrftoken={csrftoken}
               queue={queue}
+              favorite={favorite}
+              setFavorite={setFavorite}
+              isHost={isHost}
             />
           ) : (
             <Navigate to="/login" />

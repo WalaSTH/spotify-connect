@@ -24,6 +24,7 @@ import {
   Typography,
   Switch,
   Box,
+  Container,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
@@ -44,9 +45,19 @@ import ContactlessOutlinedIcon from "@mui/icons-material/ContactlessOutlined";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import LeakAddIcon from "@mui/icons-material/LeakAdd";
 
-export default function Room({ userID, navigate, userInRoom, song, queue }) {
+export default function Room({
+  userID,
+  navigate,
+  userInRoom,
+  song,
+  queue,
+  favorite,
+  setFavorite,
+  isHost,
+}) {
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
 
   const csrf = {
     withCredentials: true,
@@ -61,43 +72,29 @@ export default function Room({ userID, navigate, userInRoom, song, queue }) {
     //authenticateSpotify(userID);
   }, []);
 
-  async function authenticateSpotify(userID) {
-    await axios
-      .get("/api/is-authenticated" + "?user_id=" + userID)
-      .then(async function (data) {
-        if (!data.data.status[0]) {
-          await axios
-            .get("/api/get-auth-url" + "?user_id=" + userID)
-            .then((data) => {
-              window.location.replace(data.data.url);
-            });
-        }
-      });
-  }
+  const setRoomInfo = (room) => {
+    setRoomCode(room["room_code"]);
+    setRoomName(room["room_name"]);
+    getRoomAvatar(room["room_code"]);
+  };
 
-  async function getCurrentSong(userID) {
-    console.log("Getting Song");
+  async function getRoomAvatar(roomCode) {
+    console.log("ROOM CODE FOR AVATAR IS " + roomCode);
     await axios
-      .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
+      .get("api/get-room-avatar" + "?room_code=" + roomCode)
       .then((response) => {
-        console.log(response.data);
-        //setSong(response.data);
+        setUserAvatar(response.data.image);
+        console.log(response.data.image);
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
-  const setRoomInfo = (room) => {
-    setRoomCode(room["room_code"]);
-    setRoomName(room["room_name"]);
-  };
   async function getRoomData(userID) {
-    console.log("GETTING DATA");
     await axios
       .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
       .then((response) => {
-        console.log("GETTING DATA");
         if (response.status == 200) {
           setRoomInfo(response.data.room);
         } else {
@@ -138,49 +135,77 @@ export default function Room({ userID, navigate, userInRoom, song, queue }) {
   }
 
   return (
-    <Grid
-      container
-      direction="row"
-      justifyContent="center"
-      alignItems="center"
-      className="center2"
+    <Container
+      maxWidth="sm"
+      sx={{
+        marginTop: "200px",
+      }}
     >
-      <Grid item name="Player and search">
-        <Grid item xs={12} align="center" justifyContent="center">
-          <Grid item xs={12}>
-            <Typography variant="h4">{roomName}</Typography>
-          </Grid>
-          <Grid item xs={12} justifyContent="center">
-            <Search userID={userID}></Search>
-          </Grid>
-          <Grid item xs={9}>
-            <MusicPlayer
-              align="center"
-              song={song}
-              songPlaying={true}
-              userID={userID}
-              syncFunction={syncButton}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              color="secondary"
-              component={Link}
-              onClick={leaveRoom}
-              sx={{
-                color: "black",
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="flex-start"
+        className="center"
+        sx={{
+          marginTop: 10,
+        }}
+      >
+        <Grid item name="Player and search">
+          <Grid item xs={12} align="center" justifyContent="center">
+            <Grid item xs={12} justifyContent="center">
+              <Search userID={userID}></Search>
+            </Grid>
+            <Grid item xs={9}>
+              <MusicPlayer
+                align="center"
+                song={song}
+                songPlaying={true}
+                userID={userID}
+                syncFunction={syncButton}
+                favorite={favorite}
+                setFavorite={setFavorite}
+                csrf={csrf}
+                isHost={isHost}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                color="secondary"
+                component={Link}
+                onClick={leaveRoom}
+                sx={{
+                  color: "black",
 
-                borderColor: "green",
-              }}
-            >
-              <ExitToAppIcon></ExitToAppIcon>
-            </Button>
+                  borderColor: "green",
+                }}
+              >
+                <ExitToAppIcon></ExitToAppIcon>
+              </Button>
+            </Grid>
           </Grid>
         </Grid>
+        <Grid item name="Queue" xs={3}>
+          <CommingNext queue={queue} song={song} userID={userID}></CommingNext>
+        </Grid>
       </Grid>
-      <Grid item name="Queue" xs={3}>
-        <CommingNext queue={queue} song={song} userID={userID}></CommingNext>
-      </Grid>
-    </Grid>
+    </Container>
   );
+}
+
+{
+  /*       <Grid
+        container
+        spacing={3}
+        justifyContent={"center"}
+        alignItems={"center"}
+        direction="column"
+      >
+        <Grid item xs={0}>
+          <Typography variant="h3">{roomName}</Typography>
+        </Grid>
+        <Grid item xs={0}>
+          <Avatar src={userAvatar} sx={{ width: 150, height: 150 }}></Avatar>
+        </Grid>
+      </Grid> */
 }

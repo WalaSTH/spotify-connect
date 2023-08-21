@@ -2,14 +2,19 @@ import RoutesWrapper from "../routes/index";
 import NavigationLayout from "../layouts/Main";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import CssBaseline from "@mui/material/CssBaseline";
+
 import axios from "axios";
 
 export default function MainApp() {
   const [userId, setUserId] = useState(localStorage.getItem("userID"));
   const [song, setSong] = useState({});
   const [prevSong, setPrevSong] = useState("");
+  const [songChanged, setSongChanged] = useState(false);
+  const [favorite, setFavorite] = useState(false);
   const [songPlaying, setSongPlaying] = useState(true);
   const [queue, setQueue] = useState([]);
+  const [isHost, setIsHost] = useState(false);
   async function getQueue(userID) {
     await axios
       .get("api/get-queue" + "?user_id=" + userID)
@@ -21,6 +26,35 @@ export default function MainApp() {
         console.log(error);
       });
   }
+  async function isUserHost(userID) {
+    await axios
+      .get("api/is-host" + "?user_id=" + userID)
+      .then((response) => {
+        setIsHost(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  async function checkSaved(userID, songID) {
+    await axios
+      .get("api/check-saved" + "?user_id=" + userID + "&song_id=" + songID)
+      .then((response) => {
+        const saved = response.data.data[0];
+        setFavorite(saved);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  useEffect(() => {
+    if (userId) {
+      isUserHost(userId).then(() => {
+        console.log(isHost);
+      });
+    }
+  }, [userId]);
 
   useEffect(() => {
     setUserId(localStorage.getItem("userID"));
@@ -39,24 +73,11 @@ export default function MainApp() {
 
   const polling = () => {
     if (userId) {
-      checkUserInRoom(userId);
       getCurrentSong(userId).then(checkNew(song, prevSong));
       authenticateSpotify(userId);
     }
   };
 
-  async function checkUserInRoom(userID) {
-    await axios
-      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
-      .then((response) => {
-        if (response.status == 200) {
-        } else {
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
   async function authenticateSpotify(userID) {
     await axios
       .get("/api/is-authenticated" + "?user_id=" + userID)
@@ -68,6 +89,9 @@ export default function MainApp() {
               window.location.replace(data.data.url);
             });
         }
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }
   async function syncButton(id, time) {
@@ -102,19 +126,22 @@ export default function MainApp() {
   }
 
   function checkNew(song, prevSong) {
-    if (song.id != prevSong && userId != "WalaCAB" && !prevSong) {
+    if (song.id != prevSong && !prevSong) {
       // First Song
       console.log(prevSong);
       console.log("First song");
       syncButton(song.id, song.time);
       setPrevSong(song.id);
       getQueue(userId);
-    } else if (song.id != prevSong && userId != "WalaCAB" && prevSong != "") {
+      checkSaved(userId, song.id);
+      console.log(favorite);
+    } else if (song.id != prevSong && prevSong != "") {
       // New Song
       console.log("New song");
       syncButton(song.id, 0);
       setPrevSong(song.id);
       getQueue(userId);
+      checkSaved(userId, song.id);
     }
   }
 
@@ -127,7 +154,10 @@ export default function MainApp() {
           navigate={navigate}
           userId={userId}
           song={song}
+          favorite={favorite}
+          setFavorite={setFavorite}
           queue={queue}
+          isHost={isHost}
         />
       </div>
     </div>
