@@ -34,4 +34,5 @@ urlpatterns = [
     path('unsave', UnsaveSong.as_view()),
     path('check-saved', CheckSaved.as_view()),
     path('get-room-avatar', GetRoomAvatar.as_view()),
+    path('start-next', StartNextSong.as_view()),
 ]

@@ -265,7 +265,7 @@ class AddToQueue(APIView):
 
 class GetQueue(APIView):
     def get(self, request, format=None):
-        max_queue = 4
+        max_queue = 15
         user_id = request.GET.get('user_id')
         user=get_user_by_id(user_id)
         if user == None:
@@ -286,6 +286,7 @@ class GetQueue(APIView):
         res = execute_spotify_api_request(host_id, endpoint=endpoint)
 
         queue=[]
+        db_queue=[]
         if not res is None:
             if 'error' in res:
                 return Response({'Msg':'Error with request'}, status=status.HTTP_404_NOT_FOUND)
@@ -308,7 +309,13 @@ class GetQueue(APIView):
                     'image_url': image_url,
                     'id': id
                 }
+                db_queue.append(id)
                 queue.append(song)
+        print("FIRST ELEMENTO OF QUEUEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+        print( queue[0].get('title')) 
+        if queue[0].get('id') != queue[1].get('id'):
+            room.spot_queue = db_queue
+            room.save(update_fields=["spot_queue"])
         return Response({"data":queue}, status=status.HTTP_200_OK)
 
 class SaveSong(APIView):
@@ -388,3 +395,23 @@ class GetRoomAvatar(APIView):
             return Response({'Bad request':'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
         avatar = res.get("images")[1].get("url")
         return Response({"image":avatar}, status=status.HTTP_200_OK)
+
+class StartNextSong(APIView):
+    def get(self, request, format=None):
+        user_id = request.GET.get('user_id')
+        user = get_user_by_id(user_id)
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        db_queue = room.spot_queue
+        track = db_queue[0]
+        db_queue.pop(0)
+        room.spot_queue = db_queue
+        room.save(update_fields=['spot_queue'])
+        # Execute Spotify endpoint
+        endpoint = "player/play"
+        data ={
+            "uris":["spotify:track:{}".format(track)],
+            "position_ms": 0
+        }
+        res = execute_spotify_api_request(user_id=user_id,endpoint="player/play", put_=True, data_=True, data_body=json.dumps(data))
+        return Response({"data":res}, status=status.HTTP_200_OK)
