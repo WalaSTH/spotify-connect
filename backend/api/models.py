@@ -1,6 +1,6 @@
 from django.db import models
 import string, random
-
+from django.contrib.postgres.fields import ArrayField
 
 # User constraints
 USER_MIN_LEN = 4
@@ -57,6 +57,12 @@ class Room(models.Model):
     show_lobby = models.BooleanField(null=False, default=False)
     private_room = models.BooleanField(null=False, default=False)
     current_song = models.CharField(max_length=50, null=True)
+    spot_queue = ArrayField(
+        models.CharField(max_length=50, blank=True)
+    )
+    user_queue = ArrayField(
+        models.CharField(max_length=50, blank=True)
+    )
 
     def __str__(self):
         return self.code
@@ -73,8 +79,8 @@ class User(models.Model):
 class SpotifyToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    access_token = models.CharField(max_length=150)
-    refresh_token = models.CharField(max_length=150)
+    access_token = models.CharField(max_length=250)
+    refresh_token = models.CharField(max_length=250)
     expires_in = models.DateTimeField()
     token_type = models.CharField(max_length=50)
 
