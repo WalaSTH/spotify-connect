@@ -15,6 +15,13 @@ export default function MainApp() {
   const [songPlaying, setSongPlaying] = useState(true);
   const [queue, setQueue] = useState([]);
   const [isHost, setIsHost] = useState(false);
+  const [userInRoom, setUserInRoom] = useState(false);
+  const [room, setRoom] = useState({});
+  const [changed, setChanged] = useState(false);
+  async function playNextSong(userID) {
+    await axios.get("api/start-next" + "?user_id=" + userID);
+  }
+
   async function getQueue(userID) {
     await axios
       .get("api/get-queue" + "?user_id=" + userID)
@@ -73,6 +80,7 @@ export default function MainApp() {
 
   const polling = () => {
     if (userId) {
+      checkUserInRoom(userId);
       getCurrentSong(userId).then(checkNew(song, prevSong));
       authenticateSpotify(userId);
     }
@@ -108,7 +116,21 @@ export default function MainApp() {
         console.log(error);
       });
   }
-
+  async function checkUserInRoom(userID) {
+    await axios
+      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .then((response) => {
+        if (response.status == 200) {
+          setRoom(response.data.data);
+          setUserInRoom(true);
+        } else {
+          setUserInRoom(false);
+        }
+      })
+      .catch((error) => {
+        setUserInRoom(false);
+      });
+  }
   async function getCurrentSong(userID) {
     await axios
       .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
@@ -126,7 +148,13 @@ export default function MainApp() {
   }
 
   function checkNew(song, prevSong) {
-    if (song.id != prevSong && !prevSong) {
+    if (song.duration - song.time < 4000 && !changed) {
+      console.log("Song time is" + song.time);
+      console.log("Duration time is" + song.duration);
+      console.log("Difference is: " + (song.duration - song.time));
+      setChanged(true);
+      playNextSong(userId);
+    } else if (song.id != prevSong && !prevSong) {
       // First Song
       console.log(prevSong);
       console.log("First song");
@@ -135,6 +163,7 @@ export default function MainApp() {
       getQueue(userId);
       checkSaved(userId, song.id);
       console.log(favorite);
+      setChanged(false);
     } else if (song.id != prevSong && prevSong != "") {
       // New Song
       console.log("New song");
@@ -142,6 +171,7 @@ export default function MainApp() {
       setPrevSong(song.id);
       getQueue(userId);
       checkSaved(userId, song.id);
+      setChanged(false);
     }
   }
 

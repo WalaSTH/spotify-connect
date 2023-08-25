@@ -73,6 +73,16 @@ export default function Search({ userID }) {
         console.log(error);
       });
   }
+  async function playNow(songId) {
+    await axios
+      .get("api/start-song" + "?user_id=" + userID + "&song_id=" + songId)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   const renderSearchList = () => {
     return (
       <Box display="block" stickyHeader>
@@ -120,7 +130,11 @@ export default function Search({ userID }) {
                   TransitionProps={{ timeout: 600 }}
                   enterNextDelay={500}
                 >
-                  <IconButton>
+                  <IconButton
+                    onClick={() => {
+                      playNow(id);
+                    }}
+                  >
                     <PlayCircleIcon></PlayCircleIcon>
                   </IconButton>
                 </Tooltip>

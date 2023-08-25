@@ -24,6 +24,7 @@ import axios from "axios";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+
 export default function MusicPlayer(props) {
   const [reVote, setRevote] = useState(false);
 
@@ -42,7 +43,7 @@ export default function MusicPlayer(props) {
 
   async function skipSong() {
     await axios
-      .get("api/skip" + "?user_id=" + props.userID)
+      .get("api/start-next" + "?user_id=" + props.userID)
       .catch((error) => console.log(error));
   }
   async function saveSong() {
@@ -156,7 +157,7 @@ export default function MusicPlayer(props) {
               enterNextDelay={500}
             >
               <IconButton component={Link} onClick={props.syncFunction}>
-                <CloudSyncIcon></CloudSyncIcon>
+                <CloudSyncIcon>{"HI" + props.isHost}</CloudSyncIcon>
               </IconButton>
             </Tooltip>
           )}
