@@ -98,6 +98,8 @@ class CurrentSong(APIView):
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
         item = response.get('item')
+        if item is None:
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
         duration = item.get('duration_ms')
         progress = response.get('progress_ms')
         album_cover = item.get('album').get('images')[0].get('url')
@@ -257,11 +259,16 @@ class AddToQueue(APIView):
         if user.room == "":
             return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
 
-        endpoint = "player/queue?uri=spotify:track:"+song_id
-        res = execute_spotify_api_request(user_id, endpoint=endpoint, post_=True)
+        room = get_room_by_code(user.room)
+        if room == None:
+            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        queue = room.user_queue
+        queue.append(song_id)
+        room.save(update_fields=["user_queue"])
 
         return Response({"Msg":"Song added"}, status=status.HTTP_200_OK)
-    
+
 
 class GetQueue(APIView):
     def get(self, request, format=None):
@@ -403,10 +410,17 @@ class StartNextSong(APIView):
         room_code = user.room
         room = get_room_by_code(room_code)
         db_queue = room.spot_queue
-        track = db_queue[0]
-        db_queue.pop(0)
-        room.spot_queue = db_queue
-        room.save(update_fields=['spot_queue'])
+        user_queue = room.user_queue
+        if user_queue:
+            track = user_queue[0]
+            user_queue.pop(0)
+            room.user_queue = user_queue
+            room.save(update_fields=['user_queue'])
+        else:
+            track = db_queue[0]
+            db_queue.pop(0)
+            room.spot_queue = db_queue
+            room.save(update_fields=['spot_queue'])
         # Execute Spotify endpoint
         endpoint = "player/play"
         data ={
@@ -415,3 +429,33 @@ class StartNextSong(APIView):
         }
         res = execute_spotify_api_request(user_id=user_id,endpoint="player/play", put_=True, data_=True, data_body=json.dumps(data))
         return Response({"data":res}, status=status.HTTP_200_OK)
+
+class StartSong(APIView):
+    def get(self, request, format=None):
+        user_id = request.GET.get('user_id')
+        song_id = request.GET.get('song_id')
+        user = get_user_by_id(user_id)
+        room_code = user.room
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        if user.room == "":
+            return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
+        room = get_room_by_code(room_code)
+
+        if room == None:
+            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        host_id = room.host
+
+        # Execute Spotify endpoint
+        endpoint = "player/play"
+        data ={
+            "uris":["spotify:track:{}".format(song_id)],
+            "position_ms": 0
+        }
+
+        # Play for every user
+        users = User.objects.filter(room=room_code)
+        for i in range(len(users)):
+            user_nid = users[i].id
+            execute_spotify_api_request(user_id=user_nid,endpoint="player/play", put_=True, data_=True, data_body=json.dumps(data))
+        return Response({"Msg":"Song played for every user"}, status=status.HTTP_200_OK)
