@@ -294,6 +294,8 @@ class GetQueue(APIView):
 
         queue=[]
         db_queue=[]
+        #res = None
+
         if not res is None:
             if 'error' in res:
                 return Response({'Msg':'Error with request'}, status=status.HTTP_404_NOT_FOUND)

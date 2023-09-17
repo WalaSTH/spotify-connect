@@ -27,7 +27,6 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 
 export default function MusicPlayer(props) {
   const [reVote, setRevote] = useState(false);
-
   const songProgress = (props.song.time / props.song.duration) * 100;
 
   useEffect(() => {
@@ -199,11 +198,11 @@ export default function MusicPlayer(props) {
           <Typography color="textSecondary" variant="subtitle1">
             {props.song.artist}
           </Typography>
-          {props.songPlaying ? renderButtons() : null}
+          {!props.song.no_song ? renderButtons() : null}
         </Grid>
         <Grid item xs={12}></Grid>
       </Grid>
-      {props.songPlaying ? renderProgress() : null}
+      {!props.song.no_song ? renderProgress() : null}
     </Card>
   );
 }

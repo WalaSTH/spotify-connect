@@ -59,61 +59,24 @@ export default function CommingNext({ song, userID, queue }) {
           </Grid>
           <Grid item>
             <ListItem>
-              <Typography variant="subtitle1">Now playing</Typography>
+              {!song.no_song && (
+                <Typography variant="subtitle1">Now playing</Typography>
+              )}
+              {song.no_song && (
+                <Typography variant="subtitle1">
+                  Play on Spotify and add to queue
+                </Typography>
+              )}
             </ListItem>
           </Grid>
-          <Grid item>
-            <ListItem
-              sx={{
-                backgroundColor: "#1DB954",
-              }}
-            >
-              <Icon>1</Icon>
-              <ListItemButton
-                disableRipple
+          {!song.no_song && (
+            <Grid item>
+              <ListItem
                 sx={{
-                  cursor: "default",
+                  backgroundColor: "#1DB954",
                 }}
               >
-                <ListItemAvatar>
-                  <Avatar
-                    alt="Album Cover"
-                    src={song.image_url}
-                    style={{ borderRadius: 0 }}
-                  />
-                </ListItemAvatar>
-
-                <ListItemText
-                  primary={song.title}
-                  secondary={
-                    <React.Fragment>
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      ></Typography>
-                      {song.artist}
-                    </React.Fragment>
-                  }
-                />
-                <img
-                  src={equaliser}
-                  style={{
-                    backgroundColor: "transparent",
-                    width: 60,
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-            <Grid item>
-              <ListItem>
-                <Typography variant="subtitle1">Comming up next</Typography>
-              </ListItem>
-            </Grid>
-            {queue.map(({ title, image_url, artist, id }, index) => (
-              <ListItem key={index}>
-                <Icon>{index + 2}</Icon>
+                <Icon>1</Icon>
                 <ListItemButton
                   disableRipple
                   sx={{
@@ -123,12 +86,13 @@ export default function CommingNext({ song, userID, queue }) {
                   <ListItemAvatar>
                     <Avatar
                       alt="Album Cover"
-                      src={image_url}
+                      src={song.image_url}
                       style={{ borderRadius: 0 }}
                     />
                   </ListItemAvatar>
+
                   <ListItemText
-                    primary={title}
+                    primary={song.title}
                     secondary={
                       <React.Fragment>
                         <Typography
@@ -137,14 +101,59 @@ export default function CommingNext({ song, userID, queue }) {
                           variant="body2"
                           color="text.primary"
                         ></Typography>
-                        {artist}
+                        {song.artist}
                       </React.Fragment>
                     }
                   />
+                  <img
+                    src={equaliser}
+                    style={{
+                      backgroundColor: "transparent",
+                      width: 60,
+                    }}
+                  />
                 </ListItemButton>
               </ListItem>
-            ))}
-          </Grid>
+              <Grid item>
+                <ListItem>
+                  <Typography variant="subtitle1">Comming up next</Typography>
+                </ListItem>
+              </Grid>
+              {queue.map(({ title, image_url, artist, id }, index) => (
+                <ListItem key={index}>
+                  <Icon>{index + 2}</Icon>
+                  <ListItemButton
+                    disableRipple
+                    sx={{
+                      cursor: "default",
+                    }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar
+                        alt="Album Cover"
+                        src={image_url}
+                        style={{ borderRadius: 0 }}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={title}
+                      secondary={
+                        <React.Fragment>
+                          <Typography
+                            sx={{ display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          ></Typography>
+                          {artist}
+                        </React.Fragment>
+                      }
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </Grid>
+          )}
         </Grid>
       </Card>
     </Box>

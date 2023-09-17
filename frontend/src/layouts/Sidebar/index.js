@@ -78,69 +78,78 @@ export default function DrawerWrapper({
               Spotify Connect
             </Typography>
           </Box>
-          <Typography align="left" marginLeft={1}>
-            <strog>Listening to</strog>
-          </Typography>
-          <Box>
-            <Grid marginLeft={0.5} container spacing={1} alignItems={"center"}>
-              <Grid item>
-                <img
-                  src={equalizer}
-                  style={{
-                    backgroundColor: "transparent",
-                    width: 25,
-                  }}
-                />
-              </Grid>
-              <Grid item>
-                <Avatar
-                  src={song.image_url || "none"}
-                  alt={username}
-                  sx={{
-                    color: "#fff",
-                    marginBottom: "3px",
-                    width: 40,
-                    height: 40,
-                    borderRadius: 0,
-                  }}
-                />
-              </Grid>
-              <Grid item>
+          {!song.no_song && (
+            <Typography align="left" marginLeft={1}>
+              <strog>Listening to</strog>
+            </Typography>
+          )}
+          {!song.no_song && (
+            <Box>
+              <Grid
+                marginLeft={0.5}
+                container
+                spacing={1}
+                alignItems={"center"}
+              >
                 <Grid item>
-                  <Typography
-                    variant="body1"
-                    align="left"
-                    color="#1DB954"
-                    noWrap
-                    sx={{
-                      width: 150,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
+                  <img
+                    src={equalizer}
+                    style={{
+                      backgroundColor: "transparent",
+                      width: 25,
                     }}
-                  >
-                    {song.title}
-                  </Typography>
+                  />
                 </Grid>
                 <Grid item>
-                  <Typography
-                    variant="body2"
-                    align="left"
-                    color="#808080"
-                    noWrap
+                  <Avatar
+                    src={song.image_url || "none"}
+                    alt={username}
                     sx={{
-                      width: 150,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
+                      color: "#fff",
+                      marginBottom: "3px",
+                      width: 40,
+                      height: 40,
+                      borderRadius: 0,
                     }}
-                  >
-                    {song.artist}
-                  </Typography>
+                  />
+                </Grid>
+                <Grid item>
+                  <Grid item>
+                    <Typography
+                      variant="body1"
+                      align="left"
+                      color="#1DB954"
+                      noWrap
+                      sx={{
+                        width: 150,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {song.title}
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography
+                      variant="body2"
+                      align="left"
+                      color="#808080"
+                      noWrap
+                      sx={{
+                        width: 150,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {song.artist}
+                    </Typography>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          </Box>
+            </Box>
+          )}
           <Divider />
           <List>
             <Box

@@ -8,7 +8,7 @@ import axios from "axios";
 
 export default function MainApp() {
   const [userId, setUserId] = useState(localStorage.getItem("userID"));
-  const [song, setSong] = useState({});
+
   const [prevSong, setPrevSong] = useState("");
   const [songChanged, setSongChanged] = useState(false);
   const [favorite, setFavorite] = useState(false);
@@ -18,6 +18,14 @@ export default function MainApp() {
   const [userInRoom, setUserInRoom] = useState(false);
   const [room, setRoom] = useState({});
   const [changed, setChanged] = useState(false);
+  const noSong = {
+    title: "No song playing",
+    image_url:
+      "https://cdn0.iconfinder.com/data/icons/public-sign-part04/100/_-95-512.png",
+    artist: "Start playing on a device!",
+    no_song: true,
+  };
+  const [song, setSong] = useState(noSong);
   async function playNextSong(userID) {
     await axios.get("api/start-next" + "?user_id=" + userID);
   }
@@ -135,7 +143,10 @@ export default function MainApp() {
     await axios
       .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
       .then((response) => {
-        setSong(response.data);
+        if (response.status != 204) {
+          console.log(response.status);
+          setSong(response.data);
+        }
         /*         if (response.data.id != prevSong && userId != "WalaCAB") {
           setPrevSong(response.data.id);
           console.log("New song");
@@ -148,7 +159,7 @@ export default function MainApp() {
   }
 
   function checkNew(song, prevSong) {
-    if (song.duration - song.time < 4000 && !changed) {
+    if (song.duration - song.time < 3000 && !changed) {
       console.log("Song time is" + song.time);
       console.log("Duration time is" + song.duration);
       console.log("Difference is: " + (song.duration - song.time));

@@ -154,7 +154,7 @@ export default function Room({
         <Grid item name="Player and search">
           <Grid item xs={12} align="center" justifyContent="center">
             <Grid item xs={12} justifyContent="center">
-              <Search userID={userID}></Search>
+              {!song.no_song && <Search userID={userID}></Search>}
             </Grid>
             <Grid item xs={9}>
               <MusicPlayer
@@ -185,9 +185,15 @@ export default function Room({
             </Grid>
           </Grid>
         </Grid>
-        <Grid item name="Queue" xs={3}>
-          <CommingNext queue={queue} song={song} userID={userID}></CommingNext>
-        </Grid>
+        {!song.no_song && (
+          <Grid item name="Queue" xs={3}>
+            <CommingNext
+              queue={queue}
+              song={song}
+              userID={userID}
+            ></CommingNext>
+          </Grid>
+        )}
       </Grid>
     </Container>
   );
