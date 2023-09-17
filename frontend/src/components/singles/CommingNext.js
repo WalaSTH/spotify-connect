@@ -105,13 +105,15 @@ export default function CommingNext({ song, userID, queue }) {
                       </React.Fragment>
                     }
                   />
-                  <img
-                    src={equaliser}
-                    style={{
-                      backgroundColor: "transparent",
-                      width: 60,
-                    }}
-                  />
+                  {song.is_playing && (
+                    <img
+                      src={equaliser}
+                      style={{
+                        backgroundColor: "transparent",
+                        width: 60,
+                      }}
+                    />
+                  )}
                 </ListItemButton>
               </ListItem>
               <Grid item>

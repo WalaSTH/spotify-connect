@@ -148,7 +148,7 @@ export default function MusicPlayer(props) {
               </IconButton>
             </Tooltip>
           )}
-          {props.isHost && (
+          {!props.isHost && (
             <Tooltip
               title="Re-sync playback with host"
               TransitionComponent={Fade}

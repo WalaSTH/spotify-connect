@@ -50,7 +50,7 @@ export default function DrawerWrapper({
   ...otherProps
 }) {
   const username = localStorage.getItem("username");
-
+  const [showMiniPlayer, setShowMiniPlayer] = useState(false);
   function handleLogout() {
     localStorage.clear();
     navigate("/");
@@ -78,12 +78,12 @@ export default function DrawerWrapper({
               Spotify Connect
             </Typography>
           </Box>
-          {!song.no_song && (
+          {!song.no_song && showMiniPlayer && (
             <Typography align="left" marginLeft={1}>
               <strog>Listening to</strog>
             </Typography>
           )}
-          {!song.no_song && (
+          {!song.no_song && showMiniPlayer && (
             <Box>
               <Grid
                 marginLeft={0.5}
@@ -92,13 +92,15 @@ export default function DrawerWrapper({
                 alignItems={"center"}
               >
                 <Grid item>
-                  <img
-                    src={equalizer}
-                    style={{
-                      backgroundColor: "transparent",
-                      width: 25,
-                    }}
-                  />
+                  {song.is_playing && (
+                    <img
+                      src={equalizer}
+                      style={{
+                        backgroundColor: "transparent",
+                        width: 25,
+                      }}
+                    />
+                  )}
                 </Grid>
                 <Grid item>
                   <Avatar
@@ -163,7 +165,12 @@ export default function DrawerWrapper({
             ></Box>
             {userInRoom && (
               <ListItem disablePadding>
-                <ListItemButton onClick={() => navigate("/room")}>
+                <ListItemButton
+                  onClick={() => {
+                    setShowMiniPlayer(false);
+                    navigate("/room");
+                  }}
+                >
                   <ListItemIcon>
                     <MusicNoteIcon sx={{ color: "#fff " }} />
                   </ListItemIcon>
@@ -172,7 +179,12 @@ export default function DrawerWrapper({
               </ListItem>
             )}
             <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate("/")}>
+              <ListItemButton
+                onClick={() => {
+                  setShowMiniPlayer(true);
+                  navigate("/");
+                }}
+              >
                 <ListItemIcon>
                   <Home sx={{ color: "#fff " }} />
                 </ListItemIcon>
@@ -181,7 +193,12 @@ export default function DrawerWrapper({
             </ListItem>
 
             <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate("/rooms-lobby")}>
+              <ListItemButton
+                onClick={() => {
+                  setShowMiniPlayer(true);
+                  navigate("/rooms-lobby");
+                }}
+              >
                 <ListItemIcon>
                   <FormatListBulleted sx={{ color: "#fff" }} />
                 </ListItemIcon>
@@ -190,7 +207,12 @@ export default function DrawerWrapper({
             </ListItem>
             {!userInRoom && (
               <ListItem disablePadding>
-                <ListItemButton onClick={() => navigate("/create-room")}>
+                <ListItemButton
+                  onClick={() => {
+                    setShowMiniPlayer(true);
+                    navigate("/create-room");
+                  }}
+                >
                   <ListItemIcon>
                     <AddCircleIcon sx={{ color: "#fff" }} />
                   </ListItemIcon>
