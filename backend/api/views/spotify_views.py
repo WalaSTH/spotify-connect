@@ -325,6 +325,8 @@ class GetQueue(APIView):
         if queue[0].get('id') != queue[1].get('id'):
             room.spot_queue = db_queue
             room.save(update_fields=["spot_queue"])
+        if queue[0].get('id') == queue[1].get('id'):
+            return Response({"data":"messy queue"}, status=status.HTTP_204_NO_CONTENT)
         return Response({"data":queue}, status=status.HTTP_200_OK)
 
 class SaveSong(APIView):
