@@ -34,8 +34,14 @@ export default function MainApp() {
     await axios
       .get("api/get-queue" + "?user_id=" + userID)
       .then((response) => {
-        console.log(response.data.data);
-        setQueue(response.data.data);
+        if (response.status == 200) {
+          console.log(response.data.data);
+          setQueue(response.data.data);
+        } else if (response.status == 204) {
+          console.log("queue is");
+          console.log(queue);
+          setQueue(queue.slice(1));
+        }
       })
       .catch((error) => {
         console.log(error);
