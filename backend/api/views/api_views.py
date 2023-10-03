@@ -119,6 +119,7 @@ class UserInRoom(APIView):
                 'guest_skip':room.guest_skip,
                 'show_lobby':room.show_lobby,
                 'private_room':room.private_room,
+                'password': room.password,
             }
             return Response({'room': data}, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)

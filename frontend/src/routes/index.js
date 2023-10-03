@@ -40,6 +40,7 @@ export default function RoutesWrapper({
               userID={userId}
               navigate={navigate}
               csrftoken={csrftoken}
+              update={false}
             />
           ) : (
             <Navigate to="/login" />

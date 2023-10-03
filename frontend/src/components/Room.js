@@ -11,6 +11,7 @@ import {
   Redirect,
   Navigate,
   useNavigate,
+  createSearchParams,
 } from "react-router-dom";
 import {
   Button,
@@ -45,6 +46,11 @@ import ContactlessOutlinedIcon from "@mui/icons-material/ContactlessOutlined";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import LeakAddIcon from "@mui/icons-material/LeakAdd";
 
+//Settings
+import SettingsIcon from "@mui/icons-material/Settings";
+import CreateRoom from "../components/CreateRoom";
+import CreateRoomForm from "./CreateRoomForm";
+
 export default function Room({
   userID,
   navigate,
@@ -58,6 +64,7 @@ export default function Room({
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
+  const [settings, setSettings] = useState(false);
 
   const csrf = {
     withCredentials: true,
@@ -79,12 +86,10 @@ export default function Room({
   };
 
   async function getRoomAvatar(roomCode) {
-    console.log("ROOM CODE FOR AVATAR IS " + roomCode);
     await axios
       .get("api/get-room-avatar" + "?room_code=" + roomCode)
       .then((response) => {
         setUserAvatar(response.data.image);
-        console.log(response.data.image);
       })
       .catch((error) => {
         console.log(error);
@@ -133,7 +138,9 @@ export default function Room({
         console.log(error);
       });
   }
-
+  const changeRoomSettings = (value) => {
+    setSettings(value);
+  };
   return (
     <Container
       maxWidth="sm"
@@ -141,60 +148,92 @@ export default function Room({
         marginTop: "200px",
       }}
     >
-      <Grid
-        container
-        direction="row"
-        justifyContent="center"
-        alignItems="flex-start"
-        className="center"
-        sx={{
-          marginTop: 10,
-        }}
-      >
-        <Grid item name="Player and search">
-          <Grid item xs={12} align="center" justifyContent="center">
-            <Grid item xs={12} justifyContent="center">
-              {!song.no_song && <Search userID={userID}></Search>}
-            </Grid>
-            <Grid item xs={9}>
-              <MusicPlayer
-                align="center"
-                song={song}
-                songPlaying={true}
-                userID={userID}
-                syncFunction={syncButton}
-                favorite={favorite}
-                setFavorite={setFavorite}
-                csrf={csrf}
-                isHost={isHost}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                color="secondary"
-                component={Link}
-                onClick={leaveRoom}
-                sx={{
-                  color: "black",
-
-                  borderColor: "green",
-                }}
-              >
-                <ExitToAppIcon></ExitToAppIcon>
-              </Button>
-            </Grid>
-          </Grid>
+      {settings && (
+        <Grid>
+          <CreateRoom
+            userID={userID}
+            navigate={navigate}
+            csrf={csrf}
+            update={true}
+            closefun={() => {
+              changeRoomSettings(false);
+            }}
+          />
         </Grid>
-        {!song.no_song && (
-          <Grid item name="Queue" xs={3}>
-            <CommingNext
-              queue={queue}
-              song={song}
-              userID={userID}
-            ></CommingNext>
+      )}
+
+      {!settings && (
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="flex-start"
+          className="center"
+          sx={{
+            marginTop: 10,
+          }}
+        >
+          <Grid item name="Player and search">
+            <Grid item xs={12} align="center" justifyContent="center">
+              <Grid item xs={12} justifyContent="center">
+                {!song.no_song && <Search userID={userID}></Search>}
+              </Grid>
+              <Grid item xs={9}>
+                <MusicPlayer
+                  align="center"
+                  song={song}
+                  songPlaying={true}
+                  userID={userID}
+                  syncFunction={syncButton}
+                  favorite={favorite}
+                  setFavorite={setFavorite}
+                  csrf={csrf}
+                  isHost={isHost}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  color="secondary"
+                  component={Link}
+                  onClick={leaveRoom}
+                  sx={{
+                    color: "black",
+
+                    borderColor: "green",
+                  }}
+                >
+                  <ExitToAppIcon></ExitToAppIcon>
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  color="secondary"
+                  component={Link}
+                  onClick={() => {
+                    changeRoomSettings(true);
+                  }}
+                  sx={{
+                    color: "black",
+
+                    borderColor: "green",
+                  }}
+                >
+                  <SettingsIcon></SettingsIcon>
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
-        )}
-      </Grid>
+          {!song.no_song && (
+            <Grid item name="Queue" xs={3}>
+              <CommingNext
+                queue={queue}
+                song={song}
+                userID={userID}
+              ></CommingNext>
+            </Grid>
+          )}
+        </Grid>
+      )}
     </Container>
   );
 }

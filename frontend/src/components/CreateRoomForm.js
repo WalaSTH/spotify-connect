@@ -34,22 +34,31 @@ const ROOM_CODE_MAX_LEN = 8;
 const ROOM_MIN_PASSOWRD = 3;
 const ROOM_MAX_PASSWORD = 16;
 
-export default function CreateRoomForm({ userID, navigate }) {
+export default function CreateRoomForm({
+  userID,
+  navigate,
+  update,
+  closefun,
+  room,
+  guestPause,
+}) {
   const username = localStorage.getItem("username");
   const user = userID;
   const createRoomEndpoint = "http://127.0.0.1:8000/api/create-room/";
   const initialRoomName = username + "'s Room";
-  const initialFormState = {
+  const guest_pause = guestPause;
+  let initialFormState = {
     roomName: "",
-    guestPause: false,
-    guestAddQueue: true,
-    guestManageQueue: false,
-    guestChat: true,
-    guestSkip: false,
-    privateRoom: false,
-    showLobby: true,
-    password: "",
+    guestPause: room["guest_pause"],
+    guestAddQueue: room["guest_add_queue"],
+    guestManageQueue: room["guest_manage_queue"],
+    guestChat: room["guest_chat"],
+    guestSkip: room["guest_skip"],
+    privateRoom: room["private_room"],
+    showLobby: room["show_lobby"],
+    password: room["password"],
   };
+
   const formValidation = Yup.object().shape({
     roomName: Yup.string()
       .min(
@@ -79,7 +88,6 @@ export default function CreateRoomForm({ userID, navigate }) {
     }),
   });
   async function handleRoomButton(values) {
-    console.log("HI");
     if (values.roomName === "") {
       values.roomName = initialRoomName;
     }
@@ -94,12 +102,13 @@ export default function CreateRoomForm({ userID, navigate }) {
     formData.append("show_lobby", values.showLobby);
     formData.append("private_room", values.privateRoom);
     formData.append("password", values.password);
-    console.log(values);
     await axios
       .post(createRoomEndpoint, formData)
       .then((response) => {
-        console.log(response);
         navigate("/room");
+        if (update) {
+          closefun();
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -109,21 +118,53 @@ export default function CreateRoomForm({ userID, navigate }) {
     return (
       <Grid container spacing={2}>
         <Grid item xs={12} align="center">
-          <Button
-            color="primary"
-            variant="contained"
-            type="submit"
-            onClick={handleSubmit}
-            component={Link}
-          >
-            Create A Room
-          </Button>
+          {!update && (
+            <Button
+              color="primary"
+              variant="contained"
+              type="submit"
+              onClick={handleSubmit}
+              component={Link}
+            >
+              Create A Room
+            </Button>
+          )}
+          {update && (
+            <Button
+              color="primary"
+              variant="contained"
+              type="submit"
+              onClick={handleSubmit}
+              component={Link}
+            >
+              Update Settings
+            </Button>
+          )}
         </Grid>
-        <Grid item xs={12} align="center">
-          <Button color="secondary" variant="contained" to="/" component={Link}>
-            Back
-          </Button>
-        </Grid>
+        {!update && (
+          <Grid item xs={12} align="center">
+            <Button
+              color="secondary"
+              variant="contained"
+              to="/"
+              component={Link}
+            >
+              Back
+            </Button>
+          </Grid>
+        )}
+        {update && (
+          <Grid item xs={12} align="center">
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={closefun}
+              component={Link}
+            >
+              Back
+            </Button>
+          </Grid>
+        )}
       </Grid>
     );
   };
@@ -131,6 +172,7 @@ export default function CreateRoomForm({ userID, navigate }) {
   return (
     <Formik
       initialValues={initialFormState}
+      enableReinitialize
       validationSchema={formValidation}
       onSubmit={handleRoomButton}
     >

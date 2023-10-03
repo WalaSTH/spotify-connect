@@ -18,7 +18,19 @@ import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function CreateRoom({ userID, navigate }) {
+export default function CreateRoom({ userID, navigate, update, closefun }) {
+  const [room, setRoom] = useState({
+    guest_pause: false,
+    room_name: "",
+    guest_add_queue: true,
+    guest_manage_queue: false,
+    guest_skip: false,
+    guest_chat: true,
+    show_lobby: true,
+    private_room: false,
+    password: "",
+  });
+  const [guestPause, setGuestPause] = useState(false);
   useEffect(() => {
     checkUserInRoom(userID).then(() => {
       authenticateSpotify(userID);
@@ -29,8 +41,14 @@ export default function CreateRoom({ userID, navigate }) {
     await axios
       .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
       .then((response) => {
-        if (response.status == 200) {
+        console.log(response);
+        if (response.status == 200 && update == false) {
           navigate("/room");
+        } else if (update) {
+          const room = response.data.room;
+          setGuestPause(room["guest_pause"]);
+          setRoom(room);
+          console.log(room);
         }
       })
       .catch((error) => {
@@ -42,7 +60,6 @@ export default function CreateRoom({ userID, navigate }) {
     await axios
       .get("/api/is-authenticated" + "?user_id=" + userID)
       .then(async function (data) {
-        console.log(data.data.status[0]);
         if (!data.data.status[0]) {
           await axios
             .get("/api/get-auth-url" + "?user_id=" + userID)
@@ -66,13 +83,24 @@ export default function CreateRoom({ userID, navigate }) {
               <LockOutlinedIcon />
             </Avatar>
           </Grid>
-          <Typography component="h4" variant="h4" align="center">
-            Create Room
-          </Typography>
+          {!update && (
+            <Typography component="h4" variant="h4" align="center">
+              Create Room
+            </Typography>
+          )}
+          {update && (
+            <Typography component="h4" variant="h4" align="center">
+              Room Settings
+            </Typography>
+          )}
           <React.Fragment>
             <CreateRoomForm
               userID={userID}
               navigate={navigate}
+              update={update}
+              closefun={closefun}
+              room={room}
+              guestPause={guestPause}
             ></CreateRoomForm>
           </React.Fragment>
         </Paper>

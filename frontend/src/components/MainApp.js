@@ -16,7 +16,7 @@ export default function MainApp() {
   const [queue, setQueue] = useState([]);
   const [isHost, setIsHost] = useState(false);
   const [userInRoom, setUserInRoom] = useState(false);
-  const [room, setRoom] = useState({});
+  const [room, setRoom] = useState({ room_code: "code", guest_pause: false });
   const [changed, setChanged] = useState(false);
   const noSong = {
     title: "No song playing",
