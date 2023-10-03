@@ -179,17 +179,20 @@ class CreateRoomView(generics.ListAPIView):
                 room.password=password
                 room.show_lobby=show_lobby
                 room.guest_add_queue=guest_add_queue
+                room.spot_queue = []
+                room.user_queue = []
 
                 room.save(update_fields=['room_name', 'guest_pause','guest_manage_queue',
                                         'guest_chat', 'guest_skip', 'private_room',
-                                        'guest_add_queue', 'show_lobby', 'password'])
+                                        'guest_add_queue', 'show_lobby', 'password', 'spot_queue', 'user_queue'])
                 return Response({"Msg":"Room succesfully updated"}, status=status.HTTP_200_OK)
             else:
                 # Create room
                 room = Room(host=host, room_name=room_name, guest_pause=guest_pause,
                             guest_chat=guest_chat, guest_skip=guest_skip,
                             guest_manage_queue=guest_manage_queue, private_room=private_room,
-                            password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby)
+                            password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby,
+                            user_queue=[], spot_queue=[])
                 user = get_user_by_id(host)
                 room.save()
                 user.room=room.code
