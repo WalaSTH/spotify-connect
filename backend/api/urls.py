@@ -36,4 +36,5 @@ urlpatterns = [
     path('get-room-avatar', GetRoomAvatar.as_view()),
     path('start-next', StartNextSong.as_view()),
     path('start-song', StartSong.as_view()),
+    path('pop-queue', PopQueue.as_view()),
 ]

@@ -8,7 +8,6 @@ import axios from "axios";
 
 export default function MainApp() {
   const [userId, setUserId] = useState(localStorage.getItem("userID"));
-
   const [prevSong, setPrevSong] = useState("");
   const [songChanged, setSongChanged] = useState(false);
   const [favorite, setFavorite] = useState(false);
@@ -18,6 +17,9 @@ export default function MainApp() {
   const [userInRoom, setUserInRoom] = useState(false);
   const [room, setRoom] = useState({ room_code: "code", guest_pause: false });
   const [changed, setChanged] = useState(false);
+  const [popped, setPopped] = useState(true);
+  const [alradySkipped, setAlreadySkipped] = useState(false);
+
   const noSong = {
     title: "No song playing",
     image_url:
@@ -163,14 +165,41 @@ export default function MainApp() {
         console.log(error);
       });
   }
-
+  async function popQueue(userId) {
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    await axios
+      .post("http://127.0.0.1:8000/api/pop-queue", formData)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   function checkNew(song, prevSong) {
-    if (song.duration - song.time < 3000 && !changed) {
+    if (song.duration - song.time < 2000 && !changed) {
       console.log("Song time is" + song.time);
       console.log("Duration time is" + song.duration);
       console.log("Difference is: " + (song.duration - song.time));
       setChanged(true);
-      playNextSong(userId);
+      if (isHost) {
+        setPopped(false);
+        console.log("NEEDS POPPING");
+      }
+      if (!alradySkipped) {
+        console.log("Skipping");
+        playNextSong(userId);
+        setAlreadySkipped(true);
+      }
+    }
+    if (!popped) {
+      //Pop first of queue
+      setPopped(true);
+      popQueue(userId);
+      console.log("POPPED");
+      console.log(popped);
+      //pop element
     } else if (song.id != prevSong && !prevSong) {
       // First Song
       console.log(prevSong);
@@ -183,8 +212,9 @@ export default function MainApp() {
       setChanged(false);
     } else if (song.id != prevSong && prevSong != "") {
       // New Song
+      setAlreadySkipped(false);
       console.log("New song");
-      syncButton(song.id, 0);
+      //syncButton(song.id, 0);
       setPrevSong(song.id);
       getQueue(userId);
       checkSaved(userId, song.id);

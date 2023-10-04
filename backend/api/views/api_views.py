@@ -130,6 +130,32 @@ class RoomView(generics.ListAPIView):
     serializer_class = RoomSerializer
     queryset = Room.objects.all()
 
+class PopQueue(APIView):
+    def post(self, request, format=None):
+        user_id = request.data.get("user_id")
+        user = get_user_by_id(user_id)
+        if user is None:
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        room_code = user.room
+        if room_code == "":
+            return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        room = get_room_by_code(room_code)
+        if room is None:
+            return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        if room.host != user_id:
+            return Response({'Bad Request': 'Only host can pop'}, status=status.HTTP_400_BAD_REQUEST)
+        db_queue = room.spot_queue
+        user_queue = room.user_queue
+        if user_queue:
+            user_queue.pop(0)
+            room.user_queue = user_queue
+            room.save(update_fields=['user_queue'])
+        elif db_queue:
+            db_queue.pop(0)
+            room.spot_queue=db_queue
+            room.save(update_fields=['spot_queue'])
+        return Response({"Msg":"Queue popped!"}, status=status.HTTP_200_OK)
+
 class CreateRoomView(generics.ListAPIView):
     serializer_class = RoomCreateSerializer
 

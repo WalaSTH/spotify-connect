@@ -58,12 +58,11 @@ class Room(models.Model):
     private_room = models.BooleanField(null=False, default=False)
     current_song = models.CharField(max_length=50, null=True)
     spot_queue = ArrayField(
-        models.CharField(max_length=50, blank=True)
+        models.JSONField(null=True)
     )
     user_queue = ArrayField(
         models.CharField(max_length=50, blank=True)
     )
-
     def __str__(self):
         return self.code
 

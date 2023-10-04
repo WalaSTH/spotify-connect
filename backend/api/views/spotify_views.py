@@ -272,7 +272,7 @@ class AddToQueue(APIView):
 
 class GetQueue(APIView):
     def get(self, request, format=None):
-        max_queue = 15
+        max_queue = 50
         user_id = request.GET.get('user_id')
         user=get_user_by_id(user_id)
         if user == None:
@@ -318,16 +318,16 @@ class GetQueue(APIView):
                     'image_url': image_url,
                     'id': id
                 }
-                db_queue.append(id)
+                db_queue.append(song)
                 queue.append(song)
-        print("FIRST ELEMENTO OF QUEUEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
-        print( queue[0].get('title')) 
         if queue[0].get('id') != queue[1].get('id'):
+            #Valid new queue, replace
             room.spot_queue = db_queue
             room.save(update_fields=["spot_queue"])
-        if queue[0].get('id') == queue[1].get('id'):
-            return Response({"data":"messy queue"}, status=status.HTTP_204_NO_CONTENT)
-        return Response({"data":queue}, status=status.HTTP_200_OK)
+        #if queue[0].get('id') == queue[1].get('id'):
+            #Not valid queue
+
+        return Response({"data":room.spot_queue}, status=status.HTTP_200_OK)
 
 class SaveSong(APIView):
     def put(self, request, format=None):
@@ -391,7 +391,7 @@ class CheckSaved(APIView):
         endpoint = "tracks/contains?ids="+song_id
         res = execute_spotify_api_request(user_id, endpoint=endpoint)
         return Response({"data":res}, status=status.HTTP_200_OK)
-    
+
 class GetRoomAvatar(APIView):
     def get(self, request, format=None):
         room_code = request.GET.get("room_code")
@@ -415,17 +415,14 @@ class StartNextSong(APIView):
         room = get_room_by_code(room_code)
         db_queue = room.spot_queue
         user_queue = room.user_queue
+        room_host = room.host
+        is_host = room_host == user_id
         if user_queue:
-            track = user_queue[0]
-            user_queue.pop(0)
-            room.user_queue = user_queue
-            room.save(update_fields=['user_queue'])
+            track = user_queue[0]['id']
+
         else:
-            track = db_queue[0]
-            db_queue.pop(0)
-            room.spot_queue = db_queue
-            room.save(update_fields=['spot_queue'])
-        # Execute Spotify endpoint
+            track = db_queue[0]['id']
+
         endpoint = "player/play"
         data ={
             "uris":["spotify:track:{}".format(track)],
