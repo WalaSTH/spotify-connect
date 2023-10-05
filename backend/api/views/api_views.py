@@ -156,6 +156,19 @@ class PopQueue(APIView):
             room.save(update_fields=['spot_queue'])
         return Response({"Msg":"Queue popped!"}, status=status.HTTP_200_OK)
 
+class RemoveSong(APIView):
+    def post(self, request, format=None):
+        user_id = request.data.get("user_id")
+        song_id = request.data.get("song_id")
+        user = get_user_by_id(user_id)
+        if user is None:
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        room_code = user.room
+        room = get_room_by_code(room_code)
+        if room is None:
+            return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
 class CreateRoomView(generics.ListAPIView):
     serializer_class = RoomCreateSerializer
 
@@ -321,3 +334,4 @@ class UserIsHost(APIView):
         room = get_room_by_code(room_code)
         res = room.host == user_id
         return Response({"data":res}, status=status.HTTP_200_OK)
+    

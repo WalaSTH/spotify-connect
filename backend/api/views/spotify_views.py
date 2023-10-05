@@ -247,12 +247,19 @@ class SearchSong(APIView):
         return Response({"data":result_list}, status=status.HTTP_200_OK)
 
 class AddToQueue(APIView):
-    def get(self, request, format=None):
-        user_id = request.GET.get("user_id")
-        song_id = request.GET.get("song_id")
-
+    def post(self, request, format=None):
+        user_id = request.data.get("user_id")
+        song_id = request.data.get("song_id")
+        artist = request.data.get("artist")
+        image_url = request.data.get("image_url")
+        title = request.data.get("title")
         user = get_user_by_id(user_id)
-
+        song = {
+            'title': title,
+            'artist': artist,
+            'image_url': image_url,
+            'id': song_id,
+        }
         if user == None:
             return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -264,7 +271,7 @@ class AddToQueue(APIView):
             return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
         
         queue = room.user_queue
-        queue.append(song_id)
+        queue.append(song)
         room.save(update_fields=["user_queue"])
 
         return Response({"Msg":"Song added"}, status=status.HTTP_200_OK)
@@ -316,7 +323,8 @@ class GetQueue(APIView):
                     'title': name,
                     'artist': artist_string,
                     'image_url': image_url,
-                    'id': id
+                    'id': id,
+                    'queue_id': i
                 }
                 db_queue.append(song)
                 queue.append(song)

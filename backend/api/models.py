@@ -61,7 +61,7 @@ class Room(models.Model):
         models.JSONField(null=True)
     )
     user_queue = ArrayField(
-        models.CharField(max_length=50, blank=True)
+        models.JSONField(null=True)
     )
     def __str__(self):
         return self.code
