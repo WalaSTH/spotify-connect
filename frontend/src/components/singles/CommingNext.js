@@ -47,7 +47,20 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import equaliser from "./../equaliser.gif";
 
+//Queue manage
+import DeleteIcon from "@mui/icons-material/Delete";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
 export default function CommingNext({ song, userID, queue }) {
+  async function removeSong(songId) {
+    const formData = new FormData();
+    formData.append("song_id", songId);
+    formData.append("user_id", userID);
+    await axios
+      .post("http://127.0.0.1:8000/api/remove-song", formData)
+      .catch((error) => console.log(error));
+  }
   return (
     <Box>
       <Card style={{ maxHeight: 450, overflow: "auto" }}>
@@ -118,6 +131,11 @@ export default function CommingNext({ song, userID, queue }) {
               </ListItem>
               <Grid item>
                 <ListItem>
+                  <Typography variant="subtitle1">Users's queue</Typography>
+                </ListItem>
+              </Grid>
+              <Grid item>
+                <ListItem>
                   <Typography variant="subtitle1">Comming up next</Typography>
                 </ListItem>
               </Grid>
@@ -151,6 +169,40 @@ export default function CommingNext({ song, userID, queue }) {
                         </React.Fragment>
                       }
                     />
+                    <Tooltip
+                      title="Move up"
+                      TransitionComponent={Fade}
+                      TransitionProps={{ timeout: 600 }}
+                      enterNextDelay={500}
+                    >
+                      <IconButton onClick={() => {}}>
+                        <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                      title="Move down"
+                      TransitionComponent={Fade}
+                      TransitionProps={{ timeout: 600 }}
+                      enterNextDelay={500}
+                    >
+                      <IconButton>
+                        <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                      title="Remove song"
+                      TransitionComponent={Fade}
+                      TransitionProps={{ timeout: 600 }}
+                      enterNextDelay={500}
+                    >
+                      <IconButton
+                        onClick={() => {
+                          removeSong(id);
+                        }}
+                      >
+                        <DeleteIcon></DeleteIcon>
+                      </IconButton>
+                    </Tooltip>
                   </ListItemButton>
                 </ListItem>
               ))}

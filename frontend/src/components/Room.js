@@ -176,7 +176,7 @@ export default function Room({
           <Grid item name="Player and search">
             <Grid item xs={12} align="center" justifyContent="center">
               <Grid item xs={12} justifyContent="center">
-                {!song.no_song && <Search userID={userID}></Search>}
+                {!song.no_song && <Search userID={userID} csrf={csrf}></Search>}
               </Grid>
               <Grid item xs={9}>
                 <MusicPlayer

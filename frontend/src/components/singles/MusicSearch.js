@@ -45,7 +45,7 @@ import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function Search({ userID }) {
+export default function Search({ userID, csrf }) {
   const [searchList, setSearchList] = useState([]);
   const [activeSearch, setActiveSearch] = useState(false);
 
@@ -58,14 +58,18 @@ export default function Search({ userID }) {
   }
   
   */
-  async function addToQueue(songId) {
+  async function addToQueue(title, imageUrl, artist, songId) {
     console.log(songId);
     const formData = new FormData();
     formData.append("user_id", userID);
+    formData.append("image_url", imageUrl);
+    formData.append("title", title);
+    formData.append("artist", artist);
     formData.append("song_id", songId);
-    console.log(formData);
+    formData.append("csrfmiddlewaretoken", "{{csrf_token}}");
+
     await axios
-      .get("api/add-queue" + "?user_id=" + userID + "&song_id=" + songId)
+      .post("api/add-queue", formData, csrf)
       .then((response) => {
         console.log(response);
       })
@@ -146,7 +150,7 @@ export default function Search({ userID }) {
                 >
                   <IconButton
                     onClick={() => {
-                      addToQueue(id);
+                      addToQueue(title, image_url, artist, id);
                     }}
                   >
                     <QueueIcon></QueueIcon>

@@ -13,6 +13,7 @@ export default function MainApp() {
   const [favorite, setFavorite] = useState(false);
   const [songPlaying, setSongPlaying] = useState(true);
   const [queue, setQueue] = useState([]);
+  const [userQueue, setUserQueue] = useState([]);
   const [isHost, setIsHost] = useState(false);
   const [userInRoom, setUserInRoom] = useState(false);
   const [room, setRoom] = useState({ room_code: "code", guest_pause: false });
@@ -29,7 +30,9 @@ export default function MainApp() {
   };
   const [song, setSong] = useState(noSong);
   async function playNextSong(userID) {
-    await axios.get("api/start-next" + "?user_id=" + userID);
+    await axios.get("api/start-next" + "?user_id=" + userID).catch((error) => {
+      console.log(error);
+    });
   }
 
   async function getQueue(userID) {
