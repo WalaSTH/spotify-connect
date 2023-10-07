@@ -17,6 +17,7 @@ export default function RoutesWrapper({
   favorite,
   setFavorite,
   isHost,
+  userQueue,
 }) {
   return (
     <Routes>
@@ -60,6 +61,7 @@ export default function RoutesWrapper({
               favorite={favorite}
               setFavorite={setFavorite}
               isHost={isHost}
+              userQueue={userQueue}
             />
           ) : (
             <Navigate to="/login" />

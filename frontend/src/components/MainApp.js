@@ -40,8 +40,9 @@ export default function MainApp() {
       .get("api/get-queue" + "?user_id=" + userID)
       .then((response) => {
         if (response.status == 200) {
-          console.log(response.data.data);
-          setQueue(response.data.data);
+          console.log(response.data.spot_queue);
+          setQueue(response.data.spot_queue);
+          setUserQueue(response.data.user_queue);
         } else if (response.status == 204) {
           console.log("queue is");
           console.log(queue);
@@ -237,6 +238,7 @@ export default function MainApp() {
           favorite={favorite}
           setFavorite={setFavorite}
           queue={queue}
+          userQueue={userQueue}
           isHost={isHost}
         />
       </div>

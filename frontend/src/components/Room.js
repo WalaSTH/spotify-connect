@@ -57,6 +57,7 @@ export default function Room({
   userInRoom,
   song,
   queue,
+  userQueue,
   favorite,
   setFavorite,
   isHost,
@@ -227,6 +228,7 @@ export default function Room({
             <Grid item name="Queue" xs={3}>
               <CommingNext
                 queue={queue}
+                userQueue={userQueue}
                 song={song}
                 userID={userID}
               ></CommingNext>

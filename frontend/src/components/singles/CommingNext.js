@@ -52,13 +52,30 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-export default function CommingNext({ song, userID, queue }) {
-  async function removeSong(songId) {
+export default function CommingNext({ song, userID, queue, userQueue }) {
+  async function removeSong(queueId) {
     const formData = new FormData();
-    formData.append("song_id", songId);
+    formData.append("queue_id", queueId);
     formData.append("user_id", userID);
     await axios
       .post("http://127.0.0.1:8000/api/remove-song", formData)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => console.log(error));
+  }
+  async function move(queueId, position, useUser) {
+    console.log("Trying to move " + queueId + " to position: " + position);
+    const formData = new FormData();
+    formData.append("user_id", userID);
+    formData.append("queue_id", queueId);
+    formData.append("position", position);
+    formData.append("use_user", useUser);
+    await axios
+      .post("http://127.0.0.1:8000/api/move-song", formData)
+      .then((response) => {
+        console.log(response);
+      })
       .catch((error) => console.log(error));
   }
   return (
@@ -129,83 +146,168 @@ export default function CommingNext({ song, userID, queue }) {
                   )}
                 </ListItemButton>
               </ListItem>
-              <Grid item>
-                <ListItem>
-                  <Typography variant="subtitle1">Users's queue</Typography>
-                </ListItem>
-              </Grid>
+              {userQueue.length > 0 && (
+                <Grid item>
+                  <ListItem>
+                    <Typography variant="subtitle1">Users's queue</Typography>
+                  </ListItem>
+                </Grid>
+              )}
+              {userQueue.map(
+                ({ title, image_url, artist, id, queue_id }, index) => (
+                  <ListItem key={index}>
+                    <Icon>{index + 2}</Icon>
+                    <ListItemButton
+                      disableRipple
+                      sx={{
+                        cursor: "default",
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          alt="Album Cover"
+                          src={image_url}
+                          style={{ borderRadius: 0 }}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={title}
+                        secondary={
+                          <React.Fragment>
+                            <Typography
+                              sx={{ display: "inline" }}
+                              component="span"
+                              variant="body2"
+                              color="text.primary"
+                            ></Typography>
+                            {artist}
+                          </React.Fragment>
+                        }
+                      />
+                      {index != 0 && (
+                        <Tooltip
+                          title="Move up"
+                          TransitionComponent={Fade}
+                          TransitionProps={{ timeout: 600 }}
+                          enterNextDelay={500}
+                        >
+                          <IconButton onClick={() => {}}>
+                            <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {index != userQueue.length - 1 && (
+                        <Tooltip
+                          title="Move down"
+                          TransitionComponent={Fade}
+                          TransitionProps={{ timeout: 600 }}
+                          enterNextDelay={500}
+                        >
+                          <IconButton>
+                            <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      <Tooltip
+                        title="Remove from queue"
+                        TransitionComponent={Fade}
+                        TransitionProps={{ timeout: 600 }}
+                        enterNextDelay={500}
+                      >
+                        <IconButton
+                          onClick={() => {
+                            removeSong(queue_id);
+                          }}
+                        >
+                          <DeleteIcon></DeleteIcon>
+                        </IconButton>
+                      </Tooltip>
+                    </ListItemButton>
+                  </ListItem>
+                )
+              )}
               <Grid item>
                 <ListItem>
                   <Typography variant="subtitle1">Comming up next</Typography>
                 </ListItem>
               </Grid>
-              {queue.map(({ title, image_url, artist, id }, index) => (
-                <ListItem key={index}>
-                  <Icon>{index + 2}</Icon>
-                  <ListItemButton
-                    disableRipple
-                    sx={{
-                      cursor: "default",
-                    }}
-                  >
-                    <ListItemAvatar>
-                      <Avatar
-                        alt="Album Cover"
-                        src={image_url}
-                        style={{ borderRadius: 0 }}
+              {queue.map(
+                ({ title, image_url, artist, id, queue_id }, index) => (
+                  <ListItem key={index}>
+                    <Icon>{index + 2 + userQueue.length}</Icon>
+                    <ListItemButton
+                      disableRipple
+                      sx={{
+                        cursor: "default",
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          alt="Album Cover"
+                          src={image_url}
+                          style={{ borderRadius: 0 }}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={title}
+                        secondary={
+                          <React.Fragment>
+                            <Typography
+                              sx={{ display: "inline" }}
+                              component="span"
+                              variant="body2"
+                              color="text.primary"
+                            ></Typography>
+                            {artist}
+                          </React.Fragment>
+                        }
                       />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={title}
-                      secondary={
-                        <React.Fragment>
-                          <Typography
-                            sx={{ display: "inline" }}
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                          ></Typography>
-                          {artist}
-                        </React.Fragment>
-                      }
-                    />
-                    <Tooltip
-                      title="Move up"
-                      TransitionComponent={Fade}
-                      TransitionProps={{ timeout: 600 }}
-                      enterNextDelay={500}
-                    >
-                      <IconButton onClick={() => {}}>
-                        <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                      title="Move down"
-                      TransitionComponent={Fade}
-                      TransitionProps={{ timeout: 600 }}
-                      enterNextDelay={500}
-                    >
-                      <IconButton>
-                        <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                      title="Remove song"
-                      TransitionComponent={Fade}
-                      TransitionProps={{ timeout: 600 }}
-                      enterNextDelay={500}
-                    >
-                      <IconButton
-                        onClick={() => {
-                          removeSong(id);
-                        }}
+                      {index != 0 && (
+                        <Tooltip
+                          title="Move up"
+                          TransitionComponent={Fade}
+                          TransitionProps={{ timeout: 600 }}
+                          enterNextDelay={500}
+                        >
+                          <IconButton
+                            onClick={() => {
+                              move(queue_id, index - 1, false);
+                            }}
+                          >
+                            <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {index != queue.length - 1 && (
+                        <Tooltip
+                          title="Move down"
+                          TransitionComponent={Fade}
+                          TransitionProps={{ timeout: 600 }}
+                          enterNextDelay={500}
+                        >
+                          <IconButton>
+                            <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      <Tooltip
+                        title="Remove from queue"
+                        TransitionComponent={Fade}
+                        TransitionProps={{ timeout: 600 }}
+                        enterNextDelay={500}
                       >
-                        <DeleteIcon></DeleteIcon>
-                      </IconButton>
-                    </Tooltip>
-                  </ListItemButton>
-                </ListItem>
-              ))}
+                        <IconButton
+                          onClick={() => {
+                            removeSong(queue_id);
+                          }}
+                        >
+                          <DeleteIcon></DeleteIcon>
+                        </IconButton>
+                      </Tooltip>
+                    </ListItemButton>
+                  </ListItem>
+                )
+              )}
             </Grid>
           )}
         </Grid>
