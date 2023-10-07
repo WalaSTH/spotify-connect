@@ -19,7 +19,8 @@ urlpatterns = [
     path('get-room', UserInRoom.as_view()),
     path('leave-room', LeaveRoom.as_view()),
     path('is-host', UserIsHost.as_view()),
-
+    path('remove-song', RemoveSong.as_view()),
+    path('move-song', MoveSong.as_view()),
     # Spotify
 
     path('current-song', CurrentSong.as_view()),

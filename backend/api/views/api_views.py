@@ -159,7 +159,7 @@ class PopQueue(APIView):
 class RemoveSong(APIView):
     def post(self, request, format=None):
         user_id = request.data.get("user_id")
-        song_id = request.data.get("song_id")
+        queue_id = request.data.get("queue_id")
         user = get_user_by_id(user_id)
         if user is None:
             return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -167,7 +167,28 @@ class RemoveSong(APIView):
         room = get_room_by_code(room_code)
         if room is None:
             return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+        db_queue = room.spot_queue
+        user_queue = room.user_queue
+        found = False
+        i = 0
+        while (not found and i<len(user_queue)):
+            if (int(user_queue[i]["queue_id"]) == int(queue_id)):
+                found = True
+                del user_queue[i]
+            i = i + 1
+
+        i = 0
+        while (not found and i<len(db_queue)):
+            if (int(db_queue[i]["queue_id"]) == int(queue_id)):
+                found = True
+                del db_queue[i]
+            i = i + 1
+        if(not found):
+            Response({"Msg":"Song not in queue"}, status=status.HTTP_204_NO_CONTENT)
+        room.spot_queue = db_queue
+        room.user_queue = user_queue
+        room.save(update_fields=["spot_queue", "user_queue"])
+        return Response({"Msg":"Song removed from queue"}, status=status.HTTP_200_OK)
 
 class CreateRoomView(generics.ListAPIView):
     serializer_class = RoomCreateSerializer
@@ -221,7 +242,6 @@ class CreateRoomView(generics.ListAPIView):
                 room.guest_add_queue=guest_add_queue
                 room.spot_queue = []
                 room.user_queue = []
-
                 room.save(update_fields=['room_name', 'guest_pause','guest_manage_queue',
                                         'guest_chat', 'guest_skip', 'private_room',
                                         'guest_add_queue', 'show_lobby', 'password', 'spot_queue', 'user_queue'])
@@ -232,7 +252,7 @@ class CreateRoomView(generics.ListAPIView):
                             guest_chat=guest_chat, guest_skip=guest_skip,
                             guest_manage_queue=guest_manage_queue, private_room=private_room,
                             password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby,
-                            user_queue=[], spot_queue=[])
+                            user_queue=[], spot_queue=[], last_id = 1)
                 user = get_user_by_id(host)
                 room.save()
                 user.room=room.code
@@ -309,7 +329,6 @@ class LeaveRoom(APIView):
         # Delete for all if user is host
         room = get_room_by_code(room_code)
         if user.id == room.host:
-            print("IS HOST!!!!!!!!!!!!!!!!!!!!!!")
             queryset = User.objects.filter(room=room_code)
             for i in range(len(queryset)):
                 queryset[i].room = ""
@@ -335,3 +354,60 @@ class UserIsHost(APIView):
         res = room.host == user_id
         return Response({"data":res}, status=status.HTTP_200_OK)
     
+class MoveSong(APIView):
+    def post(self, request, format=None):
+        user_id = request.data.get("user_id")
+        position = request.data.get("position")
+        queue_id = request.data.get("queue_id")
+        use_user = request.data.get("use_user")
+
+        # Validate fields
+        if not user_id_exists(user_id):
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user = get_user_by_id(user_id)
+        room_code = user.room
+        if room_code == "":
+            return Response({'Msg': 'User not in room_code'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        if not room_exists(room_code):
+            user.room=""
+            user.save(update_fields=['room'])
+            return Response({'Msg': 'Invalid user room'}, status=status.HTTP_404_NOT_FOUND)
+        room = get_room_by_code(room_code)
+
+        # Move song to position
+        user_queue = room.user_queue
+        spot_queue = room.spot_queue
+        if(use_user and len(user_queue)>0):
+            if position < 0:
+                position = 0
+            if position > len(user_queue):
+                position = len(user_queue)-1
+            found = False
+            i = 0
+            while (not found and i<len(user_queue)):
+                if (int(user_queue[i]["queue_id"]) == int(queue_id)):
+                    found = True
+                    del user_queue[i]
+                i = i + 1
+            if(not found):
+                return Response({'Msg': 'Song not in list'}, status=status.HTTP_404_NOT_FOUND)
+            user_queue[position], user_queue[i-1] = user_queue[i-1], user_queue[position]
+            room.save(update_fields=["user_queue"])
+        elif(not use_user and len(spot_queue)>0):
+            if position < 0:
+                position = 0
+            if position > len(spot_queue):
+                position = len(spot_queue)-1
+            found = False
+            i = 0
+            while (not found and i<len(spot_queue)):
+                if (int(spot_queue[i]["queue_id"]) == int(queue_id)):
+                    found = True
+                    del spot_queue[i]
+                i = i + 1
+            if(not found):
+                return Response({'Msg': 'Song not in list'}, status=status.HTTP_404_NOT_FOUND)
+            spot_queue[position], spot_queue[i-1] = spot_queue[i-1], spot_queue[position]
+            room.save(update_fields=["spot_queue"])
+        return Response({'Msg': 'Song moved!'}, status=status.HTTP_200_OK)

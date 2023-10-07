@@ -63,6 +63,7 @@ class Room(models.Model):
     user_queue = ArrayField(
         models.JSONField(null=True)
     )
+    last_id = models.IntegerField()
     def __str__(self):
         return self.code
 

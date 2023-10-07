@@ -254,21 +254,23 @@ class AddToQueue(APIView):
         image_url = request.data.get("image_url")
         title = request.data.get("title")
         user = get_user_by_id(user_id)
+        room = get_room_by_code(user.room)
+        if room == None:
+            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
         song = {
             'title': title,
             'artist': artist,
             'image_url': image_url,
             'id': song_id,
+            'queue_id': room.last_id + 1,
         }
+        room.last_id = room.last_id + 1
+        room.save(update_fields=["last_id"])
         if user == None:
             return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         if user.room == "":
             return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
-
-        room = get_room_by_code(user.room)
-        if room == None:
-            return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
         
         queue = room.user_queue
         queue.append(song)
@@ -309,6 +311,7 @@ class GetQueue(APIView):
             res_queue = res.get('queue')
             size = min(max_queue, len(res_queue))
             for i in range(size):
+                index = i
                 queue_elem = res_queue[i]
                 name = queue_elem.get('name')
                 id = queue_elem.get('id')
@@ -324,18 +327,20 @@ class GetQueue(APIView):
                     'artist': artist_string,
                     'image_url': image_url,
                     'id': id,
-                    'queue_id': i
+                    'queue_id': index
                 }
+                
                 db_queue.append(song)
                 queue.append(song)
         if queue[0].get('id') != queue[1].get('id'):
             #Valid new queue, replace
             room.spot_queue = db_queue
-            room.save(update_fields=["spot_queue"])
+            room.last_id=size
+            room.save(update_fields=["spot_queue", "last_id"])
         #if queue[0].get('id') == queue[1].get('id'):
             #Not valid queue
 
-        return Response({"data":room.spot_queue}, status=status.HTTP_200_OK)
+        return Response({"spot_queue":room.spot_queue, "user_queue":room.user_queue}, status=status.HTTP_200_OK)
 
 class SaveSong(APIView):
     def put(self, request, format=None):

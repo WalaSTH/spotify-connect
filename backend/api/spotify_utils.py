@@ -12,7 +12,6 @@ def get_user_tokens(user_id):
     user = get_user_by_id(user_id)
     user_tokens = SpotifyToken.objects.filter(user=user)
     if user_tokens.exists():
-        print(user_tokens[0])
         return user_tokens[0]
     else:
         return None
@@ -76,9 +75,7 @@ def execute_spotify_api_request(user_id, endpoint, post_=False,
         base_url = BASE_URL_QUEUE
     tokens = get_user_tokens(user_id)
     header = {'Content-Type':'application/json', 'Authorization':'Bearer ' + tokens.access_token}
-    print(tokens.access_token)
     if post_:
-        print(tokens.access_token)
         response = post(base_url + endpoint, headers=header)
         return response.content
 
