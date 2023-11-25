@@ -356,11 +356,22 @@ class UserIsHost(APIView):
     
 class MoveSong(APIView):
     def post(self, request, format=None):
+        print("TRYING TO MOVE SONG")
+        print("TRYING TO MOVE SONG")
+        print("TRYING TO MOVE SONG")
         user_id = request.data.get("user_id")
-        position = request.data.get("position")
+        position = int(request.data.get("position"))
+        print("THE POSITION TO WERE YOU WANT TO PUT IT IS")
+        print(position)
         queue_id = request.data.get("queue_id")
-        use_user = request.data.get("use_user")
-
+        print("THE QUEUE ID IS")
+        print(queue_id)
+        use_user_str = request.data.get("use_user")
+        if(use_user_str == "false"):
+            use_user = False
+        else:
+            user_user = True
+        print(use_user)
         # Validate fields
         if not user_id_exists(user_id):
             return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -378,7 +389,11 @@ class MoveSong(APIView):
         # Move song to position
         user_queue = room.user_queue
         spot_queue = room.spot_queue
-        if(use_user and len(user_queue)>0):
+        print("LEN OF SPOT QUEUE")
+        print(len(spot_queue))
+        print(type(use_user))
+        if(not use_user and len(user_queue)>0):
+            print("SONG ON USR QUEUE")
             if position < 0:
                 position = 0
             if position > len(user_queue):
@@ -388,13 +403,13 @@ class MoveSong(APIView):
             while (not found and i<len(user_queue)):
                 if (int(user_queue[i]["queue_id"]) == int(queue_id)):
                     found = True
-                    del user_queue[i]
                 i = i + 1
             if(not found):
                 return Response({'Msg': 'Song not in list'}, status=status.HTTP_404_NOT_FOUND)
             user_queue[position], user_queue[i-1] = user_queue[i-1], user_queue[position]
             room.save(update_fields=["user_queue"])
-        elif(not use_user and len(spot_queue)>0):
+        if(not use_user and len(spot_queue)>0):
+            print("SONG ON SPOT QUEUE")
             if position < 0:
                 position = 0
             if position > len(spot_queue):
@@ -404,10 +419,13 @@ class MoveSong(APIView):
             while (not found and i<len(spot_queue)):
                 if (int(spot_queue[i]["queue_id"]) == int(queue_id)):
                     found = True
-                    del spot_queue[i]
                 i = i + 1
             if(not found):
                 return Response({'Msg': 'Song not in list'}, status=status.HTTP_404_NOT_FOUND)
+            
             spot_queue[position], spot_queue[i-1] = spot_queue[i-1], spot_queue[position]
             room.save(update_fields=["spot_queue"])
         return Response({'Msg': 'Song moved!'}, status=status.HTTP_200_OK)
+    
+
+### WS LATER MOVE TO ITS OWN
