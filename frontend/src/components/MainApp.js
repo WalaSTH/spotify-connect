@@ -8,6 +8,7 @@ import axios from "axios";
 
 export default function MainApp() {
   const [userId, setUserId] = useState(localStorage.getItem("userID"));
+  const [username, setUsername] = useState(localStorage.getItem("username"));
   const [prevSong, setPrevSong] = useState("");
   const [songChanged, setSongChanged] = useState(false);
   const [favorite, setFavorite] = useState(false);
@@ -159,11 +160,6 @@ export default function MainApp() {
           console.log(response.status);
           setSong(response.data);
         }
-        /*         if (response.data.id != prevSong && userId != "WalaCAB") {
-          setPrevSong(response.data.id);
-          console.log("New song");
-          syncButton(response.data.id, response.data.time);
-        } */
       })
       .catch((error) => {
         console.log(error);
@@ -197,7 +193,7 @@ export default function MainApp() {
         setAlreadySkipped(true);
       }
     }
-    if (!popped) {
+    if (!popped && isHost) {
       //Pop first of queue
       setPopped(true);
       popQueue(userId);
@@ -237,9 +233,11 @@ export default function MainApp() {
           song={song}
           favorite={favorite}
           setFavorite={setFavorite}
+          setPopped={setPopped}
           queue={queue}
           userQueue={userQueue}
           isHost={isHost}
+          username={username}
         />
       </div>
     </div>

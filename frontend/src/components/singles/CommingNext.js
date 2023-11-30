@@ -53,6 +53,8 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 export default function CommingNext({ song, userID, queue, userQueue }) {
+  const [hovering, setHovering] = useState(-1);
+
   async function removeSong(queueId) {
     const formData = new FormData();
     formData.append("queue_id", queueId);
@@ -233,7 +235,11 @@ export default function CommingNext({ song, userID, queue, userQueue }) {
               </Grid>
               {queue.map(
                 ({ title, image_url, artist, id, queue_id }, index) => (
-                  <ListItem key={index}>
+                  <ListItem
+                    key={index}
+                    onMouseEnter={() => setHovering(index)}
+                    onMouseLeave={() => setHovering(-1)}
+                  >
                     <Icon>{index + 2 + userQueue.length}</Icon>
                     <ListItemButton
                       disableRipple
@@ -262,7 +268,7 @@ export default function CommingNext({ song, userID, queue, userQueue }) {
                           </React.Fragment>
                         }
                       />
-                      {index != 0 && (
+                      {index != 0 && index == hovering && (
                         <Tooltip
                           title="Move up"
                           TransitionComponent={Fade}
@@ -271,39 +277,45 @@ export default function CommingNext({ song, userID, queue, userQueue }) {
                         >
                           <IconButton
                             onClick={() => {
-                              move(queue_id, index - 1, false);
+                              move(Number(queue_id), Number(index - 1), false);
                             }}
                           >
                             <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
                           </IconButton>
                         </Tooltip>
                       )}
-                      {index != queue.length - 1 && (
+                      {index != queue.length - 1 && index == hovering && (
                         <Tooltip
                           title="Move down"
                           TransitionComponent={Fade}
                           TransitionProps={{ timeout: 600 }}
                           enterNextDelay={500}
                         >
-                          <IconButton>
+                          <IconButton
+                            onClick={() => {
+                              move(Number(queue_id), Number(index + 1), false);
+                            }}
+                          >
                             <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
                           </IconButton>
                         </Tooltip>
                       )}
-                      <Tooltip
-                        title="Remove from queue"
-                        TransitionComponent={Fade}
-                        TransitionProps={{ timeout: 600 }}
-                        enterNextDelay={500}
-                      >
-                        <IconButton
-                          onClick={() => {
-                            removeSong(queue_id);
-                          }}
+                      {index == hovering && (
+                        <Tooltip
+                          title="Remove from queue"
+                          TransitionComponent={Fade}
+                          TransitionProps={{ timeout: 600 }}
+                          enterNextDelay={500}
                         >
-                          <DeleteIcon></DeleteIcon>
-                        </IconButton>
-                      </Tooltip>
+                          <IconButton
+                            onClick={() => {
+                              removeSong(queue_id);
+                            }}
+                          >
+                            <DeleteIcon></DeleteIcon>
+                          </IconButton>
+                        </Tooltip>
+                      )}
                     </ListItemButton>
                   </ListItem>
                 )

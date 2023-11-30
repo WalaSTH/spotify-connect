@@ -43,6 +43,7 @@ export default function MusicPlayer(props) {
   async function skipSong() {
     await axios
       .get("api/start-next" + "?user_id=" + props.userID)
+      .then(props.setPopped(false))
       .catch((error) => console.log(error));
   }
   async function saveSong() {
