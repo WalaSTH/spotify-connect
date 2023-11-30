@@ -3,10 +3,6 @@ import {
   Button,
   Card,
   Grid,
-  ListItem,
-  ListItemButton,
-  ListItemAvatar,
-  ListItemText,
   TextField,
   FormHelperText,
   FormControl,
@@ -37,16 +33,7 @@ export default function Chatbox({ msg }) {
     { user: "Cath", msg: "Oh, ok", avatar: AVATAR_FST },
   ]);
   const [lastUser, setLastUser] = useState("");
-  const listItemStyles = {
-    position: "relative",
-  };
 
-  const secondaryTextStyles = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    // Add any other styles you need for the secondary text
-  };
   const addMsg = () => {
     const newMessage = { user: "Cath", msg: "ASAP" };
     setMsgArray([...msgArray, newMessage]);
@@ -56,35 +43,28 @@ export default function Chatbox({ msg }) {
       <Card
         style={{ maxHeight: 300, overflow: "auto" }}
         sx={{
-          //backgroundColor: "#333232",
+          backgroundColor: "#333232",
           padding: 2,
           borderRadius: 4,
         }}
       >
-        <Grid container direction="column" spacing={0}>
-          {msgArray.map(({ msg, user, avatar }, index) => (
-            <ListItem key={index}>
-              <ListItemButton
-                disableRipple
-                sx={{
-                  cursor: "default",
-                }}
-              >
-                <ListItemAvatar>
-                  <Avatar alt="Album Cover" src={avatar} />
-                </ListItemAvatar>
-                <ListItem style={listItemStyles}>
-                  <ListItemText
-                    primary={msg}
-                    secondaryTypographyProps={{ component: "div" }}
-                  />
-                  <div style={secondaryTextStyles}>{user}</div>
-                </ListItem>
-              </ListItemButton>
-            </ListItem>
-          ))}
-          <Button onClick={addMsg}>Add</Button>
-        </Grid>
+        {msgArray.map(({ msg }, index) => (
+          <DefaultChatMsg
+            avatar={
+              index === 0
+                ? msgArray[index]["avatar"]
+                : msgArray[index - 1]["user"] === msgArray[index]["user"]
+                ? "prev"
+                : msgArray[index]["avatar"]
+            }
+            spaceBottom={0.2}
+            spaceTop={0.2}
+            msg={msgArray[index]["msg"]}
+            color={user == msgArray[index]["user"] ? "#1DB954" : "#222322"}
+            fontColor={user == msgArray[index]["user"] ? "black" : "white"}
+          ></DefaultChatMsg>
+        ))}
+        <Button onClick={addMsg}>Add</Button>
       </Card>
     </div>
   );
