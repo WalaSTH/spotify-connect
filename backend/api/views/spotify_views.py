@@ -162,9 +162,16 @@ class PauseSong(APIView):
         if user.room == "":
             return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
 
+        
+
         room_code = user.room
         room = get_room_by_code(room_code)
         host_id = room.host
+
+        # Permissions
+        if user_id != host_id and not room.guest_pause:
+            return Response({'Msg':'User doesnt have permission'}, status=status.HTTP_403_FORBIDDEN) 
+
         users = User.objects.filter(room=room_code)
         for i in range(len(users)):
             user_nid = users[i].id
@@ -185,6 +192,11 @@ class PlaySong(APIView):
         room_code = user.room
         room = get_room_by_code(room_code)
         host_id = room.host
+
+        # Permissions
+        if user_id != host_id and not room.guest_pause:
+            return Response({'Msg':'User doesnt have permission'}, status=status.HTTP_403_FORBIDDEN) 
+
         users = User.objects.filter(room=room_code)
         for i in range(len(users)):
             user_nid = users[i].id
@@ -194,8 +206,6 @@ class PlaySong(APIView):
     
 class SkipSong(APIView):
     def get(self, request, format=None):
-
-        
         user_id = request.GET.get('user_id')
         user=get_user_by_id(user_id)
         if user == None:
@@ -207,6 +217,10 @@ class SkipSong(APIView):
         room_code = user.room
         room = get_room_by_code(room_code)
         host_id = room.host
+        # Permissions
+        if user_id != host_id and not room.guest_skip:
+            return Response({'Msg':'User doesnt have permission'}, status=status.HTTP_403_FORBIDDEN) 
+
         users = User.objects.filter(room=room_code)
         
         for i in range(len(users)):
@@ -271,7 +285,11 @@ class AddToQueue(APIView):
 
         if user.room == "":
             return Response({'Msg':'User not in room'}, status=status.HTTP_404_NOT_FOUND)
-        
+        host_id = room.host
+        # Permissions
+        if user_id != host_id and not room.guest_add_queue:
+            return Response({'Msg':'User doesnt have permission'}, status=status.HTTP_403_FORBIDDEN) 
+
         queue = room.user_queue
         queue.append(song)
         room.save(update_fields=["user_queue"])
