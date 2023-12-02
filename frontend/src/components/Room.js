@@ -35,6 +35,8 @@ import userInRoomEndpoint from "../static/endpoints";
 import MusicPlayer from "./MusicPlayer";
 import Search from "./singles/MusicSearch";
 import CommingNext from "./singles/CommingNext";
+import DefaultChatMsg from "./singles/DefaultChatMsg";
+
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -50,23 +52,49 @@ import LeakAddIcon from "@mui/icons-material/LeakAdd";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CreateRoom from "../components/CreateRoom";
 import CreateRoomForm from "./CreateRoomForm";
-
+import Chatbox from "./singles/ChatboxTwo";
+const AVATAR_FST =
+  "https://upload.wikimedia.org/wikipedia/en/0/04/Navi_%28The_Legend_of_Zelda%29.png";
+const AVATAR_SND =
+  "https://64.media.tumblr.com/390f64100e5173270c662662e0a264d6/b7390dc2f583fc49-95/s400x600/67ad7eca9154f02c5f28d7ddbdb7b35d9fb9f30e.png";
+const AVATAR_USER =
+  "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/1/1c/Saria.jpg/revision/latest?cb=20070126013259";
 export default function Room({
   userID,
+  username,
   navigate,
   userInRoom,
   song,
   queue,
+  setQueue,
   userQueue,
+  setUserQueue,
   favorite,
   setFavorite,
   isHost,
+  setPopped,
+  getQueue,
 }) {
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
   const [settings, setSettings] = useState(false);
-
+  const [message, setMessage] = useState("");
+  const [messageGot, setMessageGot] = useState("");
+  const [socket, setSocket] = useState({});
+  const [msgArray, setMsgArray] = useState([
+    { user: "Navi", msg: "Hey, listen", avatar: AVATAR_FST },
+    { user: "Navi", msg: "if you hold Z", avatar: AVATAR_FST },
+    { user: "Navi", msg: "you can target your enemy", avatar: AVATAR_FST },
+    { user: "Link", msg: "I already knew that", avatar: AVATAR_SND },
+    { user: "Navi", msg: "Oh, ok", avatar: AVATAR_FST },
+    {
+      user: "Link",
+      msg: "And next time you want to talk to me about the stupidest things please just forget it and don't make me waste my time.",
+      avatar: AVATAR_SND,
+    },
+    { user: "Link", msg: "Thanks", avatar: AVATAR_SND },
+  ]);
   const csrf = {
     withCredentials: true,
     headers: {
@@ -77,13 +105,35 @@ export default function Room({
 
   useEffect(() => {
     getRoomData(userID);
+
     //authenticateSpotify(userID);
   }, []);
 
+  socket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    if (data["code"] == "chat") {
+      setMessageGot(messageGot + "\n" + data["message"]);
+      const newMessage = {
+        user: data["user"],
+        msg: data["message"],
+        avatar: data["avatar"],
+      };
+      setMsgArray([...msgArray, newMessage]);
+    } else if (data["code"] == "queue") {
+      getQueue(userID);
+    }
+  };
+  socket.onclose = function (e) {
+    console.error("Chat socket closed unexpectedly");
+  };
   const setRoomInfo = (room) => {
     setRoomCode(room["room_code"]);
     setRoomName(room["room_name"]);
     getRoomAvatar(room["room_code"]);
+    const chatSocket = new WebSocket(
+      `ws://localhost:8000/ws/${room["room_code"]}/`
+    );
+    setSocket(chatSocket);
   };
 
   async function getRoomAvatar(roomCode) {
@@ -143,100 +193,115 @@ export default function Room({
     setSettings(value);
   };
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        marginTop: "200px",
-      }}
-    >
-      {settings && (
-        <Grid>
-          <CreateRoom
-            userID={userID}
-            navigate={navigate}
-            csrf={csrf}
-            update={true}
-            closefun={() => {
-              changeRoomSettings(false);
-            }}
-          />
-        </Grid>
-      )}
-
-      {!settings && (
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="flex-start"
-          className="center"
-          sx={{
-            marginTop: 10,
-          }}
-        >
-          <Grid item name="Player and search">
-            <Grid item xs={12} align="center" justifyContent="center">
-              <Grid item xs={12} justifyContent="center">
-                {!song.no_song && <Search userID={userID} csrf={csrf}></Search>}
-              </Grid>
-              <Grid item xs={9}>
-                <MusicPlayer
-                  align="center"
-                  song={song}
-                  songPlaying={true}
-                  userID={userID}
-                  syncFunction={syncButton}
-                  favorite={favorite}
-                  setFavorite={setFavorite}
-                  csrf={csrf}
-                  isHost={isHost}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  color="secondary"
-                  component={Link}
-                  onClick={leaveRoom}
-                  sx={{
-                    color: "black",
-
-                    borderColor: "green",
-                  }}
-                >
-                  <ExitToAppIcon></ExitToAppIcon>
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  color="secondary"
-                  component={Link}
-                  onClick={() => {
-                    changeRoomSettings(true);
-                  }}
-                  sx={{
-                    color: "black",
-
-                    borderColor: "green",
-                  }}
-                >
-                  <SettingsIcon></SettingsIcon>
-                </Button>
-              </Grid>
-            </Grid>
+    <div>
+      <Container
+        maxWidth="sm"
+        sx={{
+          marginTop: "200px",
+        }}
+      >
+        {settings && (
+          <Grid>
+            <CreateRoom
+              userID={userID}
+              navigate={navigate}
+              csrf={csrf}
+              update={true}
+              closefun={() => {
+                changeRoomSettings(false);
+              }}
+            />
           </Grid>
-          {!song.no_song && (
-            <Grid item name="Queue" xs={3}>
-              <CommingNext
-                queue={queue}
-                userQueue={userQueue}
-                song={song}
-                userID={userID}
-              ></CommingNext>
+        )}
+
+        {!settings && (
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="flex-start"
+            className="center"
+            sx={{
+              marginTop: 10,
+            }}
+          >
+            <Grid item name="Player and search">
+              <Grid item xs={12} align="center" justifyContent="center">
+                <Grid item xs={12} justifyContent="center">
+                  {!song.no_song && (
+                    <Search userID={userID} csrf={csrf}></Search>
+                  )}
+                </Grid>
+                <Grid item xs={9}>
+                  <Typography>{roomCode}</Typography>
+                  <MusicPlayer
+                    align="center"
+                    song={song}
+                    songPlaying={true}
+                    userID={userID}
+                    syncFunction={syncButton}
+                    favorite={favorite}
+                    setFavorite={setFavorite}
+                    csrf={csrf}
+                    isHost={isHost}
+                    setPopped={setPopped}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    color="secondary"
+                    component={Link}
+                    onClick={leaveRoom}
+                    sx={{
+                      color: "black",
+
+                      borderColor: "green",
+                    }}
+                  >
+                    <ExitToAppIcon></ExitToAppIcon>
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    color="secondary"
+                    component={Link}
+                    onClick={() => {
+                      changeRoomSettings(true);
+                    }}
+                    sx={{
+                      color: "black",
+
+                      borderColor: "green",
+                    }}
+                  >
+                    <SettingsIcon></SettingsIcon>
+                  </Button>
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <Chatbox
+                  msgArray={msgArray}
+                  setMsgArray={setMsgArray}
+                  socket={socket}
+                  sessionUser={username}
+                ></Chatbox>
+              </Grid>
             </Grid>
-          )}
-        </Grid>
-      )}
-    </Container>
+            {!song.no_song && (
+              <Grid item name="Queue" xs={3}>
+                <CommingNext
+                  queue={queue}
+                  userQueue={userQueue}
+                  song={song}
+                  userID={userID}
+                  socket={socket}
+                ></CommingNext>
+              </Grid>
+            )}
+          </Grid>
+        )}
+      </Container>
+    </div>
   );
 }
 

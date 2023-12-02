@@ -11,13 +11,18 @@ import axios from "axios";
 export default function RoutesWrapper({
   navigate,
   userId,
+  username,
   song,
   csrftoken,
   queue,
+  setQueue,
   favorite,
   setFavorite,
   isHost,
   userQueue,
+  setUserQueue,
+  setPopped,
+  getQueue,
 }) {
   return (
     <Routes>
@@ -54,14 +59,19 @@ export default function RoutesWrapper({
           userId ? (
             <Room
               userID={userId}
+              username={username}
               navigate={navigate}
               song={song}
               csrftoken={csrftoken}
               queue={queue}
+              setQueue={setQueue}
               favorite={favorite}
               setFavorite={setFavorite}
               isHost={isHost}
               userQueue={userQueue}
+              setUserQueue={setUserQueue}
+              setPopped={setPopped}
+              getQueue={getQueue}
             />
           ) : (
             <Navigate to="/login" />

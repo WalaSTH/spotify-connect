@@ -16,34 +16,33 @@ import {
   Avatar,
 } from "@mui/material";
 import DefaultChatMsg from "./DefaultChatMsg";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const AVATAR_FST =
-  "https://upload.wikimedia.org/wikipedia/en/0/04/Navi_%28The_Legend_of_Zelda%29.png";
-const AVATAR_SND =
-  "https://64.media.tumblr.com/390f64100e5173270c662662e0a264d6/b7390dc2f583fc49-95/s400x600/67ad7eca9154f02c5f28d7ddbdb7b35d9fb9f30e.png";
+const AVATAR_USER =
+  "https://i.pinimg.com/236x/14/f3/d6/14f3d646694123884a9e28abb724584e.jpg";
 
-export default function Chatbox({ msg }) {
-  const user = "Wala";
-  const [msgArray, setMsgArray] = useState([
-    { user: "Cath", msg: "Hey, listen", avatar: AVATAR_FST },
-    { user: "Cath", msg: "if you hold Z", avatar: AVATAR_FST },
-    { user: "Cath", msg: "you can target your enemy", avatar: AVATAR_FST },
-    { user: "Wala", msg: "I already knew that", avatar: AVATAR_SND },
-    { user: "Cath", msg: "Oh, ok", avatar: AVATAR_FST },
-  ]);
-  const [lastUser, setLastUser] = useState("");
-
-  const addMsg = () => {
-    const newMessage = { user: "Cath", msg: "ASAP" };
-    setMsgArray([...msgArray, newMessage]);
-  };
+export default function Chatbox({
+  msg,
+  msgArray,
+  setMsgArray,
+  socket,
+  sessionUser,
+}) {
+  const [newMessage, setNewMessage] = useState("");
+  const cardRef = useRef(null);
+  useEffect(() => {
+    // Scroll down to the bottom of the card
+    if (cardRef.current) {
+      cardRef.current.scrollTop = cardRef.current.scrollHeight;
+    }
+  }, [msgArray]);
   return (
     <div>
       <Card
-        style={{ maxHeight: 300, overflow: "auto" }}
+        ref={cardRef}
+        style={{ maxHeight: 350, maxWidth: 300, overflow: "auto" }}
         sx={{
-          backgroundColor: "#333232",
+          backgroundColor: "#fbfbfa",
           padding: 2,
           borderRadius: 4,
         }}
@@ -60,11 +59,42 @@ export default function Chatbox({ msg }) {
             spaceBottom={0.2}
             spaceTop={0.2}
             msg={msgArray[index]["msg"]}
-            color={user == msgArray[index]["user"] ? "#1DB954" : "#222322"}
-            fontColor={user == msgArray[index]["user"] ? "black" : "white"}
+            color={
+              sessionUser == msgArray[index]["user"] ? "#2D9596" : "#f4f4f5"
+            }
+            fontColor={
+              sessionUser == msgArray[index]["user"] ? "#f0f8ea" : "#4e524e"
+            }
           ></DefaultChatMsg>
         ))}
-        <Button onClick={addMsg}>Add</Button>
+        <TextField
+          sx={{ margin: "10px" }}
+          InputProps={{
+            sx: {
+              borderRadius: 10,
+            },
+          }}
+          label="Type a message "
+          variant="outlined"
+          value={newMessage}
+          onChange={(e) => {
+            setNewMessage(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.keyCode == 13) {
+              socket.send(
+                JSON.stringify({
+                  type: "chat_message",
+                  user: sessionUser,
+                  message: e.target.value,
+                  avatar: AVATAR_USER,
+                  code: "chat",
+                })
+              );
+              setNewMessage("");
+            }
+          }}
+        ></TextField>
       </Card>
     </div>
   );

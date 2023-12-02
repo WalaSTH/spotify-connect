@@ -52,7 +52,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-export default function CommingNext({ song, userID, queue, userQueue }) {
+export default function CommingNext({
+  song,
+  userID,
+  queue,
+  userQueue,
+  socket,
+}) {
   const [hovering, setHovering] = useState(-1);
 
   async function removeSong(queueId) {
@@ -62,7 +68,15 @@ export default function CommingNext({ song, userID, queue, userQueue }) {
     await axios
       .post("http://127.0.0.1:8000/api/remove-song", formData)
       .then((response) => {
-        console.log(response);
+        socket.send(
+          JSON.stringify({
+            type: "chat_message",
+            user: "sessionUser",
+            message: "queue_message",
+            avatar: "AVATAR_USER",
+            code: "queue",
+          })
+        );
       })
       .catch((error) => console.log(error));
   }
@@ -77,6 +91,15 @@ export default function CommingNext({ song, userID, queue, userQueue }) {
       .post("http://127.0.0.1:8000/api/move-song", formData)
       .then((response) => {
         console.log(response);
+        socket.send(
+          JSON.stringify({
+            type: "chat_message",
+            user: "sessionUser",
+            message: "queue_message",
+            avatar: "AVATAR_USER",
+            code: "queue",
+          })
+        );
       })
       .catch((error) => console.log(error));
   }

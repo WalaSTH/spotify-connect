@@ -235,9 +235,12 @@ export default function MainApp() {
           setFavorite={setFavorite}
           setPopped={setPopped}
           queue={queue}
+          setQueue={setQueue}
           userQueue={userQueue}
+          setUserQueue={setUserQueue}
           isHost={isHost}
           username={username}
+          getQueue={getQueue}
         />
       </div>
     </div>

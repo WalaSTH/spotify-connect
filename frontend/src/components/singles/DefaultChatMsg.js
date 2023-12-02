@@ -25,13 +25,8 @@ export default function DefaultChatMsg({
 }) {
   return (
     <div>
-      <Grid
-        container
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="center"
-      >
-        <Grid item xs={0.7}>
+      <Grid container direction="row" justifyContent="flex-start">
+        <Grid item xs={2}>
           {avatar != "prev" && (
             <Avatar
               src={avatar}
@@ -45,6 +40,7 @@ export default function DefaultChatMsg({
         <Grid
           item
           sx={{
+            maxWidth: "200px",
             marginBottom: spaceBottom,
             marginTop: spaceTop,
             backgroundColor: color,
