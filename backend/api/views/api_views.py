@@ -356,16 +356,9 @@ class UserIsHost(APIView):
     
 class MoveSong(APIView):
     def post(self, request, format=None):
-        print("TRYING TO MOVE SONG")
-        print("TRYING TO MOVE SONG")
-        print("TRYING TO MOVE SONG")
         user_id = request.data.get("user_id")
         position = int(request.data.get("position"))
-        print("THE POSITION TO WERE YOU WANT TO PUT IT IS")
-        print(position)
         queue_id = request.data.get("queue_id")
-        print("THE QUEUE ID IS")
-        print(queue_id)
         use_user_str = request.data.get("use_user")
         if(use_user_str == "false"):
             use_user = False
@@ -386,6 +379,11 @@ class MoveSong(APIView):
             return Response({'Msg': 'Invalid user room'}, status=status.HTTP_404_NOT_FOUND)
         room = get_room_by_code(room_code)
 
+        host_id = room.host
+        # Permissions
+        if user_id != host_id and not room.guest_manage_queue:
+            return Response({'Msg':'User doesnt have permission'}, status=status.HTTP_403_FORBIDDEN) 
+        
         # Move song to position
         user_queue = room.user_queue
         spot_queue = room.spot_queue
