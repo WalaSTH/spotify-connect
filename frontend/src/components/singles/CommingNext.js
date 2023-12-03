@@ -58,6 +58,8 @@ export default function CommingNext({
   queue,
   userQueue,
   socket,
+  isHost,
+  guestManage,
 }) {
   const [hovering, setHovering] = useState(-1);
 
@@ -209,7 +211,7 @@ export default function CommingNext({
                           </React.Fragment>
                         }
                       />
-                      {index != 0 && (
+                      {index != 0 && (isHost || guestManage) && (
                         <Tooltip
                           title="Move up"
                           TransitionComponent={Fade}
@@ -221,7 +223,7 @@ export default function CommingNext({
                           </IconButton>
                         </Tooltip>
                       )}
-                      {index != userQueue.length - 1 && (
+                      {index != userQueue.length - 1 && (isHost || guestManage) && (
                         <Tooltip
                           title="Move down"
                           TransitionComponent={Fade}
@@ -233,7 +235,7 @@ export default function CommingNext({
                           </IconButton>
                         </Tooltip>
                       )}
-                      <Tooltip
+                      {((isHost || guestManage) &&(<Tooltip
                         title="Remove from queue"
                         TransitionComponent={Fade}
                         TransitionProps={{ timeout: 600 }}
@@ -246,7 +248,7 @@ export default function CommingNext({
                         >
                           <DeleteIcon></DeleteIcon>
                         </IconButton>
-                      </Tooltip>
+                      </Tooltip>))}
                     </ListItemButton>
                   </ListItem>
                 )
@@ -291,7 +293,7 @@ export default function CommingNext({
                           </React.Fragment>
                         }
                       />
-                      {index != 0 && index == hovering && (
+                      {index != 0 && index == hovering && (isHost || guestManage) && (
                         <Tooltip
                           title="Move up"
                           TransitionComponent={Fade}
@@ -307,7 +309,7 @@ export default function CommingNext({
                           </IconButton>
                         </Tooltip>
                       )}
-                      {index != queue.length - 1 && index == hovering && (
+                      {index != queue.length - 1 && index == hovering && (isHost || guestManage) && (
                         <Tooltip
                           title="Move down"
                           TransitionComponent={Fade}
@@ -323,7 +325,7 @@ export default function CommingNext({
                           </IconButton>
                         </Tooltip>
                       )}
-                      {index == hovering && (
+                      {index == hovering && (isHost || guestManage) &&(
                         <Tooltip
                           title="Remove from queue"
                           TransitionComponent={Fade}

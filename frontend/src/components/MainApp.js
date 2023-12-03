@@ -59,6 +59,7 @@ export default function MainApp() {
       .get("api/is-host" + "?user_id=" + userID)
       .then((response) => {
         setIsHost(response.data.data);
+        localStorage.setItem("isHost", isHost);
       })
       .catch((error) => {
         console.log(error);

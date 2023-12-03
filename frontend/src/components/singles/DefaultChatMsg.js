@@ -1,4 +1,3 @@
-import ChatMsg from "@mui-treasury/components/chatMsg/ChatMsg";
 import {
   Button,
   Grid,

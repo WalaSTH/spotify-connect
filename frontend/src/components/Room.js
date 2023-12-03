@@ -77,6 +77,7 @@ export default function Room({
 }) {
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
+  const [room, setRoom] = useState({});
   const [userAvatar, setUserAvatar] = useState("");
   const [settings, setSettings] = useState(false);
   const [message, setMessage] = useState("");
@@ -130,6 +131,7 @@ export default function Room({
     setRoomCode(room["room_code"]);
     setRoomName(room["room_name"]);
     getRoomAvatar(room["room_code"]);
+    setRoom(room);
     const chatSocket = new WebSocket(
       `ws://localhost:8000/ws/${room["room_code"]}/`
     );
@@ -228,7 +230,7 @@ export default function Room({
             <Grid item name="Player and search">
               <Grid item xs={12} align="center" justifyContent="center">
                 <Grid item xs={12} justifyContent="center">
-                  {!song.no_song && (
+                  {!song.no_song && (isHost || room["guest_add_queue"]) &&(
                     <Search userID={userID} csrf={csrf}></Search>
                   )}
                 </Grid>
@@ -245,6 +247,7 @@ export default function Room({
                     csrf={csrf}
                     isHost={isHost}
                     setPopped={setPopped}
+                    room={room}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -278,14 +281,14 @@ export default function Room({
                   </Button>
                 </Grid>
               </Grid>
-              <Grid item xs={12}>
+              {room["guest_chat"]&&(<Grid item xs={12}>
                 <Chatbox
                   msgArray={msgArray}
                   setMsgArray={setMsgArray}
                   socket={socket}
                   sessionUser={username}
                 ></Chatbox>
-              </Grid>
+              </Grid>)}
             </Grid>
             {!song.no_song && (
               <Grid item name="Queue" xs={3}>
@@ -295,6 +298,8 @@ export default function Room({
                   song={song}
                   userID={userID}
                   socket={socket}
+                  isHost={isHost}
+                  guestManage={room["guest_manage_queue"]}
                 ></CommingNext>
               </Grid>
             )}

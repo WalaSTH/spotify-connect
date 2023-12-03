@@ -77,7 +77,8 @@ export default function MusicPlayer(props) {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
     };
-    axios.get("api/play" + "?user_id=" + props.userID);
+    axios.get("api/play" + "?user_id=" + props.userID)
+    .catch((error) => console.log(error));
   };
 
   const renderButtons = () => {
@@ -90,15 +91,15 @@ export default function MusicPlayer(props) {
             TransitionProps={{ timeout: 600 }}
             enterNextDelay={500}
           >
-            <IconButton
+            {(props.room["guest_pause"] || props.isHost)&&(<IconButton
               onClick={() => {
                 props.song.is_playing ? pauseSong() : playSong();
               }}
             >
               {props.song.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
-            </IconButton>
+            </IconButton>)}
           </Tooltip>
-          <Tooltip
+          {(props.room["guest_skip"] || props.isHost)&&(<Tooltip
             title={"Skip song"}
             TransitionComponent={Fade}
             TransitionProps={{ timeout: 600 }}
@@ -112,7 +113,7 @@ export default function MusicPlayer(props) {
               <SkipNextIcon />
               {props.song.votes} {props.song.votes_required}
             </IconButton>
-          </Tooltip>
+          </Tooltip>)}
           {!props.favorite && (
             <Tooltip
               title="Save to Spotify library"
