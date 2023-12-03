@@ -167,6 +167,12 @@ class RemoveSong(APIView):
         room = get_room_by_code(room_code)
         if room is None:
             return Response({'Msg': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Permissions
+        host_id = room.host
+        if user_id != host_id and not room.guest_skip:
+            return Response({'Msg':'User doesnt have permission'}, status=status.HTTP_403_FORBIDDEN)
+        
         db_queue = room.spot_queue
         user_queue = room.user_queue
         found = False

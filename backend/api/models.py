@@ -162,3 +162,7 @@ def user_in_room(room_code, user_id):
     if user.room:
         res = user.room == room_code
     return res
+
+def room_can_chat(room_code):
+    room = get_room_by_code(room_code)
+    return room.guest_chat
