@@ -81,6 +81,8 @@ export default function Search({ userID, csrf, socket }) {
             code: "queue",
           })
         );
+        setActiveSearch(false);
+        document.getElementById("searchbar").value = "";
       })
       .catch((error) => {
         console.log(error);
