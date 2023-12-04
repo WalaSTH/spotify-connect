@@ -25,7 +25,6 @@ export default function CreateRoom({ userID, navigate, update, closefun }) {
     guest_add_queue: true,
     guest_manage_queue: false,
     guest_skip: false,
-    guest_chat: true,
     show_lobby: true,
     private_room: false,
     password: "",

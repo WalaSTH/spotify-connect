@@ -52,7 +52,6 @@ export default function CreateRoomForm({
     guestPause: room["guest_pause"],
     guestAddQueue: room["guest_add_queue"],
     guestManageQueue: room["guest_manage_queue"],
-    guestChat: room["guest_chat"],
     guestSkip: room["guest_skip"],
     privateRoom: room["private_room"],
     showLobby: room["show_lobby"],
@@ -97,7 +96,6 @@ export default function CreateRoomForm({
     formData.append("guest_pause", values.guestPause);
     formData.append("guest_add_queue", values.guestAddQueue);
     formData.append("guest_manage_queue", values.guestManageQueue);
-    formData.append("guest_chat", values.guestChat);
     formData.append("guest_skip", values.guestSkip);
     formData.append("show_lobby", values.showLobby);
     formData.append("private_room", values.privateRoom);
@@ -209,7 +207,7 @@ export default function CreateRoomForm({
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="h6" gutterBottom>
-                  Default Values for Guests
+                  What Can Guests Do?
                 </Typography>
               </Grid>
               <Grid container justifyContent="flex-end">
@@ -227,7 +225,7 @@ export default function CreateRoomForm({
                     value={values.guestPause}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    label="Pause"
+                    label="Play/Pause"
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -261,7 +259,7 @@ export default function CreateRoomForm({
                     value={values.guestManageQueue}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    label="Manage Queue"
+                    label="Move/Remove Tracks"
                   />
                 </Grid>
 
@@ -280,24 +278,6 @@ export default function CreateRoomForm({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     label="Skip"
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        color="secondary"
-                        name="guestChat"
-                        value={values.guestChat}
-                        checked={values.guestChat}
-                      />
-                    }
-                    name="guestChat"
-                    value={values.guestChat}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    label="Chat"
                   />
                 </Grid>
               </Grid>
