@@ -72,6 +72,7 @@ export default function Chatbox({
             sx: {
               borderRadius: 10,
             },
+            spellCheck: "false",
           }}
           label="Type a message "
           variant="outlined"
@@ -79,6 +80,7 @@ export default function Chatbox({
           onChange={(e) => {
             setNewMessage(e.target.value);
           }}
+          
           onKeyDown={(e) => {
             if (e.keyCode == 13) {
               socket.send(
