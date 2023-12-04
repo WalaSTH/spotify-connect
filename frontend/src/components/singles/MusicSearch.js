@@ -45,7 +45,7 @@ import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function Search({ userID, csrf }) {
+export default function Search({ userID, csrf, socket }) {
   const [searchList, setSearchList] = useState([]);
   const [activeSearch, setActiveSearch] = useState(false);
 
@@ -72,6 +72,15 @@ export default function Search({ userID, csrf }) {
       .post("api/add-queue", formData, csrf)
       .then((response) => {
         console.log(response);
+        socket.send(
+          JSON.stringify({
+            type: "chat_message",
+            user: "sessionUser",
+            message: "queue_message",
+            avatar: "AVATAR_USER",
+            code: "queue",
+          })
+        );
       })
       .catch((error) => {
         console.log(error);

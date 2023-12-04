@@ -242,7 +242,7 @@ export default function Room({
               <Grid item xs={12} align="center" justifyContent="center">
                 <Grid item xs={12} justifyContent="center">
                   {!song.no_song && (isHost || room["guest_add_queue"]) &&(
-                    <Search userID={userID} csrf={csrf}></Search>
+                    <Search userID={userID} csrf={csrf} socket={socket}></Search>
                   )}
                 </Grid>
                 <Grid item xs={9}>

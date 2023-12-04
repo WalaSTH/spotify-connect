@@ -62,7 +62,7 @@ export default function CommingNext({
   guestManage,
 }) {
   const [hovering, setHovering] = useState(-1);
-
+  const [userHover, setUserHover] = useState(-1);
   async function removeSong(queueId) {
     const formData = new FormData();
     formData.append("queue_id", queueId);
@@ -184,8 +184,8 @@ export default function CommingNext({
                 ({ title, image_url, artist, id, queue_id }, index) => (
                   <ListItem 
                   key={index} 
-                  onMouseEnter={() => setHovering(index)}
-                  onMouseLeave={() => setHovering(-1)}>
+                  onMouseEnter={() => setUserHover(index)}
+                  onMouseLeave={() => setUserHover(-1)}>
                     <Icon>{index + 2}</Icon>
                     <ListItemButton
                       disableRipple
@@ -214,7 +214,7 @@ export default function CommingNext({
                           </React.Fragment>
                         }
                       />
-                      {index != 0 && (isHost || guestManage) && (
+                      {index != 0 && index == userHover && (isHost || guestManage) && (
                         <Tooltip
                           title="Move up"
                           TransitionComponent={Fade}
@@ -228,7 +228,7 @@ export default function CommingNext({
                           </IconButton>
                         </Tooltip>
                       )}
-                      {index != userQueue.length - 1 && index == hovering && (isHost || guestManage) && (
+                      {index != userQueue.length - 1 && index == userHover && (isHost || guestManage) && (
                         <Tooltip
                           title="Move down"
                           TransitionComponent={Fade}
@@ -244,7 +244,7 @@ export default function CommingNext({
                           </IconButton>
                         </Tooltip>
                       )}
-                      {((isHost || guestManage) &&(<Tooltip
+                      {(index == userHover && (isHost || guestManage) &&(<Tooltip
                         title="Remove from queue"
                         TransitionComponent={Fade}
                         TransitionProps={{ timeout: 600 }}
