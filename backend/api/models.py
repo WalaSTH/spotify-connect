@@ -52,7 +52,6 @@ class Room(models.Model):
     guest_pause = models.BooleanField(null=False, default=False)
     guest_add_queue = models.BooleanField(null=False, default=False)
     guest_manage_queue = models.BooleanField(null=False, default=False)
-    guest_chat = models.BooleanField(null=False, default=False)
     guest_skip = models.BooleanField(null=False, default=False)
     show_lobby = models.BooleanField(null=False, default=False)
     private_room = models.BooleanField(null=False, default=False)
@@ -163,6 +162,9 @@ def user_in_room(room_code, user_id):
         res = user.room == room_code
     return res
 
-def room_can_chat(room_code):
-    room = get_room_by_code(room_code)
-    return room.guest_chat
+def user_in_any_room(user_id):
+    user = get_user_by_id(user_id)
+    res = False
+    if user.room:
+        res = True
+    return res

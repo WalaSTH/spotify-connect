@@ -4,7 +4,7 @@ from .models import Room, User, SpotifyToken
 
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('code', 'host', 'password', 'room_name', 'guest_pause',
-                  'guest_manage_queue', 'guest_chat', 'guest_skip',
+                  'guest_manage_queue', 'guest_skip',
                   'private_room','show_lobby','guest_add_queue')
 
 class UserAdmin(admin.ModelAdmin):

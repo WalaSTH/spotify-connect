@@ -115,7 +115,6 @@ class UserInRoom(APIView):
                 'guest_pause':room.guest_pause,
                 'guest_add_queue':room.guest_add_queue,
                 'guest_manage_queue':room.guest_manage_queue,
-                'guest_chat':room.guest_chat,
                 'guest_skip':room.guest_skip,
                 'show_lobby':room.show_lobby,
                 'private_room':room.private_room,
@@ -206,7 +205,6 @@ class CreateRoomView(generics.ListAPIView):
             room_name = serializer.data.get('room_name')
             guest_pause = serializer.data.get('guest_pause')
             guest_manage_queue = serializer.data.get('guest_manage_queue')
-            guest_chat = serializer.data.get('guest_chat')
             guest_skip = serializer.data.get('guest_skip')
             private_room = serializer.data.get('private_room')
             show_lobby = serializer.data.get('show_lobby')
@@ -239,7 +237,6 @@ class CreateRoomView(generics.ListAPIView):
                 room = queryset[0]
                 room.room_name=room_name
                 room.guest_pause=guest_pause
-                room.guest_chat=guest_chat
                 room.guest_manage_queue=guest_manage_queue
                 room.guest_skip=guest_skip
                 room.private_room=private_room
@@ -249,13 +246,15 @@ class CreateRoomView(generics.ListAPIView):
                 room.spot_queue = []
                 room.user_queue = []
                 room.save(update_fields=['room_name', 'guest_pause','guest_manage_queue',
-                                        'guest_chat', 'guest_skip', 'private_room',
+                                         'guest_skip', 'private_room',
                                         'guest_add_queue', 'show_lobby', 'password', 'spot_queue', 'user_queue'])
                 return Response({"Msg":"Room succesfully updated"}, status=status.HTTP_200_OK)
             else:
-                # Create room
+                # Create room if not in a room as guest
+                if user_in_any_room(host):
+                    return Response({'Msg': 'User already in a room'}, status=status.HTTP_400_BAD_REQUEST)
                 room = Room(host=host, room_name=room_name, guest_pause=guest_pause,
-                            guest_chat=guest_chat, guest_skip=guest_skip,
+                            guest_skip=guest_skip,
                             guest_manage_queue=guest_manage_queue, private_room=private_room,
                             password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby,
                             user_queue=[], spot_queue=[], last_id = 1)
@@ -369,7 +368,8 @@ class MoveSong(APIView):
         if(use_user_str == "false"):
             use_user = False
         else:
-            user_user = True
+            use_user = True
+        print("WHAT IS THE VALUE OF USE USEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER")
         print(use_user)
         # Validate fields
         if not user_id_exists(user_id):
@@ -396,7 +396,7 @@ class MoveSong(APIView):
         print("LEN OF SPOT QUEUE")
         print(len(spot_queue))
         print(type(use_user))
-        if(not use_user and len(user_queue)>0):
+        if(use_user and len(user_queue)>0):
             print("SONG ON USR QUEUE")
             if position < 0:
                 position = 0

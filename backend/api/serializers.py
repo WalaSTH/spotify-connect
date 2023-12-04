@@ -31,7 +31,7 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ('code', 'host', 'password', 'room_name', 'guest_pause',
-                  'guest_manage_queue', 'guest_chat', 'guest_skip',
+                  'guest_manage_queue', 'guest_skip',
                   'private_room','show_lobby','guest_add_queue')
 
 
@@ -39,7 +39,7 @@ class RoomCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ('host', 'password', 'room_name', 'guest_pause',
-                  'guest_manage_queue', 'guest_chat', 'guest_skip',
+                  'guest_manage_queue', 'guest_skip',
                   'private_room','show_lobby','guest_add_queue')
 
 class RoomEnterSerializer(serializers.ModelSerializer):
