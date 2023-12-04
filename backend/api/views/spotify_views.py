@@ -125,7 +125,8 @@ class CurrentSong(APIView):
         }
 
         self.update_room_song(room, song_id)
-
+        print("THE SONG IS:")
+        print(song)
         return Response(song, status=status.HTTP_200_OK)
 
     def update_room_song(self, room, song_id):
