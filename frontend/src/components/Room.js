@@ -122,6 +122,8 @@ export default function Room({
       setMsgArray([...msgArray, newMessage]);
     } else if (data["code"] == "queue") {
       getQueue(userID);
+    } else if(data["code"]=="settings"){
+      getRoomData(userID);
     }
   };
   socket.onclose = function (e) {
@@ -202,7 +204,7 @@ export default function Room({
           marginTop: "200px",
         }}
       >
-        {settings && (
+        {settings &&  (
           <Grid>
             <CreateRoom
               userID={userID}
@@ -211,6 +213,15 @@ export default function Room({
               update={true}
               closefun={() => {
                 changeRoomSettings(false);
+                socket.send(
+                  JSON.stringify({
+                    type: "chat_message",
+                    user: "sessionUser",
+                    message: "queue_message",
+                    avatar: "AVATAR_USER",
+                    code: "settings",
+                  })
+                );
               }}
             />
           </Grid>
@@ -264,7 +275,7 @@ export default function Room({
                     <ExitToAppIcon></ExitToAppIcon>
                   </Button>
                 </Grid>
-                <Grid item xs={12}>
+                {isHost &&(<Grid item xs={12}>
                   <Button
                     color="secondary"
                     component={Link}
@@ -279,16 +290,16 @@ export default function Room({
                   >
                     <SettingsIcon></SettingsIcon>
                   </Button>
-                </Grid>
+                </Grid>)}
               </Grid>
-              {room["guest_chat"]&&(<Grid item xs={12}>
+              <Grid item xs={12}>
                 <Chatbox
                   msgArray={msgArray}
                   setMsgArray={setMsgArray}
                   socket={socket}
                   sessionUser={username}
                 ></Chatbox>
-              </Grid>)}
+              </Grid>
             </Grid>
             {!song.no_song && (
               <Grid item name="Queue" xs={3}>

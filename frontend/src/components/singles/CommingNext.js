@@ -182,7 +182,10 @@ export default function CommingNext({
               )}
               {userQueue.map(
                 ({ title, image_url, artist, id, queue_id }, index) => (
-                  <ListItem key={index}>
+                  <ListItem 
+                  key={index} 
+                  onMouseEnter={() => setHovering(index)}
+                  onMouseLeave={() => setHovering(-1)}>
                     <Icon>{index + 2}</Icon>
                     <ListItemButton
                       disableRipple
@@ -218,19 +221,25 @@ export default function CommingNext({
                           TransitionProps={{ timeout: 600 }}
                           enterNextDelay={500}
                         >
-                          <IconButton onClick={() => {}}>
+                          <IconButton onClick={() => {
+                              move(Number(queue_id), Number(index - 1), true);
+                            }}>
                             <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
                           </IconButton>
                         </Tooltip>
                       )}
-                      {index != userQueue.length - 1 && (isHost || guestManage) && (
+                      {index != userQueue.length - 1 && index == hovering && (isHost || guestManage) && (
                         <Tooltip
                           title="Move down"
                           TransitionComponent={Fade}
                           TransitionProps={{ timeout: 600 }}
                           enterNextDelay={500}
                         >
-                          <IconButton>
+                          <IconButton
+                            onClick={() => {
+                              move(Number(queue_id), Number(index + 1), true);
+                            }}
+                          >
                             <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
                           </IconButton>
                         </Tooltip>
