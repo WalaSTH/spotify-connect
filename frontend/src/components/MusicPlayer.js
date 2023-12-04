@@ -15,6 +15,7 @@ import {
   Tooltip,
   Fade,
 } from "@mui/material";
+import Marquee from "react-fast-marquee";
 import { useState, useEffect } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
@@ -194,9 +195,16 @@ export default function MusicPlayer(props) {
           <img src={props.song.image_url} height="100%" width="100%" />
         </Grid>
         <Grid item align="center" xs={8}>
-          <Typography component="h5" variant="h5">
-            {props.song.title}
-          </Typography>
+          {(props.song.title.length > 30) && (<Marquee style={{ maxWidth: 240, minWidth:240 }} >
+            <Typography component="h5" variant="h5">
+              {props.song.title}
+            </Typography>
+          </Marquee>)}
+          {(props.song.title.length <= 30) && (
+            <Typography component="h5" variant="h5" style={{maxWidth:240, minWidth:240}}>
+              {props.song.title}
+            </Typography>
+          )}
           <Typography color="textSecondary" variant="subtitle1">
             {props.song.artist}
           </Typography>
