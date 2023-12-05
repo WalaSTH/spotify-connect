@@ -46,7 +46,8 @@ import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import equaliser from "./../equaliser.gif";
-
+import * as colors from './../../static/colors';
+import Search from "./MusicSearch";
 //Queue manage
 import DeleteIcon from "@mui/icons-material/Delete";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -60,6 +61,8 @@ export default function CommingNext({
   socket,
   isHost,
   guestManage,
+  room,
+  csrf,
 }) {
   const [hovering, setHovering] = useState(-1);
   const [userHover, setUserHover] = useState(-1);
@@ -107,13 +110,23 @@ export default function CommingNext({
   }
   return (
     <Box>
+      <Card>
+                  <ListItem>
+              <Typography variant="h6">Music Queue</Typography>
+
+            </ListItem>
+            <Grid item xs={12} justifyContent="center">
+                  {!song.no_song && (isHost || room["guest_add_queue"]) &&(
+                    <Search userID={userID} csrf={csrf} socket={socket}></Search>
+                  )}
+            </Grid>
       <Card style={{ maxHeight: 450, overflow: "auto" }}>
         <Grid container direction="column" spacing={0}>
           <Grid item>
-            <ListItem>
-              <Typography variant="h6">Music Queue</Typography>
-            </ListItem>
+
+
           </Grid>
+
           <Grid item>
             <ListItem>
               {!song.no_song && (
@@ -130,7 +143,7 @@ export default function CommingNext({
             <Grid item>
               <ListItem
                 sx={{
-                  backgroundColor: "#1DB954",
+                  backgroundColor: colors.nowPlayingColor,
                 }}
               >
                 <Icon>1</Icon>
@@ -357,6 +370,7 @@ export default function CommingNext({
             </Grid>
           )}
         </Grid>
+        </Card>
       </Card>
     </Box>
   );

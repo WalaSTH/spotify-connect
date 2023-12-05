@@ -25,6 +25,7 @@ import axios from "axios";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import * as colors from "./../static/colors";
 
 export default function MusicPlayer(props) {
   const [reVote, setRevote] = useState(false);
@@ -178,7 +179,7 @@ export default function MusicPlayer(props) {
 
   const renderProgress = () => {
     return (
-      <Box sx={{ width: "100%", color: "#1DB954" }}>
+      <Box sx={{ width: "100%", color: colors.progBarColor }}>
         <LinearProgress
           variant="determinate"
           value={songProgress}

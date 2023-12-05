@@ -13,6 +13,7 @@ import {
   createTheme,
   Grid,
 } from "@mui/material";
+import * as colors from './../../static/colors';
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import Home from "@mui/icons-material/Home";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
@@ -62,7 +63,7 @@ export default function DrawerWrapper({
         <Box
           sx={{
             textAlign: "center",
-            backgroundColor: "#121212",
+            backgroundColor: colors.navbarSideColor,
             height: "100%",
           }}
         >

@@ -13,8 +13,11 @@ import {
   Box,
   Container,
   Avatar,
+  InputLabel,
 } from "@mui/material";
 import DefaultChatMsg from "./DefaultChatMsg";
+import * as colors from "./../../static/colors";
+
 import React, { useState, useEffect, useRef } from "react";
 
 const AVATAR_USER =
@@ -39,7 +42,7 @@ export default function Chatbox({
     <div>
       <Card
         ref={cardRef}
-        style={{ maxHeight: 350, maxWidth: 300, overflow: "auto" }}
+        style={{ maxHeight: 350, maxWidth: 800, overflow: "auto" }}
         sx={{
           backgroundColor: "#fbfbfa",
           padding: 2,
@@ -59,22 +62,24 @@ export default function Chatbox({
             spaceTop={0.2}
             msg={msgArray[index]["msg"]}
             color={
-              sessionUser == msgArray[index]["user"] ? "#2D9596" : "#f4f4f5"
+              sessionUser == msgArray[index]["user"] ? colors.chatBubbleuser : colors.chatBubbleOthers
             }
             fontColor={
-              sessionUser == msgArray[index]["user"] ? "#f0f8ea" : "#4e524e"
+              sessionUser == msgArray[index]["user"] ? colors.chatTextUser : colors.chatTextOthers
             }
           ></DefaultChatMsg>
         ))}
-        <TextField
-          sx={{ margin: "10px" }}
+        <TextField 
+          sx={{ margin: "10px", width:"70%"}}
+          autoComplete="off"
           InputProps={{
             sx: {
               borderRadius: 10,
             },
             spellCheck: "false",
           }}
-          label="Type a message "
+          label={newMessage=="" ? "Type a message":""}
+          InputLabelProps={{ shrink: false }}
           variant="outlined"
           value={newMessage}
           onChange={(e) => {

@@ -53,6 +53,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import CreateRoom from "../components/CreateRoom";
 import CreateRoomForm from "./CreateRoomForm";
 import Chatbox from "./singles/ChatboxTwo";
+import * as colors from "./../static/colors";
 const AVATAR_FST =
   "https://upload.wikimedia.org/wikipedia/en/0/04/Navi_%28The_Legend_of_Zelda%29.png";
 const AVATAR_SND =
@@ -199,9 +200,12 @@ export default function Room({
   return (
     <div>
       <Container
+      
         maxWidth="sm"
         sx={{
-          marginTop: "200px",
+          marginTop: "0px",
+          
+
         }}
       >
         {settings &&  (
@@ -235,18 +239,17 @@ export default function Room({
             alignItems="flex-start"
             className="center"
             sx={{
-              marginTop: 10,
+              marginTop:0,
+
             }}
+            spacing={1}
           >
             <Grid item name="Player and search">
+              
               <Grid item xs={12} align="center" justifyContent="center">
-                <Grid item xs={12} justifyContent="center">
-                  {!song.no_song && (isHost || room["guest_add_queue"]) &&(
-                    <Search userID={userID} csrf={csrf} socket={socket}></Search>
-                  )}
-                </Grid>
+
                 <Grid item xs={9}>
-                  <Typography>{roomCode}</Typography>
+                  <Typography>{}</Typography>
                   <MusicPlayer
                     align="center"
                     song={song}
@@ -291,18 +294,20 @@ export default function Room({
                     <SettingsIcon></SettingsIcon>
                   </Button>
                 </Grid>)}
+                <Grid item xs={9}>
+                  <Chatbox
+                    msgArray={msgArray}
+                    setMsgArray={setMsgArray}
+                    socket={socket}
+                    sessionUser={username}
+                  ></Chatbox>
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <Chatbox
-                  msgArray={msgArray}
-                  setMsgArray={setMsgArray}
-                  socket={socket}
-                  sessionUser={username}
-                ></Chatbox>
-              </Grid>
+              
             </Grid>
             {!song.no_song && (
-              <Grid item name="Queue" xs={3}>
+              <Grid item name="Queue" xs={3.5}
+              sx={{minWidth:400}}>
                 <CommingNext
                   queue={queue}
                   userQueue={userQueue}
@@ -310,9 +315,12 @@ export default function Room({
                   userID={userID}
                   socket={socket}
                   isHost={isHost}
+                  csrf={csrf}
+                  room={room}
                   guestManage={room["guest_manage_queue"]}
                 ></CommingNext>
               </Grid>
+              
             )}
           </Grid>
         )}
