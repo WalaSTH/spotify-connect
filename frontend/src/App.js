@@ -7,7 +7,8 @@ import MainApp from "./components/MainApp";
 
 function App() {
   const navigate = useNavigate();
-  return <MainApp />;
+  return <div><MainApp /></div>;
+  
 }
 
 export default App;
