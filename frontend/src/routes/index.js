@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import CreateRoom from "../components/CreateRoom";
 import Room from "../components/Room";
 import axios from "axios";
+import LobbyList from "../components/RoomsLobby";
 
 export default function RoutesWrapper({
   navigate,
@@ -58,7 +59,6 @@ export default function RoutesWrapper({
         element={
           userId ? (
             <Room
-              
               userID={userId}
               username={username}
               navigate={navigate}
@@ -73,6 +73,22 @@ export default function RoutesWrapper({
               setUserQueue={setUserQueue}
               setPopped={setPopped}
               getQueue={getQueue}
+            />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/rooms-lobby"
+        element={
+          userId ? (
+            <LobbyList
+              userId={userId}
+              navigate={navigate}
+              csrftoken={csrftoken}
+              update={false}
+              status={"connected"}
             />
           ) : (
             <Navigate to="/login" />

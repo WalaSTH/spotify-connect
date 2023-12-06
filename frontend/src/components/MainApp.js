@@ -225,7 +225,7 @@ export default function MainApp() {
 
   const navigate = useNavigate();
   return (
-    <div >
+    <div>
       <NavigationLayout navigate={navigate} avatar={null} song={song} />
       <div>
         <RoutesWrapper

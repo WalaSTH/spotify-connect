@@ -35,6 +35,12 @@ export default function Chatbox({ msg }) {
     { user: "Cath", msg: "you can target your enemy", avatar: AVATAR_FST },
     { user: "Wala", msg: "I already knew that", avatar: AVATAR_SND },
     { user: "Cath", msg: "Oh, ok", avatar: AVATAR_FST },
+    {
+      user: "Wala",
+      msg: "And next time you want to talk to me about the stupidest things please just forget it and don't make me waste my time.",
+      avatar: AVATAR_SND,
+    },
+    { user: "Wala", msg: "Thanks", avatar: AVATAR_SND },
   ]);
   const [lastUser, setLastUser] = useState("");
   const listItemStyles = {
@@ -54,7 +60,7 @@ export default function Chatbox({ msg }) {
   return (
     <div>
       <Card
-        style={{ maxHeight: 300, overflow: "auto" }}
+        style={{ maxHeight: 350, maxWidth: 300, overflow: "auto" }}
         sx={{
           //backgroundColor: "#333232",
           padding: 2,
