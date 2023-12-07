@@ -1,6 +1,14 @@
 import * as React from "react";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
-import { Button, Tooltip, Fade } from "@mui/material";
+import {
+  Button,
+  Tooltip,
+  Fade,
+  Box,
+  Grid,
+  Typography,
+  Avatar,
+} from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import LockIcon from "@mui/icons-material/Lock";
@@ -15,6 +23,9 @@ import QueueIcon from "@mui/icons-material/Queue";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import PlayCircle from "@mui/icons-material/PlayCircle";
+
+//Images
+import equalizer from "./equaliser.gif";
 
 const joinRoomUrl = "http://127.0.0.1:8000/api/join-room";
 
@@ -103,7 +114,77 @@ export default function RoomsLobby({ userId, navigate }) {
       headerName: "Currenty Playing",
       width: 150,
       renderCell: (params) => {
-        return <div>{}</div>;
+        const song = params.row.current_song;
+        return (
+          <div>
+            <Box>
+              <Grid
+                marginLeft={0.5}
+                container
+                spacing={1}
+                alignItems={"center"}
+              >
+                <Grid item>
+                  {song.is_playing && (
+                    <img
+                      src={equalizer}
+                      style={{
+                        backgroundColor: "transparent",
+                        width: 25,
+                      }}
+                    />
+                  )}
+                </Grid>
+                <Grid item>
+                  <Avatar
+                    src={song.image_url || "none"}
+                    sx={{
+                      color: "#fff",
+                      marginBottom: "3px",
+                      width: 40,
+                      height: 40,
+                      borderRadius: 0,
+                    }}
+                  />
+                </Grid>
+                <Grid item>
+                  <Grid item>
+                    <Typography
+                      variant="body1"
+                      align="left"
+                      color="#1DB954"
+                      noWrap
+                      sx={{
+                        width: 150,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {song.title}
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography
+                      variant="body2"
+                      align="left"
+                      color="#808080"
+                      noWrap
+                      sx={{
+                        width: 150,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {song.artist}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Box>
+          </div>
+        );
       },
     },
     { field: "user_count", headerName: "Users", width: 150 },
@@ -224,7 +305,12 @@ export default function RoomsLobby({ userId, navigate }) {
     <div>
       <Button onClick={() => getRooms(userId)}></Button>
       <div style={{ height: 300, width: "80%" }} className="center">
-        <DataGrid rows={roomsList} columns={columns} sx={{ marginLeft: 20 }} />
+        <DataGrid
+          rows={roomsList}
+          rowHeight={100}
+          columns={columns}
+          sx={{ marginLeft: 20 }}
+        />
       </div>
     </div>
   );

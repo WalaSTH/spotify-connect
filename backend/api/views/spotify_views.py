@@ -123,8 +123,13 @@ class CurrentSong(APIView):
             'is_playing': is_playing,
             'id': song_id
         }
-
-        self.update_room_song(room, song_id)
+        song_db={
+            'title': item.get('name'),
+            'artist': artist_string,
+            'image_url': album_cover,
+            'id': song_id
+        }
+        self.update_room_song(room, song_db)
         #print("THE SONG IS:")
         #print(song)
         return Response(song, status=status.HTTP_200_OK)
