@@ -8,30 +8,41 @@ import {
   Grid,
   Typography,
   Avatar,
+  Card,
+  TextField,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import LockIcon from "@mui/icons-material/Lock";
-import LockOpenIcon from "@mui/icons-material/LockOpen";
-import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import LoginIcon from "@mui/icons-material/Login";
-import IconButton from "@mui/material/IconButton";
 
-//Permissions
+import Marquee from "react-fast-marquee";
+
+//Icons
 import PauseIcon from "@mui/icons-material/Pause";
 import QueueIcon from "@mui/icons-material/Queue";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import PlayCircle from "@mui/icons-material/PlayCircle";
+import PasswordIcon from "@mui/icons-material/Password";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import IconButton from "@mui/material/IconButton";
+import LockIcon from "@mui/icons-material/Lock";
+import LoginIcon from "@mui/icons-material/Login";
+import CloseIcon from "@mui/icons-material/Close";
 
-//Images
+//Local
 import equalizer from "./equaliser.gif";
+import * as colors from "./../static/colors";
 
 const joinRoomUrl = "http://127.0.0.1:8000/api/join-room";
 
 export default function RoomsLobby({ userId, navigate }) {
   const [roomsList, setRoomsList] = useState([]);
   const [songList, setSongList] = useState([]);
+  const [inputPassword, setInputPassword] = useState(-1);
 
   const rows: GridRowsProp = [
     { id: 1, col1: "Hello", col2: "World" },
@@ -112,77 +123,87 @@ export default function RoomsLobby({ userId, navigate }) {
     {
       field: "current_song",
       headerName: "Currenty Playing",
-      width: 150,
+      minWidth: 270,
+      type: "actions",
       renderCell: (params) => {
         const song = params.row.current_song;
         return (
           <div>
-            <Box>
-              <Grid
-                marginLeft={0.5}
-                container
-                spacing={1}
-                alignItems={"center"}
-              >
-                <Grid item>
-                  {song.is_playing && (
-                    <img
-                      src={equalizer}
-                      style={{
-                        backgroundColor: "transparent",
-                        width: 25,
-                      }}
-                    />
-                  )}
-                </Grid>
-                <Grid item>
-                  <Avatar
-                    src={song.image_url || "none"}
-                    sx={{
-                      color: "#fff",
-                      marginBottom: "3px",
-                      width: 40,
-                      height: 40,
-                      borderRadius: 0,
-                    }}
-                  />
-                </Grid>
-                <Grid item>
-                  <Grid item>
-                    <Typography
-                      variant="body1"
-                      align="left"
-                      color="#1DB954"
-                      noWrap
-                      sx={{
-                        width: 150,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {song.title}
-                    </Typography>
+            {song && (
+              <Box>
+                <Card>
+                  <Grid
+                    marginLeft={0}
+                    container
+                    spacing={1}
+                    alignItems={"center"}
+                  >
+                    <Grid item>
+                      <Avatar
+                        src={song.image_url || "none"}
+                        sx={{
+                          color: "#fff",
+                          marginBottom: "0px",
+                          width: 70,
+                          height: 70,
+                          borderRadius: 0,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      {song.title.length <= 20 && (
+                        <Grid item>
+                          <Typography
+                            variant="body1"
+                            align="left"
+                            color={colors.miniplayerText}
+                            noWrap
+                            sx={{
+                              width: 150,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {song.title}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {song.title.length > 20 && (
+                        <Marquee
+                          speed={20}
+                          style={{ maxWidth: 150 }}
+                          autoFill={false}
+                        >
+                          <Typography
+                            align="left"
+                            color={colors.miniplayerText}
+                          >
+                            {song.title + "‎ ‎ ‎ ‎‎ ‎ ‎ ‎ "}
+                          </Typography>
+                        </Marquee>
+                      )}
+                      <Grid item>
+                        <Typography
+                          variant="body2"
+                          align="left"
+                          color="#808080"
+                          noWrap
+                          sx={{
+                            width: 150,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {song.artist}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <Typography
-                      variant="body2"
-                      align="left"
-                      color="#808080"
-                      noWrap
-                      sx={{
-                        width: 150,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {song.artist}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Box>
+                </Card>
+              </Box>
+            )}
           </div>
         );
       },
@@ -243,9 +264,8 @@ export default function RoomsLobby({ userId, navigate }) {
       field: "private_room",
       headerName: "Private",
       width: 150,
-      type: "actions",
       renderCell: (params) => {
-        return params.row.private ? (
+        return params.row.private_room ? (
           <>
             <LockIcon />
           </>
@@ -264,13 +284,51 @@ export default function RoomsLobby({ userId, navigate }) {
       renderCell: (params) => {
         return (
           <div>
-            <IconButton
-              onClick={() => {
-                handleEnterRoom(params.row.room_code, "");
-              }}
-            >
-              <LoginIcon></LoginIcon>
-            </IconButton>
+            {!params.row.private_room && (
+              <IconButton
+                onClick={() => {
+                  handleEnterRoom(params.row.room_code, "");
+                }}
+              >
+                <LoginIcon></LoginIcon>
+              </IconButton>
+            )}
+            {params.row.private_room && (
+              <IconButton
+                onClick={() => {
+                  setInputPassword(params.row.id);
+                }}
+                //onMouseOutCapture={() => setInputPassword(-1)}
+              >
+                {inputPassword != params.row.id && (
+                  <PasswordIcon></PasswordIcon>
+                )}
+              </IconButton>
+            )}
+            {inputPassword == params.row.id && (
+              <div>
+                <Grid container>
+                  <Grid item>
+                    <OutlinedInput
+                      id="outlined-adornment-password"
+                      type={"password"}
+                      endAdornment={
+                        <InputAdornment position="end"></InputAdornment>
+                      }
+                    />
+                  </Grid>
+                  <Grid item>
+                    <IconButton
+                      onClick={() => {
+                        setInputPassword(-1);
+                      }}
+                    >
+                      <CloseIcon></CloseIcon>
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              </div>
+            )}
           </div>
         );
       },
@@ -304,12 +362,16 @@ export default function RoomsLobby({ userId, navigate }) {
   return (
     <div>
       <Button onClick={() => getRooms(userId)}></Button>
-      <div style={{ height: 300, width: "80%" }} className="center">
+      <div style={{ width: "80%" }} className="center">
         <DataGrid
           rows={roomsList}
-          rowHeight={100}
+          getRowHeight={() => "auto"}
           columns={columns}
           sx={{ marginLeft: 20 }}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 5 } },
+          }}
+          pageSizeOptions={[5, 10]}
         />
       </div>
     </div>
