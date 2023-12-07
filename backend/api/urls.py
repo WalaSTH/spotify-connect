@@ -5,6 +5,7 @@ from .views.spotify_views import *
 
 urlpatterns = [
     path('room/', RoomView.as_view()),
+    path('get-rooms/', GetRooms.as_view()),
     path('user/', UserView.as_view()),
     path('username-taken', UserTaken.as_view()),
     path('create-user', CreateUser.as_view()),
@@ -24,6 +25,7 @@ urlpatterns = [
     
     # Spotify
     path('current-song', CurrentSong.as_view()),
+    path('get-song', GetSong.as_view()),
     path('pause', PauseSong.as_view()),
     path('play', PlaySong.as_view()),
     path('sync', SyncUser.as_view()),

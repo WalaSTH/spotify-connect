@@ -86,10 +86,10 @@ def execute_spotify_api_request(user_id, endpoint, post_=False,
     if put_:
         response = put(base_url + endpoint, headers=header)
         return response.content
-    
+
     if delete_:
         response = delete(base_url + endpoint, headers=header)
-    
+
     response = get(base_url + endpoint, {}, headers=header)
 
     try:

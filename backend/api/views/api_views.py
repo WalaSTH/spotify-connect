@@ -4,10 +4,12 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
+import json
 from ..serializers import *
 from ..models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+
 
 USER_MIN_LEN = 4
 USER_MAX_LEN = 16
@@ -124,6 +126,47 @@ class UserInRoom(APIView):
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
 # Room Views
+
+class GetRooms(APIView):
+    serializer_class = RoomSerializer
+    def get(self, request, format=None):
+        user_id = request.GET.get('user_id')
+        if not user_id_exists(user_id):
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        queryset = Room.objects.all()
+        len = Room.objects.count()
+        list = []
+        for i in range(len):
+            room_code = queryset[i].code
+            user_count = User.objects.filter(room=room_code).count()
+            permissions = ""
+            if queryset[i].guest_pause:
+                permissions = permissions + "Play/Pause "
+            if queryset[i].guest_add_queue:
+                permissions = permissions + "Add Queue "
+            if queryset[i].guest_manage_queue:
+                permissions = permissions + "Manage Queue "
+            if queryset[i].guest_skip:
+                permissions = permissions + "Skip "
+
+            data={
+                'id': i,
+                'room_code':queryset[i].code,
+                'room_name':queryset[i].room_name,
+                'guest_pause':queryset[i].guest_pause,
+                'guest_add_queue':queryset[i].guest_add_queue,
+                'guest_manage_queue':queryset[i].guest_manage_queue,
+                'guest_skip':queryset[i].guest_skip,
+                'show_lobby':queryset[i].show_lobby,
+                'private_room':queryset[i].private_room,
+                'password': queryset[i].password,
+                'current_song': queryset[i].current_song,
+                'user_count':user_count,
+                'permissions': permissions,
+            }
+            list.append(data)
+        print(list)
+        return Response({'Data': list}, status=status.HTTP_200_OK)
 
 class RoomView(generics.ListAPIView):
     serializer_class = RoomSerializer

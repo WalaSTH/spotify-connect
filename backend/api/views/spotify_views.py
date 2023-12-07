@@ -125,8 +125,8 @@ class CurrentSong(APIView):
         }
 
         self.update_room_song(room, song_id)
-        print("THE SONG IS:")
-        print(song)
+        #print("THE SONG IS:")
+        #print(song)
         return Response(song, status=status.HTTP_200_OK)
 
     def update_room_song(self, room, song_id):
@@ -492,3 +492,45 @@ class StartSong(APIView):
             user_nid = users[i].id
             execute_spotify_api_request(user_id=user_nid,endpoint="player/play", put_=True, data_=True, data_body=json.dumps(data))
         return Response({"Msg":"Song played for every user"}, status=status.HTTP_200_OK)
+
+class GetSong(APIView):
+    def get(self, request, format=None):
+        user_id = request.GET.get('user_id')
+        song_id = request.GET.get('song_id')
+        user = get_user_by_id(user_id)
+        if user == None:
+            return Response({'Msg':'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Execute Spotify endpoint
+        endpoint = "tracks/" + song_id
+        print(song_id)
+        response = execute_spotify_api_request(user_id=user_id,endpoint=endpoint, queue_=True)
+        
+        print(response)
+        print("RESPONSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+
+        if 'Error' in response:
+            return Response({}, status=status.HTTP_208_ALREADY_REPORTED)
+
+        if response is None:
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        artist_string = ""
+        for i, artist in enumerate(response.get('artists')):
+            if i > 0:
+                artist_string += ", "
+            name = artist.get('name')
+            artist_string += name 
+
+        album_cover = response.get('album').get('images')[0].get('url')
+        song = {
+            'title': response.get('name'),
+            'artist': artist_string,
+            'image_url': album_cover,
+            'id': song_id
+        }
+        return Response({"Data":song}, status=status.HTTP_200_OK)
+    
+
+""" 
+        """
