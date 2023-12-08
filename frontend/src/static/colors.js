@@ -20,3 +20,5 @@ export const chatBubbleuser = darkGreen;
 export const chatBubbleOthers = lightGray;
 export const chatTextUser = whiteText;
 export const chatTextOthers = darkText;
+export const miniplayerText = darkGreen;
+export const miniplayerSideText = greenApple;

@@ -13,7 +13,7 @@ import {
   createTheme,
   Grid,
 } from "@mui/material";
-import * as colors from './../../static/colors';
+import * as colors from "./../../static/colors";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import Home from "@mui/icons-material/Home";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
@@ -121,7 +121,7 @@ export default function DrawerWrapper({
                     <Typography
                       variant="body1"
                       align="left"
-                      color="#1DB954"
+                      color={colors.miniplayerSideText}
                       noWrap
                       sx={{
                         width: 150,
