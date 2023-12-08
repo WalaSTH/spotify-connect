@@ -1,0 +1,121 @@
+##### STUFF TO DO #####
+
+Handle permisions
+DONE	Check for every permission on action endpoints. 
+DONE	Hide functions to non hosts
+DONE	Handle forbidden responses from back.
+DONE	Use websockets for room settings edit
+
+DONE Only Host should edit room settings
+
+
+Fix Queue
+DONE	Move on spot queue doesnt work when there is music in user queue
+DONE	Move is not implemented for user queue?
+DONE	Fix buttons
+DONE	Add websocket for adding song to queue
+DONE	After adding track -> close
+
+Fix frontend
+DONE	Picture of album should have a fixed size
+			-> Its related to song name
+		Fix sidebar taking space
+
+Show available rooms
+DONE	Get Rooms from Backend
+		Show Rooms information on a list > Name, Curently Listening, User count, Permissions, Private, Join
+		Change size of some columns
+DONE		Add icons for permissions and private
+DONE		Add icon and functionality to Join Button
+			Have currently playing when its currently playing
+
+	Arreglar Websockets con permisos
+
+
+Tell when mobile res -> Need other string len for Marquee
+
+Listening to doesnt work when mobile sidebar
+
+Get avatar
+
+I send room directly to room page, should stop using queue and others
+
+Not having to refresh when I play something
+
+Fix spong not always playing next
+
+
+
+##### ERROR LOGS #####
+
+UPDATING ROOM WHEN NOT HOST CREATES ONE LOL
+AM I IN TWO ROOMS?
+No, I basically create a new one and change the settings in that one
+
+>>>>This broke queue.
+
+Added two songs from spotconnect app (users queue)
+then, skipped.
+Had two users on room
+Did all the actions above with the host one.
+Queue only had the two songs, 1 on playing now, the otherone (2) on User's queue
+
+>>>>This broke sync.
+First incorrect song starts playing on guest user.
+Tried sync, didnt work
+For some reason sync desapeared.
+When I f5 it was no longer there
+Leaving room and joining fixed things
+
+>> Added a song to users list and spot queue was empty after, what?
+
+
+>> sometimes reaching the end of the song doesnt make it skip to next #THIS WILL BE HEAVY
+
+>>> Failed to load users queueu might make that it never gets current song
+get queue returns 500 server error
+again, index out of range	
+I think this queue bug occurs when I play a single song that doesnt load a queue
+That will prevent the app to properly function
+
+>>> There seems to be a problem with authentication. Gotta re check that.
+I had to delete a user and re register for me to make it work
+Deleting the spotify token from database also works and its faster
+It might be that tokens are not being refreshed, or maybe ive beet putting singles all along
+Gotta check that
+
+>>>> Sync button not appearing?
+For some reason, it doesnt load the sync button. Gotta check the values of guards.
+I reloaded and it worked now... I also played something on spotify on a guest device
+I may be wrong but I get the feeling these buttons work properly (after f5) when a song is playing
+
+>>> Queue deleted itself for no reason 
+
+
+>>> Manageing queue only works once the first song has finished and we use the backend queue
+
+
+
+>>> Sometimes I will see spot queue (backend) on host but not on guest, why? check how queue is got
+Maybe I need to make it so that it looks on the backend.
+Well, I just saw I was in another room. So I was a host and that was ok. Why did I change rooms tho, maybe I left and created and forgot
+
+
+>> The isHost might be broken because maybe you create a room then leave then you join one and the isHost variable doesnt update 
+In fact, it works the opossite way aswell
+Being in a room thats not yours, leaving and creating has isHost as false till reset.
+
+I need to re-adjust isHost everytime i do stuff like
+ > Leave room, join room
+
+>>> I was host but isHost was false or something because sync button was there. Also, in this tab, I never was guest, so the former theory would not work here
+
+
+NOTES:
+	Dont forget to start redis when using windows.
+
+	To return a queryset, which is not Json serializable, you can use
+	First, data = list(queryset) to convert it to a list and then use
+	JsonResponse to send it.
+
+>> isHost not updating after creating room...
