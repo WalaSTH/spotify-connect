@@ -48,18 +48,23 @@ export default function RoomsLobby({ userId, navigate }) {
   const [password, setPassword] = useState("");
   const [badPassword, setBadPassword] = useState(false);
   const [alreadyInRoom, setAlreadyInRoom] = useState(false);
-
+  const [roomToEnter, setRoomToEnter] = useState("");
+  const [roomCount, setRoomCount] = useState(0);
   const rows: GridRowsProp = [
     { id: 1, col1: "Hello", col2: "World" },
     { id: 2, col1: "DataGridPro", col2: "is Awesome" },
     { id: 3, col1: "MUI", col2: "is Amazing" },
   ];
 
-  async function handleEnterRoom(roomCode, password) {
+  async function handleEnterRoom(roomCode, password, ask) {
+    console.log(ask);
     const formData = new FormData();
     formData.append("user_id", userId);
     formData.append("room_code", roomCode);
     formData.append("room_password", password);
+    if (ask) {
+      formData.append("ask_user", ask);
+    }
     await axios
       .post(joinRoomUrl, formData)
       .then(() => {
@@ -70,7 +75,11 @@ export default function RoomsLobby({ userId, navigate }) {
         const errorMsg = error.response.data.Msg;
         if (errorMsg === "Wrong password") {
           setBadPassword(true);
+          setAlreadyInRoom(false);
           console.log("BAD PASSWORD");
+        } else if (errorMsg === "User is in another room") {
+          setAlreadyInRoom(true);
+          setBadPassword(false);
         }
       });
   }
@@ -101,13 +110,14 @@ export default function RoomsLobby({ userId, navigate }) {
         console.log(error);
       });
   }
-  async function loadData() {
+  async function loadData(page) {
     try {
       // Get rooms
-      const initialData = await getRooms(userId);
+      const initialData = await getRooms(userId, page);
       // Fetch song for every row
       console.log("THE SONG IS");
       console.log(initialData);
+      setRoomCount(initialData["Count"]);
       for (let i = 0; i < initialData["Data"].length; i++) {
         let songData = {};
         if (initialData["Data"][i].current_song != null) {
@@ -293,7 +303,8 @@ export default function RoomsLobby({ userId, navigate }) {
             {!params.row.private_room && (
               <IconButton
                 onClick={() => {
-                  handleEnterRoom(params.row.room_code, "");
+                  setRoomToEnter(params.row.room_code);
+                  handleEnterRoom(params.row.room_code, "", true);
                 }}
               >
                 <LoginIcon></LoginIcon>
@@ -317,6 +328,7 @@ export default function RoomsLobby({ userId, navigate }) {
                   <Grid item>
                     <OutlinedInput
                       id="password"
+                      ad
                       type={"password"}
                       value={password}
                       onChange={(e) => {
@@ -340,7 +352,8 @@ export default function RoomsLobby({ userId, navigate }) {
                   </Grid>
                   <IconButton
                     onClick={() => {
-                      handleEnterRoom(params.row.room_code, password);
+                      setAlreadyInRoom(false);
+                      handleEnterRoom(params.row.room_code, password, false);
                     }}
                   >
                     <LoginIcon></LoginIcon>
@@ -354,8 +367,10 @@ export default function RoomsLobby({ userId, navigate }) {
     },
   ];
 
-  async function getRooms(userId) {
-    const response = await fetch("api/get-rooms" + "?user_id=" + userId);
+  async function getRooms(userId, page) {
+    const response = await fetch(
+      "api/get-rooms" + "?user_id=" + userId + "&page=" + page
+    );
     const data = await response.json();
     return data;
 
@@ -375,17 +390,16 @@ export default function RoomsLobby({ userId, navigate }) {
   }
 
   useEffect(() => {
-    loadData();
+    loadData(1);
   }, []);
 
   return (
     <div>
-      <Button onClick={() => getRooms(userId)}></Button>
       {badPassword && (
         <Alert
           className="alert"
           severity="error"
-          sx={{ width: 350 }}
+          sx={{ width: 300 }}
           onClose={() => {
             setBadPassword(false);
             setPassword("");
@@ -393,6 +407,41 @@ export default function RoomsLobby({ userId, navigate }) {
         >
           <AlertTitle>Oops</AlertTitle>
           <strong>Wrong password</strong>
+        </Alert>
+      )}
+      {alreadyInRoom && (
+        <Alert className="alert" severity="warning" sx={{ width: 320 }}>
+          <AlertTitle> Alraedy in a room</AlertTitle>
+          Enter this room and leave previous?
+          <Grid container direction="row" spacing={0}>
+            <Grid item>
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  handleEnterRoom(roomToEnter, password, false);
+                }}
+              >
+                YES
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setAlreadyInRoom(false);
+                }}
+              >
+                NO
+              </Button>
+            </Grid>
+            <Grid item>
+              <Typography variant="caption" display="block" gutterBottom>
+                Note: Rooms you host are deleted when leaving
+              </Typography>
+            </Grid>
+          </Grid>
         </Alert>
       )}
       <div style={{ width: "80%" }} className="center">
@@ -404,7 +453,12 @@ export default function RoomsLobby({ userId, navigate }) {
           initialState={{
             pagination: { paginationModel: { pageSize: 5 } },
           }}
-          pageSizeOptions={[5, 10]}
+          //hideFooterPagination={true}
+          paginationMode={"server"}
+          rowCount={roomCount}
+          onPaginationModelChange={(e) => {
+            loadData(e["page"] + 1);
+          }}
         />
       </div>
     </div>
