@@ -10,6 +10,9 @@ from ..models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
+# Pagination
+from django.core.paginator import Paginator
+
 
 USER_MIN_LEN = 4
 USER_MAX_LEN = 16
@@ -131,42 +134,50 @@ class GetRooms(APIView):
     serializer_class = RoomSerializer
     def get(self, request, format=None):
         user_id = request.GET.get('user_id')
+        page = request.GET.get('page')
         if not user_id_exists(user_id):
             return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         queryset = Room.objects.all()
         len = Room.objects.count()
         list = []
+        # Pagination
+        p = Paginator(Room.objects.all(), 5)
+        rooms_paged = p.get_page(page)
+        len = rooms_paged.start_index() - rooms_paged.end_index()
+        len = rooms_paged.__len__()
         for i in range(len):
-            room_code = queryset[i].code
+            room_code = rooms_paged[i].code
             user_count = User.objects.filter(room=room_code).count()
             permissions = ""
-            if queryset[i].guest_pause:
+            if rooms_paged[i].guest_pause:
                 permissions = permissions + "Play/Pause "
-            if queryset[i].guest_add_queue:
+            if rooms_paged[i].guest_add_queue:
                 permissions = permissions + "Add Queue "
-            if queryset[i].guest_manage_queue:
+            if rooms_paged[i].guest_manage_queue:
                 permissions = permissions + "Manage Queue "
-            if queryset[i].guest_skip:
+            if rooms_paged[i].guest_skip:
                 permissions = permissions + "Skip "
 
             data={
                 'id': i,
-                'room_code':queryset[i].code,
-                'room_name':queryset[i].room_name,
-                'guest_pause':queryset[i].guest_pause,
-                'guest_add_queue':queryset[i].guest_add_queue,
-                'guest_manage_queue':queryset[i].guest_manage_queue,
-                'guest_skip':queryset[i].guest_skip,
-                'show_lobby':queryset[i].show_lobby,
-                'private_room':queryset[i].private_room,
-                'password': queryset[i].password,
-                'current_song': queryset[i].current_song,
+                'room_code':rooms_paged[i].code,
+                'room_name':rooms_paged[i].room_name,
+                'guest_pause':rooms_paged[i].guest_pause,
+                'guest_add_queue':rooms_paged[i].guest_add_queue,
+                'guest_manage_queue':rooms_paged[i].guest_manage_queue,
+                'guest_skip':rooms_paged[i].guest_skip,
+                'show_lobby':rooms_paged[i].show_lobby,
+                'private_room':rooms_paged[i].private_room,
+                'password': rooms_paged[i].password,
+                'current_song': rooms_paged[i].current_song,
                 'user_count':user_count,
                 'permissions': permissions,
             }
             list.append(data)
         print(list)
-        return Response({'Data': list}, status=status.HTTP_200_OK)
+
+
+        return Response({'Data': list, 'Count':p.count}, status=status.HTTP_200_OK)
 
 class RoomView(generics.ListAPIView):
     serializer_class = RoomSerializer
@@ -328,6 +339,7 @@ class RoomJoin(APIView):
         user_id = request.data.get('user_id')
         room_code = request.data.get('room_code')
         password = request.data.get('room_password')
+        ask_user =request.data.get('ask_user')
 
         # Validate fields
         if not user_id_exists(user_id):
@@ -344,7 +356,7 @@ class RoomJoin(APIView):
             return Response({'Msg': 'User already in room'}, status=status.HTTP_208_ALREADY_REPORTED)
         # User in another room?
         user = get_user_by_id(user_id)
-        if user.room != "":
+        if user.room != "" and ask_user:
             return Response({'Msg': 'User is in another room'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Join user
