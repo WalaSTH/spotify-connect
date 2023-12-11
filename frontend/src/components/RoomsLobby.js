@@ -13,6 +13,8 @@ import {
   InputLabel,
   OutlinedInput,
   InputAdornment,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -43,6 +45,9 @@ export default function RoomsLobby({ userId, navigate }) {
   const [roomsList, setRoomsList] = useState([]);
   const [songList, setSongList] = useState([]);
   const [inputPassword, setInputPassword] = useState(-1);
+  const [password, setPassword] = useState("");
+  const [badPassword, setBadPassword] = useState(false);
+  const [alreadyInRoom, setAlreadyInRoom] = useState(false);
 
   const rows: GridRowsProp = [
     { id: 1, col1: "Hello", col2: "World" },
@@ -64,6 +69,7 @@ export default function RoomsLobby({ userId, navigate }) {
         console.log(error);
         const errorMsg = error.response.data.Msg;
         if (errorMsg === "Wrong password") {
+          setBadPassword(true);
           console.log("BAD PASSWORD");
         }
       });
@@ -310,8 +316,12 @@ export default function RoomsLobby({ userId, navigate }) {
                 <Grid container>
                   <Grid item>
                     <OutlinedInput
-                      id="outlined-adornment-password"
+                      id="password"
                       type={"password"}
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
                       endAdornment={
                         <InputAdornment position="end"></InputAdornment>
                       }
@@ -320,12 +330,21 @@ export default function RoomsLobby({ userId, navigate }) {
                   <Grid item>
                     <IconButton
                       onClick={() => {
+                        setPassword("");
                         setInputPassword(-1);
+                        setBadPassword(false);
                       }}
                     >
                       <CloseIcon></CloseIcon>
                     </IconButton>
                   </Grid>
+                  <IconButton
+                    onClick={() => {
+                      handleEnterRoom(params.row.room_code, password);
+                    }}
+                  >
+                    <LoginIcon></LoginIcon>
+                  </IconButton>
                 </Grid>
               </div>
             )}
@@ -362,6 +381,20 @@ export default function RoomsLobby({ userId, navigate }) {
   return (
     <div>
       <Button onClick={() => getRooms(userId)}></Button>
+      {badPassword && (
+        <Alert
+          className="alert"
+          severity="error"
+          sx={{ width: 350 }}
+          onClose={() => {
+            setBadPassword(false);
+            setPassword("");
+          }}
+        >
+          <AlertTitle>Oops</AlertTitle>
+          <strong>Wrong password</strong>
+        </Alert>
+      )}
       <div style={{ width: "80%" }} className="center">
         <DataGrid
           rows={roomsList}
