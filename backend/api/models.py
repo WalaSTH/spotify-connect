@@ -63,6 +63,7 @@ class Room(models.Model):
         models.JSONField(null=True)
     )
     last_id = models.IntegerField()
+    user_count = models.IntegerField()
     def __str__(self):
         return self.code
 
@@ -154,6 +155,9 @@ def join_user(room_code, user_id):
     user = get_user_by_id(user_id)
     user.room = room_code
     user.save(update_fields=['room'])
+    room = get_room_by_code(room_code)
+    room.user_count=room.user_count+1
+    room.save(update_fields=['user_count'])
 
 def user_in_room(room_code, user_id):
     user = get_user_by_id(user_id)

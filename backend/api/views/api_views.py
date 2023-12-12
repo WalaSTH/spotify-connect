@@ -135,6 +135,12 @@ class GetRooms(APIView):
     def get(self, request, format=None):
         user_id = request.GET.get('user_id')
         page = request.GET.get('page')
+        sort_field = request.GET.get('sort_field')
+        sort_order = request.GET.get('sort_order')
+        if sort_order == "desc" and sort_field != "user_count":
+            sort_field = "-" + sort_field
+        if sort_order == "asc" and sort_field == "user_count":
+            sort_field = "-" + sort_field
         if not user_id_exists(user_id):
             return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         queryset = Room.objects.all()
@@ -142,6 +148,8 @@ class GetRooms(APIView):
         list = []
         # Pagination
         p = Paginator(Room.objects.all(), 5)
+        if sort_field:
+            p = Paginator(Room.objects.all().order_by(sort_field), 5)
         rooms_paged = p.get_page(page)
         len = rooms_paged.start_index() - rooms_paged.end_index()
         len = rooms_paged.__len__()
@@ -170,7 +178,7 @@ class GetRooms(APIView):
                 'private_room':rooms_paged[i].private_room,
                 'password': rooms_paged[i].password,
                 'current_song': rooms_paged[i].current_song,
-                'user_count':user_count,
+                'user_count':rooms_paged[i].user_count,
                 'permissions': permissions,
             }
             list.append(data)
@@ -311,7 +319,7 @@ class CreateRoomView(generics.ListAPIView):
                             guest_skip=guest_skip,
                             guest_manage_queue=guest_manage_queue, private_room=private_room,
                             password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby,
-                            user_queue=[], spot_queue=[], last_id = 1)
+                            user_queue=[], spot_queue=[], last_id = 1, user_count = 1)
                 user = get_user_by_id(host)
                 room.save()
                 user.room=room.code
