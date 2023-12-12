@@ -50,6 +50,8 @@ export default function RoomsLobby({ userId, navigate }) {
   const [alreadyInRoom, setAlreadyInRoom] = useState(false);
   const [roomToEnter, setRoomToEnter] = useState("");
   const [roomCount, setRoomCount] = useState(0);
+  const [sortOptions, setSortOptions] = useState({ field: "", sort: "" });
+  const [pageOptions, setPageOptions] = useState({ page: 0, pageSize: 5 });
   const rows: GridRowsProp = [
     { id: 1, col1: "Hello", col2: "World" },
     { id: 2, col1: "DataGridPro", col2: "is Awesome" },
@@ -110,10 +112,10 @@ export default function RoomsLobby({ userId, navigate }) {
         console.log(error);
       });
   }
-  async function loadData(page) {
+  async function loadData(page, sortField, sortOrder) {
     try {
       // Get rooms
-      const initialData = await getRooms(userId, page);
+      const initialData = await getRooms(userId, page, sortField, sortOrder);
       // Fetch song for every row
       console.log("THE SONG IS");
       console.log(initialData);
@@ -367,9 +369,17 @@ export default function RoomsLobby({ userId, navigate }) {
     },
   ];
 
-  async function getRooms(userId, page) {
+  async function getRooms(userId, page, sortField, sortOrder) {
     const response = await fetch(
-      "api/get-rooms" + "?user_id=" + userId + "&page=" + page
+      "api/get-rooms" +
+        "?user_id=" +
+        userId +
+        "&page=" +
+        page +
+        "&sort_field=" +
+        sortField +
+        "&sort_order=" +
+        sortOrder
     );
     const data = await response.json();
     return data;
@@ -390,7 +400,7 @@ export default function RoomsLobby({ userId, navigate }) {
   }
 
   useEffect(() => {
-    loadData(1);
+    loadData(1, "", "");
   }, []);
 
   return (
@@ -455,9 +465,22 @@ export default function RoomsLobby({ userId, navigate }) {
           }}
           //hideFooterPagination={true}
           paginationMode={"server"}
+          sortingMode={"server"}
           rowCount={roomCount}
           onPaginationModelChange={(e) => {
-            loadData(e["page"] + 1);
+            setPageOptions(e);
+            loadData(e["page"] + 1, sortOptions["field"], sortOptions["sort"]);
+            console.log(e);
+          }}
+          onSortModelChange={(e) => {
+            console.log(e);
+            if (e.length == 0) {
+              setSortOptions({ field: "", sort: "" });
+              loadData(pageOptions["page"] + 1, "", "");
+            } else {
+              setSortOptions(e[0]);
+              loadData(pageOptions["page"] + 1, e[0]["field"], e[0]["sort"]);
+            }
           }}
         />
       </div>

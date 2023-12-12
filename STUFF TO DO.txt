@@ -28,6 +28,10 @@ DONE	Get Rooms from Backend
 DONE		Add icons for permissions and private
 DONE		Add icon and functionality to Join Button
 			Have currently playing when its currently playing
+			Fix password UI 
+			Backednside paging
+			Filters
+
 
 	Arreglar Websockets con permisos
 
