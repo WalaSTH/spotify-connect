@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import Marquee from "react-fast-marquee";
 
 //Icons
@@ -52,6 +52,8 @@ export default function RoomsLobby({ userId, navigate }) {
   const [roomCount, setRoomCount] = useState(0);
   const [sortOptions, setSortOptions] = useState({ field: "", sort: "" });
   const [pageOptions, setPageOptions] = useState({ page: 0, pageSize: 5 });
+  const [filterOptions, setFilterOptions] = useState({});
+  const [showFilter, setShowFilter] = useState(false);
   const rows: GridRowsProp = [
     { id: 1, col1: "Hello", col2: "World" },
     { id: 2, col1: "DataGridPro", col2: "is Awesome" },
@@ -454,36 +456,64 @@ export default function RoomsLobby({ userId, navigate }) {
           </Grid>
         </Alert>
       )}
-      <div style={{ width: "80%" }} className="center">
-        <DataGrid
-          rows={roomsList}
-          getRowHeight={() => "auto"}
-          columns={columns}
-          sx={{ marginLeft: 20 }}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 5 } },
-          }}
-          //hideFooterPagination={true}
-          paginationMode={"server"}
-          sortingMode={"server"}
-          rowCount={roomCount}
-          onPaginationModelChange={(e) => {
-            setPageOptions(e);
-            loadData(e["page"] + 1, sortOptions["field"], sortOptions["sort"]);
-            console.log(e);
-          }}
-          onSortModelChange={(e) => {
-            console.log(e);
-            if (e.length == 0) {
-              setSortOptions({ field: "", sort: "" });
-              loadData(pageOptions["page"] + 1, "", "");
-            } else {
-              setSortOptions(e[0]);
-              loadData(pageOptions["page"] + 1, e[0]["field"], e[0]["sort"]);
-            }
-          }}
-        />
-      </div>
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="flex-start"
+        className="center"
+        sx={{
+          marginTop: 0,
+          marginLeft: 50,
+        }}
+        spacing={1}
+      >
+        <Grid item>
+          <IconButton>
+            <FilterAltIcon></FilterAltIcon>
+          </IconButton>
+        </Grid>
+        <Grid item>
+          <div>
+            <DataGrid
+              rows={roomsList}
+              getRowHeight={() => "auto"}
+              columns={columns}
+              sx={{ marginLeft: 0 }}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 5 } },
+              }}
+              //hideFooterPagination={true}
+              paginationMode={"server"}
+              sortingMode={"server"}
+              rowCount={roomCount}
+              onPaginationModelChange={(e) => {
+                setPageOptions(e);
+                loadData(
+                  e["page"] + 1,
+                  sortOptions["field"],
+                  sortOptions["sort"]
+                );
+                console.log(e);
+              }}
+              onSortModelChange={(e) => {
+                console.log(e);
+                if (e.length == 0) {
+                  setSortOptions({ field: "", sort: "" });
+                  loadData(pageOptions["page"] + 1, "", "");
+                } else {
+                  setSortOptions(e[0]);
+                  loadData(
+                    pageOptions["page"] + 1,
+                    e[0]["field"],
+                    e[0]["sort"]
+                  );
+                }
+              }}
+            />
+          </div>
+        </Grid>
+      </Grid>
     </div>
   );
 }
