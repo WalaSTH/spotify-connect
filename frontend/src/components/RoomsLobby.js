@@ -15,10 +15,11 @@ import {
   InputAdornment,
   Alert,
   AlertTitle,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import Marquee from "react-fast-marquee";
 
 //Icons
@@ -34,6 +35,8 @@ import IconButton from "@mui/material/IconButton";
 import LockIcon from "@mui/icons-material/Lock";
 import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import SendIcon from "@mui/icons-material/Send";
 
 //Local
 import equalizer from "./equaliser.gif";
@@ -469,9 +472,23 @@ export default function RoomsLobby({ userId, navigate }) {
         spacing={1}
       >
         <Grid item>
-          <IconButton>
+          <IconButton onClick={() => setShowFilter(!showFilter)}>
             <FilterAltIcon></FilterAltIcon>
           </IconButton>
+        </Grid>
+        <Grid item>
+          {showFilter && (
+            <Card>
+              <FormControlLabel label="Play/Pause" control={<Checkbox />} />
+              <FormControlLabel label="Skip" control={<Checkbox />} />
+              <FormControlLabel label="Add Tracks" control={<Checkbox />} />
+              <FormControlLabel label="Move/Remove" control={<Checkbox />} />
+              <FormControlLabel label="Private" control={<Checkbox />} />
+              <IconButton>
+                <SendIcon></SendIcon>
+              </IconButton>
+            </Card>
+          )}
         </Grid>
         <Grid item>
           <div>
