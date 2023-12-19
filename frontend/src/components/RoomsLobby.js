@@ -41,6 +41,7 @@ import SendIcon from "@mui/icons-material/Send";
 //Local
 import equalizer from "./equaliser.gif";
 import * as colors from "./../static/colors";
+import FilterRooms from "./FilterRooms";
 
 const joinRoomUrl = "http://127.0.0.1:8000/api/join-room";
 
@@ -55,8 +56,7 @@ export default function RoomsLobby({ userId, navigate }) {
   const [roomCount, setRoomCount] = useState(0);
   const [sortOptions, setSortOptions] = useState({ field: "", sort: "" });
   const [pageOptions, setPageOptions] = useState({ page: 0, pageSize: 5 });
-  const [filterOptions, setFilterOptions] = useState({});
-  const [showFilter, setShowFilter] = useState(false);
+
   const rows: GridRowsProp = [
     { id: 1, col1: "Hello", col2: "World" },
     { id: 2, col1: "DataGridPro", col2: "is Awesome" },
@@ -472,23 +472,7 @@ export default function RoomsLobby({ userId, navigate }) {
         spacing={1}
       >
         <Grid item>
-          <IconButton onClick={() => setShowFilter(!showFilter)}>
-            <FilterAltIcon></FilterAltIcon>
-          </IconButton>
-        </Grid>
-        <Grid item>
-          {showFilter && (
-            <Card>
-              <FormControlLabel label="Play/Pause" control={<Checkbox />} />
-              <FormControlLabel label="Skip" control={<Checkbox />} />
-              <FormControlLabel label="Add Tracks" control={<Checkbox />} />
-              <FormControlLabel label="Move/Remove" control={<Checkbox />} />
-              <FormControlLabel label="Private" control={<Checkbox />} />
-              <IconButton>
-                <SendIcon></SendIcon>
-              </IconButton>
-            </Card>
-          )}
+          <FilterRooms></FilterRooms>
         </Grid>
         <Grid item>
           <div>
