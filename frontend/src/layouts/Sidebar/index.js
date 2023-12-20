@@ -12,6 +12,7 @@ import {
   ThemeProvider,
   createTheme,
   Grid,
+  Toolbar
 } from "@mui/material";
 import * as colors from "./../../static/colors";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";

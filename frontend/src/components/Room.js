@@ -237,7 +237,7 @@ export default function Room({
             direction="row"
             justifyContent="center"
             alignItems="flex-start"
-            className="center"
+            className=""
             sx={{
               marginTop:0,
 

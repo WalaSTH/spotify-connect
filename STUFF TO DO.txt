@@ -41,7 +41,7 @@ DONE					if filter
 DONE					filter options including include or exact
 DONE			Get filter options on backend and operate
 				Join Room frontend?
-
+				No rooms on datagrid?
 	Arreglar Websockets con permisos
 
 

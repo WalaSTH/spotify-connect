@@ -153,7 +153,7 @@ export default function RoomsLobby({ userId, navigate }) {
   }
 
   const columns: GridColDef[] = [
-    { field: "room_name", headerName: "Room Name", width: 150 },
+    { field: "room_name", headerName: "Room Name", minWidth: 50 },
     {
       field: "current_song",
       headerName: "Currenty Playing",
@@ -242,7 +242,7 @@ export default function RoomsLobby({ userId, navigate }) {
         );
       },
     },
-    { field: "user_count", headerName: "Users", width: 150 },
+    { field: "user_count", headerName: "Users", width: 150, flex:1 },
     {
       field: "permissions",
       headerName: "Permissions",
@@ -297,7 +297,8 @@ export default function RoomsLobby({ userId, navigate }) {
     {
       field: "private_room",
       headerName: "Private",
-      width: 150,
+      width: 80,
+      
       renderCell: (params) => {
         return params.row.private_room ? (
           <>
@@ -329,6 +330,7 @@ export default function RoomsLobby({ userId, navigate }) {
       headerName: "Join",
       width: 150,
       type: "actions",
+      flex:1,
       renderCell: (params) => {
         return (
           <div>
@@ -511,17 +513,11 @@ export default function RoomsLobby({ userId, navigate }) {
   }
 
   return (
-    <div>
       <Grid
         container
         direction="column"
         justifyContent="center"
-        alignItems="flex-start"
-        className=""
-        sx={{
-          marginTop: 0,
-          marginLeft: 0,
-        }}
+        alignItems="center"
         spacing={1}
       >
       {badPassword && (
@@ -580,18 +576,20 @@ export default function RoomsLobby({ userId, navigate }) {
             filter={filter} setFilter={setFilter}></FilterRooms>
         </Grid>
         <Grid item>
-          <div>
+          <Card
+          style={{width:"80vw" , overflow: "auto" }}>
             <DataGrid
-              autoHeight
-                          slots={{
-                            noRowsOverlay: CustomNoRowsOverlay,
-                            //noResultsOverlay: CustomNoRowsOverlay,
-                          }}
+              
+              slots={{
+                noRowsOverlay: CustomNoRowsOverlay,
+                //noResultsOverlay: CustomNoRowsOverlay,
+              }}
+              
               loading={!firstLoad}
               rows={roomsList}
               getRowHeight={() => "auto"}
               columns={columns}
-              sx={{ marginLeft: 0}}
+              
               initialState={{
                 pagination: { paginationModel: { pageSize: 5 } },
               }}
@@ -629,9 +627,8 @@ export default function RoomsLobby({ userId, navigate }) {
               }}
 
             />
-          </div>
+            </Card>
         </Grid>
       </Grid>
-    </div>
   );
 }

@@ -41,7 +41,7 @@ export default function NavigationLayout({ navigate, avatar, song }) {
         token={token}
         navigate={navigate}
         handleDrawerToggle={handleDrawerToggle}
-        position="fixed"
+        position="static"
         sx={{
           display: token ? { xs: "block", md: "none" } : { xs: "block" },
           width: "100vw",

@@ -51,7 +51,7 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
   const renderHomePage = () => {
     return (
       <div>
-        <Grid container spacing={3} align="center" className="center">
+        <Grid container spacing={3} align="center" className="">
           <Grid item xs={12}>
             <Typography variant="h3" component="h3">
               Spotify Connect
@@ -136,7 +136,6 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
             )}
           </Grid>
         </Grid>
-        <div></div>
       </div>
     );
   };
