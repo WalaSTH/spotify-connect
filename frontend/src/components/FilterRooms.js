@@ -42,6 +42,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SendIcon from "@mui/icons-material/Send";
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 
 //Local
 import equalizer from "./equaliser.gif";
@@ -95,32 +96,55 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 
 const joinRoomUrl = "http://127.0.0.1:8000/api/join-room";
 
-export default function FilterRooms({ userId }) {
+export default function FilterRooms({ userId, loadData, pageOptions, sortOptions, 
+  filter, setFilter,  filterOptions, setFilterOptions }) {
   const [showFilter, setShowFilter] = useState(false);
   const [guest_pause, setGuestPause] = useState(false);
   const [includeOpac, setIncludeOpac] = useState(1);
-  const [exactOpac, setExactOpac] = useState(1);
-  const [filterOptions, setFilterOptions] = useState({
-    include: false,
-    guest_pause: false,
-    guest_add_queue: false,
-    guest_manage_queue: false,
-    guest_skip: false,
-    private_room: false,
-  });
+  const [exactOpac, setExactOpac] = useState(0.4);
+
   const handleCheckbox = (e, field) => {
     let filterProps = filterOptions;
     filterProps[field] = e.target.checked;
+    if(field == "include"){
+      filterProps[field] = !e.target.checked;
+    }
     setFilterOptions(filterProps);
   };
   return (
     <div>
       <Grid container direction="column" spacing={1}>
         <Grid item>
-          <IconButton onClick={() => setShowFilter(!showFilter)}>
+{!showFilter && (          <IconButton onClick={() => setShowFilter(!showFilter)}>
             <FilterAltIcon></FilterAltIcon>
             <Typography variant="h6">Filter Rooms</Typography>
-          </IconButton>
+          </IconButton>)}
+        </Grid>
+        <Grid item>
+{showFilter && (<IconButton onClick={() => {
+              setShowFilter(!showFilter)
+              setFilter(false);
+              setFilterOptions(
+                {
+                  include: true,
+                  guest_pause: false,
+                  guest_add_queue: false,
+                  guest_manage_queue: false,
+                  guest_skip: false,
+                  private_room: false,
+                }
+              )
+              loadData(
+                pageOptions["page"] + 1,
+                sortOptions["field"],
+                sortOptions["sort"],
+                false,
+                filterOptions
+              );
+            }}>
+            <FilterAltOffIcon></FilterAltOffIcon>
+            <Typography variant="h6">Cancel Filter</Typography>
+          </IconButton>)}
         </Grid>
         <Grid item>{showFilter && <Card></Card>}</Grid>
         <Grid item>
@@ -132,14 +156,16 @@ export default function FilterRooms({ userId }) {
                     Rooms Include These
                   </Typography>
                   <FormControlLabel
-                    control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked />}
+                    control={<MaterialUISwitch sx={{ m: 1 }}  />}
                     onChange={(e) => {
                       if (e.target.checked) {
                         setExactOpac(1);
-                        setIncludeOpac(0.5);
+                        setIncludeOpac(0.4);
+                        handleCheckbox(e, "include")
                       } else {
-                        setExactOpac(0.5);
+                        setExactOpac(0.4);
                         setIncludeOpac(1);
+                        handleCheckbox(e, "include")
                       }
                     }}
                   />
@@ -183,7 +209,15 @@ export default function FilterRooms({ userId }) {
                   handleCheckbox(e, "private_room");
                 }}
               />
-              <IconButton onClick={() => console.log(filterOptions)}>
+              <IconButton onClick={() => {console.log(filterOptions)
+                              setFilter(true);
+                              loadData(
+                                pageOptions["page"] + 1,
+                                sortOptions["field"],
+                                sortOptions["sort"],
+                                true,
+                                filterOptions
+                              );}}>
                 <SendIcon></SendIcon>
               </IconButton>
             </Card>

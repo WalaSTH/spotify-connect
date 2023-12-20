@@ -56,7 +56,15 @@ export default function RoomsLobby({ userId, navigate }) {
   const [roomCount, setRoomCount] = useState(0);
   const [sortOptions, setSortOptions] = useState({ field: "", sort: "" });
   const [pageOptions, setPageOptions] = useState({ page: 0, pageSize: 5 });
-
+  const [filter, setFilter] = useState(false);
+  const [filterOptions, setFilterOptions] = useState({
+    include: true,
+    guest_pause: false,
+    guest_add_queue: false,
+    guest_manage_queue: false,
+    guest_skip: false,
+    private_room: false,
+  });
   const rows: GridRowsProp = [
     { id: 1, col1: "Hello", col2: "World" },
     { id: 2, col1: "DataGridPro", col2: "is Awesome" },
@@ -117,10 +125,10 @@ export default function RoomsLobby({ userId, navigate }) {
         console.log(error);
       });
   }
-  async function loadData(page, sortField, sortOrder) {
+  async function loadData(page, sortField, sortOrder, filter, filterOptions={} ) {
     try {
       // Get rooms
-      const initialData = await getRooms(userId, page, sortField, sortOrder);
+      const initialData = await getRooms(userId, page, sortField, sortOrder, filter, filterOptions);
       // Fetch song for every row
       console.log("THE SONG IS");
       console.log(initialData);
@@ -374,7 +382,8 @@ export default function RoomsLobby({ userId, navigate }) {
     },
   ];
 
-  async function getRooms(userId, page, sortField, sortOrder) {
+  async function getRooms(userId, page, sortField, sortOrder, filter, filterOptions) {
+    const filterOptionsString = encodeURIComponent(JSON.stringify(filterOptions))
     const response = await fetch(
       "api/get-rooms" +
         "?user_id=" +
@@ -384,8 +393,12 @@ export default function RoomsLobby({ userId, navigate }) {
         "&sort_field=" +
         sortField +
         "&sort_order=" +
-        sortOrder
-    );
+        sortOrder +
+        "&filter=" +
+        filter +
+        "&filter_options=" +
+        filterOptionsString ,
+    ).catch(error => console.error('Error:', error));
     const data = await response.json();
     return data;
 
@@ -405,7 +418,7 @@ export default function RoomsLobby({ userId, navigate }) {
   }
 
   useEffect(() => {
-    loadData(1, "", "");
+    loadData(1, "", "", filter, filterOptions);
   }, []);
 
   return (
@@ -472,7 +485,9 @@ export default function RoomsLobby({ userId, navigate }) {
         spacing={1}
       >
         <Grid item>
-          <FilterRooms></FilterRooms>
+          <FilterRooms loadData={loadData} pageOptions={pageOptions} sortOptions={sortOptions}
+            filterOptions={filterOptions} setFilterOptions={setFilterOptions}
+            filter={filter} setFilter={setFilter}></FilterRooms>
         </Grid>
         <Grid item>
           <div>
@@ -493,7 +508,9 @@ export default function RoomsLobby({ userId, navigate }) {
                 loadData(
                   e["page"] + 1,
                   sortOptions["field"],
-                  sortOptions["sort"]
+                  sortOptions["sort"],
+                  filter,
+                  filterOptions
                 );
                 console.log(e);
               }}
@@ -501,13 +518,15 @@ export default function RoomsLobby({ userId, navigate }) {
                 console.log(e);
                 if (e.length == 0) {
                   setSortOptions({ field: "", sort: "" });
-                  loadData(pageOptions["page"] + 1, "", "");
+                  loadData(pageOptions["page"] + 1, "", "", filter, filterOptions);
                 } else {
                   setSortOptions(e[0]);
                   loadData(
                     pageOptions["page"] + 1,
                     e[0]["field"],
-                    e[0]["sort"]
+                    e[0]["sort"],
+                    filter,
+                    filterOptions
                   );
                 }
               }}

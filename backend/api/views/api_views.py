@@ -137,6 +137,14 @@ class GetRooms(APIView):
         page = request.GET.get('page')
         sort_field = request.GET.get('sort_field')
         sort_order = request.GET.get('sort_order')
+        filter = request.GET.get('filter')
+        filter_options_str = request.GET.get('filter_options')
+        if filter_options_str:
+            filter_options = json.loads(filter_options_str)
+        if (filter == "true"):
+            include = filter_options["include"]
+            filter_options.pop('include', None)
+            print(filter_options)
         if sort_order == "desc" and sort_field != "user_count":
             sort_field = "-" + sort_field
         if sort_order == "asc" and sort_field == "user_count":
@@ -147,9 +155,21 @@ class GetRooms(APIView):
         len = Room.objects.count()
         list = []
         # Pagination
-        p = Paginator(Room.objects.all(), 5)
+        queryset = Room.objects.all()
+        p = Paginator(queryset, 5)
+        if filter == "true" and not include:
+            print(" NOOOOOOOT INCLUDEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+            print(include)
+            queryset = (queryset.filter(**filter_options))
+            p = Paginator(queryset, 5)
+        if filter == "true" and include:
+            print("INCLUDEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+            new_filter = {key:value for key, value in filter_options.items() if value}
+            queryset = (queryset.filter(**new_filter))
+            p = Paginator(queryset, 5)
         if sort_field:
-            p = Paginator(Room.objects.all().order_by(sort_field), 5)
+            p = Paginator(queryset.order_by(sort_field), 5)
+
         rooms_paged = p.get_page(page)
         len = rooms_paged.start_index() - rooms_paged.end_index()
         len = rooms_paged.__len__()

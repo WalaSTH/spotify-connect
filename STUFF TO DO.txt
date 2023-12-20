@@ -33,6 +33,15 @@ DONE		Add icon and functionality to Join Button
 			Filters
 
 
+DONE			Fix switch initial state
+DONE			Send stuff to backend
+DONE			Stuff to send on get Rooms
+DONE				boolean for filter
+DONE					if filter
+DONE					filter options including include or exact
+DONE			Get filter options on backend and operate
+				Join Room frontend?
+
 	Arreglar Websockets con permisos
 
 
@@ -123,3 +132,7 @@ NOTES:
 	JsonResponse to send it.
 
 >> isHost not updating after creating room...
+
+
+Pass json on get
+https://chat.openai.com/share/9e7f7734-f30c-42e6-891e-295c2977544f
