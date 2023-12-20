@@ -117,7 +117,7 @@ export default function FilterRooms({ userId, loadData, pageOptions, sortOptions
         <Grid item>
 {!showFilter && (          <IconButton onClick={() => setShowFilter(!showFilter)}>
             <FilterAltIcon></FilterAltIcon>
-            <Typography variant="h6">Filter Rooms</Typography>
+            <Typography variant="subtitle1">Filter Rooms</Typography>
           </IconButton>)}
         </Grid>
         <Grid item>
@@ -143,7 +143,7 @@ export default function FilterRooms({ userId, loadData, pageOptions, sortOptions
               );
             }}>
             <FilterAltOffIcon></FilterAltOffIcon>
-            <Typography variant="h6">Cancel Filter</Typography>
+            <Typography variant="subtitle1">Cancel Filter</Typography>
           </IconButton>)}
         </Grid>
         <Grid item>{showFilter && <Card></Card>}</Grid>
