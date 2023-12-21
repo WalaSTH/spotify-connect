@@ -23,7 +23,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 import { styled } from '@mui/material/styles';
-
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 //Icons
 import PauseIcon from "@mui/icons-material/Pause";
 import QueueIcon from "@mui/icons-material/Queue";
@@ -68,6 +69,13 @@ export default function RoomsLobby({ userId, navigate }) {
     guest_skip: false,
     private_room: false,
   });
+  const useIsMediumScreen = () => {
+    const theme = useTheme();
+    const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
+    return isMediumScreen;
+  };
+  const isMediumScreen = useIsMediumScreen();
+
   const rows: GridRowsProp = [
     { id: 1, col1: "Hello", col2: "World" },
     { id: 2, col1: "DataGridPro", col2: "is Awesome" },
@@ -577,14 +585,15 @@ export default function RoomsLobby({ userId, navigate }) {
         </Grid>
         <Grid item>
           <Card
-          style={{width:"80vw" , overflow: "auto" }}>
+          
+          style={{width:isMediumScreen?"60vw":"90vw" , overflow: "auto" }}>
             <DataGrid
               
               slots={{
                 noRowsOverlay: CustomNoRowsOverlay,
                 //noResultsOverlay: CustomNoRowsOverlay,
               }}
-              
+              autoHeight
               loading={!firstLoad}
               rows={roomsList}
               getRowHeight={() => "auto"}

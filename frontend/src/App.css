@@ -67,3 +67,10 @@
 .green{
   color: "#1DB954"
 }
+
+.smallVW{
+  width: "90vw";
+}
+.regularVW{
+  width: "60vw";
+}

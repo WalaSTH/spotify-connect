@@ -29,8 +29,8 @@ DONE		Add icons for permissions and private
 DONE		Add icon and functionality to Join Button
 			Have currently playing when its currently playing
 			Fix password UI 
-			Backednside paging
-			Filters
+DONE			Backednside paging
+DONE			Filters
 
 
 DONE			Fix switch initial state
@@ -41,10 +41,19 @@ DONE					if filter
 DONE					filter options including include or exact
 DONE			Get filter options on backend and operate
 				Join Room frontend?
-				No rooms on datagrid?
+DONE				No rooms on datagrid?
 	Arreglar Websockets con permisos
 
+//CHAT
+		Name of user
 
+//ROOM
+		Users list 
+		Kick user when host
+		Check spotify without restart
+//MUSIC
+		Start with first song
+		
 Tell when mobile res -> Need other string len for Marquee
 
 Listening to doesnt work when mobile sidebar
