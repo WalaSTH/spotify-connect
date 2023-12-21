@@ -37,7 +37,7 @@ export default function Chatbox({ msg }) {
     { user: "Cath", msg: "Oh, ok", avatar: AVATAR_FST },
     {
       user: "Wala",
-      msg: "And next time you want to talk to me about the stupidest things please just forget it and don't make me waste my time.",
+      msg: "And next timee you want to talk to me about the stupidest things please just forget it and don't make me waste my time.",
       avatar: AVATAR_SND,
     },
     { user: "Wala", msg: "Thanks", avatar: AVATAR_SND },

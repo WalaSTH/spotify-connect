@@ -58,6 +58,13 @@ export default function Chatbox({
                 ? "prev"
                 : msgArray[index]["avatar"]
             }
+            user={
+              index === 0
+              ? msgArray[index]["user"]
+              : msgArray[index - 1]["user"] === msgArray[index]["user"]
+              ? ""
+              : msgArray[index]["user"]
+            } 
             spaceBottom={0.2}
             spaceTop={0.2}
             msg={msgArray[index]["msg"]}
@@ -66,6 +73,19 @@ export default function Chatbox({
             }
             fontColor={
               sessionUser == msgArray[index]["user"] ? colors.chatTextUser : colors.chatTextOthers
+            }
+            userColor ={
+              sessionUser == msgArray[index]["user"] ? colors.chatTextUser : "textSecondary"
+            }
+            topRightRadious = {
+              index === 0
+              ? 10
+              : msgArray[index - 1]["user"] === msgArray[index]["user"]
+              ? 20
+              : 10
+            }
+            isUser = {
+              sessionUser == msgArray[index]["user"]
             }
           ></DefaultChatMsg>
         ))}
