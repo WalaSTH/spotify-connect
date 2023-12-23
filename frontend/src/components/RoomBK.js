@@ -231,11 +231,11 @@ export default function Room({
           sx={{
             marginTop: 0,
           }}
-          spacing={10}
+          spacing={1}
         >
-          <Grid item xs={6} align="center" justifyContent="center">
-            <Grid container spacing={4} justifyContent="center">
-              <Grid item xs={12}>
+          <Grid item name="Player and chat">
+            <Grid item xs={12} align="center" justifyContent="center">
+              <Grid item xs={9}>
                 <Typography>{}</Typography>
                 <MusicPlayer
                   align="center"
@@ -251,7 +251,7 @@ export default function Room({
                   room={room}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={9}>
                 <Chatbox
                   msgArray={msgArray}
                   setMsgArray={setMsgArray}
@@ -261,9 +261,8 @@ export default function Room({
               </Grid>
             </Grid>
           </Grid>
-
           {!song.no_song && (
-            <Grid item name="Queue" xs={4} sx={{ minWidth: 400 }}>
+            <Grid item name="Queue" xs={3.5} sx={{ minWidth: 400 }}>
               <CommingNext
                 queue={queue}
                 userQueue={userQueue}

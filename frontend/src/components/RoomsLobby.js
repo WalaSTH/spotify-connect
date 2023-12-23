@@ -22,9 +22,9 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
-import { styled } from '@mui/material/styles';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { styled } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 //Icons
 import PauseIcon from "@mui/icons-material/Pause";
 import QueueIcon from "@mui/icons-material/Queue";
@@ -71,7 +71,7 @@ export default function RoomsLobby({ userId, navigate }) {
   });
   const useIsMediumScreen = () => {
     const theme = useTheme();
-    const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
+    const isMediumScreen = useMediaQuery(theme.breakpoints.up("md"));
     return isMediumScreen;
   };
   const isMediumScreen = useIsMediumScreen();
@@ -136,11 +136,24 @@ export default function RoomsLobby({ userId, navigate }) {
         console.log(error);
       });
   }
-  async function loadData(page, sortField, sortOrder, filter, filterOptions={} ) {
+  async function loadData(
+    page,
+    sortField,
+    sortOrder,
+    filter,
+    filterOptions = {}
+  ) {
     try {
       setFirstLoad(false);
       // Get rooms
-      const initialData = await getRooms(userId, page, sortField, sortOrder, filter, filterOptions);
+      const initialData = await getRooms(
+        userId,
+        page,
+        sortField,
+        sortOrder,
+        filter,
+        filterOptions
+      );
       // Fetch song for every row
       console.log("THE SONG IS");
       console.log(initialData);
@@ -250,7 +263,7 @@ export default function RoomsLobby({ userId, navigate }) {
         );
       },
     },
-    { field: "user_count", headerName: "Users", width: 150, flex:1 },
+    { field: "user_count", headerName: "Users", width: 150, flex: 1 },
     {
       field: "permissions",
       headerName: "Permissions",
@@ -306,28 +319,28 @@ export default function RoomsLobby({ userId, navigate }) {
       field: "private_room",
       headerName: "Private",
       width: 80,
-      
+
       renderCell: (params) => {
         return params.row.private_room ? (
           <>
             <Tooltip
-                title="Private Room"
-                TransitionComponent={Fade}
-                TransitionProps={{ timeout: 600 }}
-                enterNextDelay={500}
-              >
-            <LockIcon />
+              title="Private Room"
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              enterNextDelay={500}
+            >
+              <LockIcon />
             </Tooltip>
           </>
         ) : (
           <>
-              <Tooltip
-                title="Open Room"
-                TransitionComponent={Fade}
-                TransitionProps={{ timeout: 600 }}
-                enterNextDelay={500}
-              >
-            <LockOpenIcon />
+            <Tooltip
+              title="Open Room"
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              enterNextDelay={500}
+            >
+              <LockOpenIcon />
             </Tooltip>
           </>
         );
@@ -338,7 +351,7 @@ export default function RoomsLobby({ userId, navigate }) {
       headerName: "Join",
       width: 150,
       type: "actions",
-      flex:1,
+      flex: 1,
       renderCell: (params) => {
         return (
           <div>
@@ -410,8 +423,17 @@ export default function RoomsLobby({ userId, navigate }) {
     },
   ];
 
-  async function getRooms(userId, page, sortField, sortOrder, filter, filterOptions) {
-    const filterOptionsString = encodeURIComponent(JSON.stringify(filterOptions))
+  async function getRooms(
+    userId,
+    page,
+    sortField,
+    sortOrder,
+    filter,
+    filterOptions
+  ) {
+    const filterOptionsString = encodeURIComponent(
+      JSON.stringify(filterOptions)
+    );
     const response = await fetch(
       "api/get-rooms" +
         "?user_id=" +
@@ -425,8 +447,8 @@ export default function RoomsLobby({ userId, navigate }) {
         "&filter=" +
         filter +
         "&filter_options=" +
-        filterOptionsString ,
-    ).catch(error => console.error('Error:', error));
+        filterOptionsString
+    ).catch((error) => console.error("Error:", error));
     const data = await response.json();
     return data;
 
@@ -449,30 +471,30 @@ export default function RoomsLobby({ userId, navigate }) {
     loadData(1, "", "", filter, filterOptions);
   }, []);
 
-  const StyledGridOverlay = styled('div')(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    '& .ant-empty-img-1': {
-      fill: theme.palette.mode === 'light' ? '#aeb8c2' : '#262626',
+  const StyledGridOverlay = styled("div")(({ theme }) => ({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    "& .ant-empty-img-1": {
+      fill: theme.palette.mode === "light" ? "#aeb8c2" : "#262626",
     },
-    '& .ant-empty-img-2': {
-      fill: theme.palette.mode === 'light' ? '#f5f5f7' : '#595959',
+    "& .ant-empty-img-2": {
+      fill: theme.palette.mode === "light" ? "#f5f5f7" : "#595959",
     },
-    '& .ant-empty-img-3': {
-      fill: theme.palette.mode === 'light' ? '#dce0e6' : '#434343',
+    "& .ant-empty-img-3": {
+      fill: theme.palette.mode === "light" ? "#dce0e6" : "#434343",
     },
-    '& .ant-empty-img-4': {
-      fill: theme.palette.mode === 'light' ? '#fff' : '#1c1c1c',
+    "& .ant-empty-img-4": {
+      fill: theme.palette.mode === "light" ? "#fff" : "#1c1c1c",
     },
-    '& .ant-empty-img-5': {
-      fillOpacity: theme.palette.mode === 'light' ? '0.8' : '0.08',
-      fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
+    "& .ant-empty-img-5": {
+      fillOpacity: theme.palette.mode === "light" ? "0.8" : "0.08",
+      fill: theme.palette.mode === "light" ? "#f5f5f5" : "#fff",
     },
   }));
-  
+
   function CustomNoRowsOverlay() {
     return (
       <StyledGridOverlay>
@@ -521,13 +543,13 @@ export default function RoomsLobby({ userId, navigate }) {
   }
 
   return (
-      <Grid
-        container
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        spacing={1}
-      >
+    <Grid
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      spacing={1}
+    >
       {badPassword && (
         <Alert
           className=""
@@ -577,67 +599,75 @@ export default function RoomsLobby({ userId, navigate }) {
           </Grid>
         </Alert>
       )}
-      
-        <Grid item>
-          <FilterRooms loadData={loadData} pageOptions={pageOptions} sortOptions={sortOptions}
-            filterOptions={filterOptions} setFilterOptions={setFilterOptions}
-            filter={filter} setFilter={setFilter}></FilterRooms>
-        </Grid>
-        <Grid item>
-          <Card
-          
-          style={{width:isMediumScreen?"60vw":"90vw" , overflow: "auto" }}>
-            <DataGrid
-              
-              slots={{
-                noRowsOverlay: CustomNoRowsOverlay,
-                //noResultsOverlay: CustomNoRowsOverlay,
-              }}
-              autoHeight
-              loading={!firstLoad}
-              rows={roomsList}
-              getRowHeight={() => "auto"}
-              columns={columns}
-              
-              initialState={{
-                pagination: { paginationModel: { pageSize: 5 } },
-              }}
-              
-              //hideFooterPagination={true}
-              paginationMode={"server"}
-              sortingMode={"server"}
-              rowCount={roomCount}
-              onPaginationModelChange={(e) => {
-                setPageOptions(e);
+
+      <Grid item>
+        <FilterRooms
+          loadData={loadData}
+          pageOptions={pageOptions}
+          sortOptions={sortOptions}
+          filterOptions={filterOptions}
+          setFilterOptions={setFilterOptions}
+          filter={filter}
+          setFilter={setFilter}
+        ></FilterRooms>
+      </Grid>
+      <Grid item>
+        <Card
+          style={{ width: isMediumScreen ? "60vw" : "90vw", overflow: "auto" }}
+        >
+          <DataGrid
+            slots={{
+              noRowsOverlay: CustomNoRowsOverlay,
+              //noResultsOverlay: CustomNoRowsOverlay,
+            }}
+            autoHeight
+            loading={!firstLoad}
+            rows={roomsList}
+            getRowHeight={() => "auto"}
+            columns={columns}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 5 } },
+            }}
+            //hideFooterPagination={true}
+            paginationMode={"server"}
+            sortingMode={"server"}
+            rowCount={roomCount}
+            onPaginationModelChange={(e) => {
+              setPageOptions(e);
+              loadData(
+                e["page"] + 1,
+                sortOptions["field"],
+                sortOptions["sort"],
+                filter,
+                filterOptions
+              );
+              console.log(e);
+            }}
+            onSortModelChange={(e) => {
+              console.log(e);
+              if (e.length == 0) {
+                setSortOptions({ field: "", sort: "" });
                 loadData(
-                  e["page"] + 1,
-                  sortOptions["field"],
-                  sortOptions["sort"],
+                  pageOptions["page"] + 1,
+                  "",
+                  "",
                   filter,
                   filterOptions
                 );
-                console.log(e);
-              }}
-              onSortModelChange={(e) => {
-                console.log(e);
-                if (e.length == 0) {
-                  setSortOptions({ field: "", sort: "" });
-                  loadData(pageOptions["page"] + 1, "", "", filter, filterOptions);
-                } else {
-                  setSortOptions(e[0]);
-                  loadData(
-                    pageOptions["page"] + 1,
-                    e[0]["field"],
-                    e[0]["sort"],
-                    filter,
-                    filterOptions
-                  );
-                }
-              }}
-
-            />
-            </Card>
-        </Grid>
+              } else {
+                setSortOptions(e[0]);
+                loadData(
+                  pageOptions["page"] + 1,
+                  e[0]["field"],
+                  e[0]["sort"],
+                  filter,
+                  filterOptions
+                );
+              }
+            }}
+          />
+        </Card>
       </Grid>
+    </Grid>
   );
 }
