@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+import requests
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -387,6 +387,21 @@ class RoomJoin(APIView):
         if user.room != "" and ask_user:
             return Response({'Msg': 'User is in another room'}, status=status.HTTP_400_BAD_REQUEST)
 
+        #Leave prev room
+        if user.room:
+            #Substract user count
+            room = get_room_by_code(user.room)
+            room.user_count = room.user_count - 1
+            room.save(update_fields=["user_count"])
+                    # Delete for all if user is host
+            if user.id == room.host:
+                queryset = User.objects.filter(room=user.room)
+                for i in range(len(queryset)):
+                    queryset[i].room = ""
+                    queryset[i].save(update_fields=['room'])
+                # Delete room
+                print("DELETEING ROOOMMMMMMMMMMMMMMMMM")
+                Room.objects.filter(code=user.room).delete()
         # Join user
         join_user(room_code, user_id)
         return Response({'Msg':'Room joined.'}, status=status.HTTP_200_OK)
@@ -413,15 +428,20 @@ class LeaveRoom(APIView):
         # Delete room for user
         user.room=""
         user.save(update_fields=['room'])
+        
+        #Substract user count
+        room = get_room_by_code(room_code)
+        room.user_count = room.user_count - 1
+        room.save(update_fields=["user_count"])
 
         # Delete for all if user is host
-        room = get_room_by_code(room_code)
         if user.id == room.host:
             queryset = User.objects.filter(room=room_code)
             for i in range(len(queryset)):
                 queryset[i].room = ""
                 queryset[i].save(update_fields=['room'])
             # Delete room
+            print("DELETEING ROOOMMMMMMMMMMMMMMMMM")
             Room.objects.filter(code=room_code).delete()
 
         return Response({'Msg':'Room leaved successfully'}, status=status.HTTP_200_OK)

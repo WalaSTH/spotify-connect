@@ -8,9 +8,9 @@ BASE_URL = "https://api.spotify.com/v1/me/"
 BASE_URL_QUEUE = "https://api.spotify.com/v1/"
 
 def get_user_tokens(user_id):
-    
     user = get_user_by_id(user_id)
     user_tokens = SpotifyToken.objects.filter(user=user)
+
     if user_tokens.exists():
         return user_tokens[0]
     else:
@@ -74,6 +74,7 @@ def execute_spotify_api_request(user_id, endpoint, post_=False,
     if queue_:
         base_url = BASE_URL_QUEUE
     tokens = get_user_tokens(user_id)
+    
     header = {'Content-Type':'application/json', 'Authorization':'Bearer ' + tokens.access_token}
     if post_:
         response = post(base_url + endpoint, headers=header)

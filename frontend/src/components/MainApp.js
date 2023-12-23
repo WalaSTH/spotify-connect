@@ -3,8 +3,8 @@ import NavigationLayout from "../layouts/Main";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import axios from "axios";
 
@@ -23,9 +23,10 @@ export default function MainApp() {
   const [changed, setChanged] = useState(false);
   const [popped, setPopped] = useState(true);
   const [alradySkipped, setAlreadySkipped] = useState(false);
+  const [poll, setPoll] = useState(0);
   const useIsMediumScreen = () => {
     const theme = useTheme();
-    const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
+    const isMediumScreen = useMediaQuery(theme.breakpoints.up("md"));
     return isMediumScreen;
   };
   const isMediumScreen = useIsMediumScreen();
@@ -165,9 +166,13 @@ export default function MainApp() {
     await axios
       .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
       .then((response) => {
-        if (response.status != 204) {
+        if (response.status != 202) {
           console.log(response.status);
           setSong(response.data);
+        }
+        if (response.status == 202) {
+          setSong(noSong);
+          setPoll(poll + 1);
         }
       })
       .catch((error) => {
@@ -233,9 +238,15 @@ export default function MainApp() {
 
   const navigate = useNavigate();
   return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <NavigationLayout navigate={navigate} avatar={null} song={song} />
-      <div style={{ flexGrow: 1, padding: '20px', marginLeft:isMediumScreen ? 240:0 }}>
+      <div
+        style={{
+          flexGrow: 1,
+          padding: "20px",
+          marginLeft: isMediumScreen ? 240 : 0,
+        }}
+      >
         <RoutesWrapper
           navigate={navigate}
           userId={userId}
@@ -252,6 +263,6 @@ export default function MainApp() {
           getQueue={getQueue}
         />
       </div>
-      </div>
+    </div>
   );
 }

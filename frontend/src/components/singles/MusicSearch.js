@@ -107,7 +107,6 @@ export default function Search({ userID, csrf, socket }) {
             position: "absolute",
             zIndex: "tooltip",
             width: 1,
-
           }}
           style={{ maxHeight: 450, overflow: "auto" }}
         >

@@ -47,7 +47,7 @@ def generate_unique_id():
 class Room(models.Model):
     code = models.CharField(max_length=ROOM_CODE_LENGTH, default=generate_unique_code, unique=True, primary_key=True)
     host = models.CharField(max_length=64, default=None)
-    password = models.CharField(max_length=ROOM_MAX_PASSWORD, null=True)
+    password = models.CharField(max_length=ROOM_MAX_PASSWORD, null=True, blank=True)
     room_name = models.CharField(max_length=30, default="Music Room")
     guest_pause = models.BooleanField(null=False, default=False)
     guest_add_queue = models.BooleanField(null=False, default=False)
@@ -55,12 +55,12 @@ class Room(models.Model):
     guest_skip = models.BooleanField(null=False, default=False)
     show_lobby = models.BooleanField(null=False, default=False)
     private_room = models.BooleanField(null=False, default=False)
-    current_song = models.JSONField(null=True)
+    current_song = models.JSONField(null=True, blank=True)
     spot_queue = ArrayField(
-        models.JSONField(null=True)
+        models.JSONField(null=True, blank=True)
     )
     user_queue = ArrayField(
-        models.JSONField(null=True)
+        models.JSONField(null=True, blank=True)
     )
     last_id = models.IntegerField()
     user_count = models.IntegerField()
@@ -74,7 +74,7 @@ class User(models.Model):
     password = models.CharField(max_length=PASSWORD_MAX_LEN)
     verified = models.BooleanField(default=False)
     authenticated = models.BooleanField(default=False)
-    room = models.CharField(max_length=ROOM_CODE_LENGTH, default="")
+    room = models.CharField(max_length=ROOM_CODE_LENGTH, default="", blank=True, null=True)
 
 class SpotifyToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
