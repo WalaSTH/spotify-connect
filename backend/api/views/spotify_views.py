@@ -95,11 +95,11 @@ class CurrentSong(APIView):
         response = execute_spotify_api_request(host_id, endpoint)
 
         if 'error' in response or 'item' not in response:
-            return Response({}, status=status.HTTP_204_NO_CONTENT)
+            return Response({}, status=status.HTTP_202_ACCEPTED)
 
         item = response.get('item')
         if item is None:
-            return Response({}, status=status.HTTP_204_NO_CONTENT)
+            return Response({}, status=status.HTTP_202_ACCEPTED)
         duration = item.get('duration_ms')
         progress = response.get('progress_ms')
         album_cover = item.get('album').get('images')[0].get('url')

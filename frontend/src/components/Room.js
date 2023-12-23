@@ -277,6 +277,38 @@ export default function Room({
               ></CommingNext>
             </Grid>
           )}
+          <Grid item xs={12}>
+            <Button
+              color="secondary"
+              component={Link}
+              onClick={leaveRoom}
+              sx={{
+                color: "black",
+
+                borderColor: "green",
+              }}
+            >
+              <ExitToAppIcon></ExitToAppIcon>
+            </Button>
+          </Grid>
+          {isHost && (
+            <Grid item xs={12}>
+              <Button
+                color="secondary"
+                component={Link}
+                onClick={() => {
+                  changeRoomSettings(true);
+                }}
+                sx={{
+                  color: "black",
+
+                  borderColor: "green",
+                }}
+              >
+                <SettingsIcon></SettingsIcon>
+              </Button>
+            </Grid>
+          )}
         </Grid>
       )}
     </div>

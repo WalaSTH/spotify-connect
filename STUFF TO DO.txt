@@ -44,6 +44,9 @@ DONE			Get filter options on backend and operate
 DONE				No rooms on datagrid?
 	Arreglar Websockets con permisos
 
+	LEAVING ROOM FROM ROOMS DOESNT DELETE IT IF HOST WTF
+	
+
 //CHAT
 		Name of user
 
@@ -69,6 +72,9 @@ Fix spong not always playing next
 
 
 ##### ERROR LOGS #####
+
+When a room has a fake user host, everything breaks.
+the currently listening takes the host
 
 UPDATING ROOM WHEN NOT HOST CREATES ONE LOL
 AM I IN TWO ROOMS?
