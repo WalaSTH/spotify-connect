@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +27,7 @@ SECRET_KEY = 'django-insecure-tkl@76c*j2qt$wk_^k16e2)(2))!xzma3lsla#kv&d9v#l3y6o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -168,7 +170,16 @@ CORS_ALLOWED_ORIGINS = [
     'https://accounts.spotify.com',
 ]
 
+CORS_ALLOWED_ORIGINS2 = ["*"]
+
+
 DEFAULT_AUTHENTICATION_CLASSES: [
     # 'rest_framework.authentication.SessionAuthentication',
     'rest_framework.authentication.BasicAuthentication',
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,"static"),
 ]
