@@ -185,6 +185,10 @@ class GetRooms(APIView):
                 permissions = permissions + "Manage Queue "
             if rooms_paged[i].guest_skip:
                 permissions = permissions + "Skip "
+            banned = user_id in rooms_paged[i].banned_users
+            host = rooms_paged[i].host
+            host_user = get_user_by_id(host)
+            host_username = host_user.username
 
             data={
                 'id': i,
@@ -200,6 +204,8 @@ class GetRooms(APIView):
                 'current_song': rooms_paged[i].current_song,
                 'user_count':rooms_paged[i].user_count,
                 'permissions': permissions,
+                'banned':banned,
+                'host_username': host_username
             }
             list.append(data)
         print(list)
@@ -228,14 +234,16 @@ class PopQueue(APIView):
         db_queue = room.spot_queue
         user_queue = room.user_queue
         if user_queue:
+            song = user_queue[0]
             user_queue.pop(0)
             room.user_queue = user_queue
             room.save(update_fields=['user_queue'])
         elif db_queue:
+            song = db_queue[0]
             db_queue.pop(0)
             room.spot_queue=db_queue
             room.save(update_fields=['spot_queue'])
-        return Response({"Msg":"Queue popped!"}, status=status.HTTP_200_OK)
+        return Response({"Msg":"Queue Popped", "Data":song["added_by"]}, status=status.HTTP_200_OK)
 
 class RemoveSong(APIView):
     def post(self, request, format=None):
@@ -339,7 +347,7 @@ class CreateRoomView(generics.ListAPIView):
                             guest_skip=guest_skip,
                             guest_manage_queue=guest_manage_queue, private_room=private_room,
                             password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby,
-                            user_queue=[], spot_queue=[], last_id = 1, user_count = 1)
+                            user_queue=[], spot_queue=[], last_id = 1, user_count = 1, banned_users = [])
                 user = get_user_by_id(host)
                 room.save()
                 user.room=room.code
@@ -386,6 +394,10 @@ class RoomJoin(APIView):
         user = get_user_by_id(user_id)
         if user.room != "" and ask_user:
             return Response({'Msg': 'User is in another room'}, status=status.HTTP_400_BAD_REQUEST)
+        # User banned?
+        room = get_room_by_code(room_code)
+        if user_id in room.banned_users:
+            return Response({'Msg': 'User banned from room'}, status=status.HTTP_403_FORBIDDEN)
 
         #Leave prev room
         if user.room:
@@ -449,6 +461,8 @@ class LeaveRoom(APIView):
 class UserIsHost(APIView):
     def get(self, request, format=None):
         user_id = request.GET.get("user_id")
+
+        #Validate user
         if not user_id_exists(user_id):
             return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         user = get_user_by_id(user_id)
@@ -461,7 +475,60 @@ class UserIsHost(APIView):
         room = get_room_by_code(room_code)
         res = room.host == user_id
         return Response({"data":res}, status=status.HTTP_200_OK)
-    
+
+class GetUsers(APIView):
+    def get(self, request, format=None):
+        user_id = request.GET.get("user_id")
+        #Validate user
+        if not user_id_exists(user_id):
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user = get_user_by_id(user_id)
+
+        room_code = user.room
+        if room_code == "" or not room_exists(room_code):
+            return Response({"Msg":"No room"}, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset = User.objects.filter(room=room_code)
+        list = []
+        for i in range(queryset.count()):
+            username = queryset[i].username
+            avatar = "https://i.pinimg.com/474x/48/9c/79/489c79244750f919f27723470813aa19.jpg"
+            list.append({"username":username, "avatar":avatar})
+        return Response({'Data': list}, status=status.HTTP_200_OK)
+
+class KickUser(APIView):
+    def post(self,request,format=None):
+        user_id = request.data.get("user_id")
+        username_kick = request.data.get("username_kick")
+
+        #Validate fields
+
+        user_kick = get_user_by_username(username_kick)
+
+        if not user_id_exists(user_id) or user_kick == None:
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        user = get_user_by_id(user_id)
+
+        room_code = user.room
+        if room_code == "" or not room_exists(room_code):
+            return Response({"Msg":"No room"}, status=status.HTTP_400_BAD_REQUEST)
+        room = get_room_by_code(room_code)
+        if room.host != user_id:
+            return Response({"Msg":"Only host can do that!"}, status=status.HTTP_403_FORBIDDEN)
+        if user_kick.id == user_id:
+            return Response({"Msg":"Host can't be kicked!"}, status=status.HTTP_403_FORBIDDEN)
+
+        user_kick.room = ""
+        user_kick.save(update_fields=["room"])
+        room.user_count = room.user_count-1
+        banned_list = room.banned_users
+        banned_list.append(user_kick.id)
+        room.save(update_fields=["user_count", "banned_users"])
+
+        return Response({'Msg': 'User kicked!'}, status=status.HTTP_200_OK)
+
+
 class MoveSong(APIView):
     def post(self, request, format=None):
         user_id = request.data.get("user_id")
