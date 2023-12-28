@@ -44,19 +44,40 @@ DONE			Get filter options on backend and operate
 DONE				No rooms on datagrid?
 	Arreglar Websockets con permisos
 
-	LEAVING ROOM FROM ROOMS DOESNT DELETE IT IF HOST WTF
-	
+	CSRF estudiar y romever linea al pedo en leaveRoom      formData.append("csrfmiddlewaretoken", "{{csrf_token}}");
 
 //CHAT
-		Name of user
+DONE		Name of user
+			Fix avatar superposing
+			Chat needs testing
+				-> Messages replacing, some users cant even talk.
+				If one of the ends refreshes, only he would talk normally. Still, others user's msgs wont come.
+				replacer replaces the last msg, cant add anymore. It replaces the last with its own or with upcomming.
+				chat limit?
 
 //ROOM
-		Users list 
-		Kick user when host
-		Check spotify without restart
+		Users list
+DONE			Fetch users from back.
+DONE			Create endpoint to kick.
+DONE			Adapt users to forbidden rooms.
+DONE		Kick user when host
+DONE		User friendly tell guest no device found
+		Warning when leaving room
+		User is Host still broken
+		Expired current song
+		SPOTIFY AVATARS
+
+DONE		Check spotify without restart
+
+DONE		Tell who added which song
+
 //MUSIC
-		Start with first song
-		
+?		Start with first song
+		Check WHY when I refresh I play the song playing by host (which is good ngl)
+// Misc
+	You should always be at the top.
+	With rooms, users lists, etc
+
 Tell when mobile res -> Need other string len for Marquee
 
 Listening to doesnt work when mobile sidebar
