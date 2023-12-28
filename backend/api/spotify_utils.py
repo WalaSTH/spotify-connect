@@ -82,6 +82,7 @@ def execute_spotify_api_request(user_id, endpoint, post_=False,
 
     if put_ and data_:
         response = put(base_url + endpoint,data=data_body, headers=header)
+        print(response.content)
         return response.content
 
     if put_:

@@ -64,6 +64,9 @@ class Room(models.Model):
     )
     last_id = models.IntegerField()
     user_count = models.IntegerField()
+    banned_users = ArrayField(
+        models.CharField(max_length=64, default=None, null=True, blank=True)
+    )
     def __str__(self):
         return self.code
 
@@ -75,6 +78,7 @@ class User(models.Model):
     verified = models.BooleanField(default=False)
     authenticated = models.BooleanField(default=False)
     room = models.CharField(max_length=ROOM_CODE_LENGTH, default="", blank=True, null=True)
+
 
 class SpotifyToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

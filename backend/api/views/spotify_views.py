@@ -156,6 +156,9 @@ class SyncUser(APIView):
         }
         if user_id != host_id:
             res = execute_spotify_api_request(user_id=user_id,endpoint="player/play", put_=True, data_=True, data_body=json.dumps(data))
+            
+            if "error" in res.decode():
+                return Response({"Msg":res.decode()}, status=status.HTTP_400_BAD_REQUEST)
         return Response({}, status=status.HTTP_200_OK)
 
 class PauseSong(APIView):
@@ -277,13 +280,7 @@ class AddToQueue(APIView):
         room = get_room_by_code(user.room)
         if room == None:
             return Response({'Msg':'Room not found'}, status=status.HTTP_404_NOT_FOUND)
-        song = {
-            'title': title,
-            'artist': artist,
-            'image_url': image_url,
-            'id': song_id,
-            'queue_id': room.last_id + 1,
-        }
+
         room.last_id = room.last_id + 1
         room.save(update_fields=["last_id"])
         if user == None:
@@ -294,8 +291,17 @@ class AddToQueue(APIView):
         host_id = room.host
         # Permissions
         if user_id != host_id and not room.guest_add_queue:
-            return Response({'Msg':'User doesnt have permission'}, status=status.HTTP_403_FORBIDDEN) 
-
+            return Response({'Msg':'User doesnt have permission'}, status=status.HTTP_403_FORBIDDEN)
+        
+        username = user.username
+        song = {
+            'title': title,
+            'artist': artist,
+            'image_url': image_url,
+            'id': song_id,
+            'queue_id': room.last_id + 1,
+            'added_by':username
+        }
         queue = room.user_queue
         queue.append(song)
         room.save(update_fields=["user_queue"])
@@ -351,7 +357,8 @@ class GetQueue(APIView):
                     'artist': artist_string,
                     'image_url': image_url,
                     'id': id,
-                    'queue_id': index
+                    'queue_id': index,
+                    'added_by':""
                 }
                 
                 db_queue.append(song)
@@ -532,7 +539,7 @@ class GetSong(APIView):
             'title': response.get('name'),
             'artist': artist_string,
             'image_url': album_cover,
-            'id': song_id
+            'id': song_id,
         }
         return Response({"Data":song}, status=status.HTTP_200_OK)
         #

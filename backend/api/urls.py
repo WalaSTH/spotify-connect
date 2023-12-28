@@ -22,7 +22,8 @@ urlpatterns = [
     path('is-host', UserIsHost.as_view()),
     path('remove-song', RemoveSong.as_view()),
     path('move-song', MoveSong.as_view()),
-    
+    path('get-users', GetUsers.as_view()),
+    path('kick-user', KickUser.as_view()),
     # Spotify
     path('current-song', CurrentSong.as_view()),
     path('get-song', GetSong.as_view()),
