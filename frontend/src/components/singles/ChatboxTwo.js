@@ -44,7 +44,7 @@ export default function Chatbox({
         ref={cardRef}
         style={{ maxHeight: 350, maxWidth: 800, overflow: "auto" }}
         sx={{
-          backgroundColor: "#fbfbfa",
+          backgroundColor: colors.chatBg,
           padding: 2,
           borderRadius: 4,
         }}
@@ -60,37 +60,41 @@ export default function Chatbox({
             }
             user={
               index === 0
-              ? msgArray[index]["user"]
-              : msgArray[index - 1]["user"] === msgArray[index]["user"]
-              ? ""
-              : msgArray[index]["user"]
-            } 
+                ? msgArray[index]["user"]
+                : msgArray[index - 1]["user"] === msgArray[index]["user"]
+                ? ""
+                : msgArray[index]["user"]
+            }
             spaceBottom={0.2}
             spaceTop={0.2}
             msg={msgArray[index]["msg"]}
             color={
-              sessionUser == msgArray[index]["user"] ? colors.chatBubbleuser : colors.chatBubbleOthers
+              sessionUser == msgArray[index]["user"]
+                ? colors.chatBubbleuser
+                : colors.chatBubbleOthers
             }
             fontColor={
-              sessionUser == msgArray[index]["user"] ? colors.chatTextUser : colors.chatTextOthers
-            }
-            userColor ={
-              sessionUser == msgArray[index]["user"] ? colors.chatTextUser : "textSecondary"
-            }
-            topRightRadious = {
-              index === 0
-              ? 10
-              : msgArray[index - 1]["user"] === msgArray[index]["user"]
-              ? 20
-              : 10
-            }
-            isUser = {
               sessionUser == msgArray[index]["user"]
+                ? colors.chatTextUser
+                : colors.chatTextOthers
             }
+            userColor={
+              sessionUser == msgArray[index]["user"]
+                ? colors.chatTextUser
+                : "textSecondary"
+            }
+            topRightRadious={
+              index === 0
+                ? 10
+                : msgArray[index - 1]["user"] === msgArray[index]["user"]
+                ? 20
+                : 10
+            }
+            isUser={sessionUser == msgArray[index]["user"]}
           ></DefaultChatMsg>
         ))}
-        <TextField 
-          sx={{ margin: "10px", width:"70%"}}
+        <TextField
+          sx={{ margin: "10px", width: "70%" }}
           autoComplete="off"
           InputProps={{
             sx: {
@@ -98,14 +102,13 @@ export default function Chatbox({
             },
             spellCheck: "false",
           }}
-          label={newMessage=="" ? "Type a message":""}
+          label={newMessage == "" ? "Type a message" : ""}
           InputLabelProps={{ shrink: false }}
           variant="outlined"
           value={newMessage}
           onChange={(e) => {
             setNewMessage(e.target.value);
           }}
-          
           onKeyDown={(e) => {
             if (e.keyCode == 13) {
               socket.send(

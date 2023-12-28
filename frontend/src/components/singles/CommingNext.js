@@ -168,6 +168,12 @@ export default function CommingNext({
                             color="text.primary"
                           ></Typography>
                           {song.artist}
+                          <br></br>
+                          {song.added_by != "" && (
+                            <Typography variant="caption">
+                              Added by: {song.added_by}
+                            </Typography>
+                          )}
                         </React.Fragment>
                       }
                     />
@@ -190,7 +196,10 @@ export default function CommingNext({
                   </Grid>
                 )}
                 {userQueue.map(
-                  ({ title, image_url, artist, id, queue_id }, index) => (
+                  (
+                    { title, image_url, artist, id, queue_id, added_by },
+                    index
+                  ) => (
                     <ListItem
                       key={index}
                       onMouseEnter={() => setUserHover(index)}
@@ -213,15 +222,21 @@ export default function CommingNext({
                         <ListItemText
                           primary={title}
                           secondary={
-                            <React.Fragment>
-                              <Typography
-                                sx={{ display: "inline" }}
-                                component="span"
-                                variant="body2"
-                                color="text.primary"
-                              ></Typography>
-                              {artist}
-                            </React.Fragment>
+                            <div>
+                              <React.Fragment>
+                                <Typography
+                                  sx={{ display: "inline" }}
+                                  component="span"
+                                  variant="body2"
+                                  color="text.primary"
+                                ></Typography>
+                                {artist}
+                                <br></br>
+                                <Typography variant="caption">
+                                  Added by: {added_by}
+                                </Typography>
+                              </React.Fragment>
+                            </div>
                           }
                         />
                         {index != 0 &&

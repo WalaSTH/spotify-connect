@@ -40,6 +40,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SendIcon from "@mui/icons-material/Send";
+import NotInterestedIcon from "@mui/icons-material/NotInterested";
 
 //Local
 import equalizer from "./equaliser.gif";
@@ -48,7 +49,7 @@ import FilterRooms from "./FilterRooms";
 
 const joinRoomUrl = "http://127.0.0.1:8000/api/join-room";
 
-export default function RoomsLobby({ userId, navigate }) {
+export default function RoomsLobby({ userId, navigate, username }) {
   const [roomsList, setRoomsList] = useState([]);
   const [firstLoad, setFirstLoad] = useState(false);
   const [songList, setSongList] = useState([]);
@@ -355,27 +356,54 @@ export default function RoomsLobby({ userId, navigate }) {
       renderCell: (params) => {
         return (
           <div>
-            {!params.row.private_room && (
-              <IconButton
-                onClick={() => {
-                  setRoomToEnter(params.row.room_code);
-                  handleEnterRoom(params.row.room_code, "", true);
-                }}
-              >
-                <LoginIcon></LoginIcon>
-              </IconButton>
+            {params.row.host_username == username && (
+              <div>
+                <IconButton
+                  onClick={() => {
+                    navigate("/room");
+                  }}
+                >
+                  <Typography variant="caption">Current Room</Typography>
+                  <LoginIcon></LoginIcon>
+                </IconButton>
+              </div>
             )}
-            {params.row.private_room && (
-              <IconButton
-                onClick={() => {
-                  setInputPassword(params.row.id);
-                }}
-                //onMouseOutCapture={() => setInputPassword(-1)}
+            {!params.row.private_room &&
+              !params.row.banned &&
+              params.row.host_username != username && (
+                <IconButton
+                  onClick={() => {
+                    setRoomToEnter(params.row.room_code);
+                    handleEnterRoom(params.row.room_code, "", true);
+                  }}
+                >
+                  <LoginIcon></LoginIcon>
+                </IconButton>
+              )}
+
+            {params.row.private_room &&
+              !params.row.banned &&
+              params.row.host_username != username && (
+                <IconButton
+                  onClick={() => {
+                    setInputPassword(params.row.id);
+                  }}
+                  //onMouseOutCapture={() => setInputPassword(-1)}
+                >
+                  {inputPassword != params.row.id && (
+                    <PasswordIcon></PasswordIcon>
+                  )}
+                </IconButton>
+              )}
+            {params.row.banned && (
+              <Tooltip
+                title="Banned from Room"
+                TransitionComponent={Fade}
+                TransitionProps={{ timeout: 600 }}
+                enterNextDelay={500}
               >
-                {inputPassword != params.row.id && (
-                  <PasswordIcon></PasswordIcon>
-                )}
-              </IconButton>
+                <NotInterestedIcon></NotInterestedIcon>
+              </Tooltip>
             )}
             {inputPassword == params.row.id && (
               <div>
