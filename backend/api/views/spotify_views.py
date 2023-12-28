@@ -517,7 +517,7 @@ class GetSong(APIView):
         endpoint = "tracks/" + song_id
         print(song_id)
         response = execute_spotify_api_request(user_id=user_id,endpoint=endpoint, queue_=True)
-        
+
         print(response)
         print("RESPONSEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
 
@@ -532,7 +532,7 @@ class GetSong(APIView):
             if i > 0:
                 artist_string += ", "
             name = artist.get('name')
-            artist_string += name 
+            artist_string += name
 
         album_cover = response.get('album').get('images')[0].get('url')
         song = {
@@ -542,7 +542,18 @@ class GetSong(APIView):
             'id': song_id,
         }
         return Response({"Data":song}, status=status.HTTP_200_OK)
-        #
 
-""" 
-        """
+class GetAvatar(APIView):
+    def get(self, request, format=None):
+        user_id = request.GET.get('user_id')
+        username = request.GET.get('username')
+        if not user_id_exists(user_id):
+            return Response({'Msg': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        user_avatar = get_user_by_username(username)
+        if user_avatar == None:
+            return Response({'Msg': 'Username not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        endpoint = "me"
+        res = execute_spotify_api_request(user_avatar.id, endpoint, queue_=True)
+        return Response({"Data":res}, status=status.HTTP_200_OK)

@@ -28,18 +28,21 @@ export default function DefaultChatMsg({
 }) {
   return (
     <div>
-      <Grid container direction="row">
+      <Grid container direction="row" justifyContent="flex-start">
         {!isUser && (
-          <Grid item xs={1}>
-            {avatar != "prev" && (
+          <Grid item>
+            {
               <Avatar
                 src={avatar}
                 sx={{
                   width: 40,
                   height: 40,
+                  opacity: avatar != "prev" ? 1 : 0,
+                  marginRight: 1,
+                  marginLeft: 1,
                 }}
               />
-            )}
+            }
           </Grid>
         )}
         <Grid
@@ -56,6 +59,8 @@ export default function DefaultChatMsg({
             borderBottomRightRadius: isUser ? 10 : 20,
             borderTopLeftRadius: isUser ? 20 : 10,
             borderBottomLeftRadius: isUser ? 20 : 10,
+            //paddingLeft: avatar !== "prev" && !isUser ? "20px" : "", // Adjust padding based on avatar presence
+            //paddingRight: avatar !== "prev" && isUser ? "50px" : "", // Adjust padding based on avatar presence
             //paddingRight:0.9,
             //paddingLeft:0.4,
           }}
@@ -94,16 +99,19 @@ export default function DefaultChatMsg({
           </Typography>
         </Grid>
         {isUser && (
-          <Grid item xs={1}>
-            {avatar != "prev" && (
+          <Grid item>
+            {
               <Avatar
                 src={avatar}
                 sx={{
                   width: 40,
                   height: 40,
+                  opacity: avatar != "prev" ? 1 : 0,
+                  marginLeft: 1,
+                  marginRight: 1,
                 }}
               />
-            )}
+            }
           </Grid>
         )}
       </Grid>

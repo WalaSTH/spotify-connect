@@ -88,6 +88,7 @@ export default function RoutesWrapper({
               navigate={navigate}
               csrftoken={csrftoken}
               update={false}
+              username={username}
               status={"connected"}
             />
           ) : (

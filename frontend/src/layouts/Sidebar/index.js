@@ -12,7 +12,7 @@ import {
   ThemeProvider,
   createTheme,
   Grid,
-  Toolbar
+  Toolbar,
 } from "@mui/material";
 import * as colors from "./../../static/colors";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
@@ -68,92 +68,6 @@ export default function DrawerWrapper({
             height: "100%",
           }}
         >
-          <Box display="flex" justifyContent="center" alignItems="center">
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="logo"
-              onClick={() => navigate("/")}
-            ></IconButton>
-            <Typography variant="h6" sx={{ my: 2 }} color="#fff">
-              Spotify Connect
-            </Typography>
-          </Box>
-          {!song.no_song && showMiniPlayer && (
-            <Typography align="left" marginLeft={1}>
-              <strog>Listening to</strog>
-            </Typography>
-          )}
-          {!song.no_song && showMiniPlayer && (
-            <Box>
-              <Grid
-                marginLeft={0.5}
-                container
-                spacing={1}
-                alignItems={"center"}
-              >
-                <Grid item>
-                  {song.is_playing && (
-                    <img
-                      src={equalizer}
-                      style={{
-                        backgroundColor: "transparent",
-                        width: 25,
-                      }}
-                    />
-                  )}
-                </Grid>
-                <Grid item>
-                  <Avatar
-                    src={song.image_url || "none"}
-                    alt={username}
-                    sx={{
-                      color: "#fff",
-                      marginBottom: "3px",
-                      width: 40,
-                      height: 40,
-                      borderRadius: 0,
-                    }}
-                  />
-                </Grid>
-                <Grid item>
-                  <Grid item>
-                    <Typography
-                      variant="body1"
-                      align="left"
-                      color={colors.miniplayerSideText}
-                      noWrap
-                      sx={{
-                        width: 150,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {song.title}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography
-                      variant="body2"
-                      align="left"
-                      color="#808080"
-                      noWrap
-                      sx={{
-                        width: 150,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {song.artist}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
           <Divider />
           <List>
             <Box
@@ -242,3 +156,94 @@ export default function DrawerWrapper({
     </Drawer>
   );
 }
+
+//Under fist BOX for small listening to
+/*
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="logo"
+              onClick={() => navigate("/")}
+            ></IconButton>
+            <Typography variant="h6" sx={{ my: 2 }} color="#fff">
+              Spotify Connect
+            </Typography>
+          </Box>
+          {!song.no_song && showMiniPlayer && (
+            <Typography align="left" marginLeft={1}>
+              <strog>Listening to</strog>
+            </Typography>
+          )}
+          {!song.no_song && showMiniPlayer && (
+            <Box>
+              <Grid
+                marginLeft={0.5}
+                container
+                spacing={1}
+                alignItems={"center"}
+              >
+                <Grid item>
+                  {song.is_playing && (
+                    <img
+                      src={equalizer}
+                      style={{
+                        backgroundColor: "transparent",
+                        width: 25,
+                      }}
+                    />
+                  )}
+                </Grid>
+                <Grid item>
+                  <Avatar
+                    src={song.image_url || "none"}
+                    alt={username}
+                    sx={{
+                      color: "#fff",
+                      marginBottom: "3px",
+                      width: 40,
+                      height: 40,
+                      borderRadius: 0,
+                    }}
+                  />
+                </Grid>
+                <Grid item>
+                  <Grid item>
+                    <Typography
+                      variant="body1"
+                      align="left"
+                      color={colors.miniplayerSideText}
+                      noWrap
+                      sx={{
+                        width: 150,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {song.title}
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography
+                      variant="body2"
+                      align="left"
+                      color="#808080"
+                      noWrap
+                      sx={{
+                        width: 150,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {song.artist}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+
+*/
