@@ -91,8 +91,9 @@ export default function Room({
   const [socket, setSocket] = useState({});
   const [showUsers, setShowUsers] = useState(false);
   const [noActiveDevice, setNoActiveDevice] = useState(false);
+  const [avatars, setAvatars] = useState({});
   const [msgArray, setMsgArray] = useState([
-    { user: "Navi", msg: "Hey, listen", avatar: AVATAR_FST },
+    /*     { user: "Navi", msg: "Hey, listen", avatar: AVATAR_FST },
     { user: "Navi", msg: "if you hold Z", avatar: AVATAR_FST },
     { user: "Navi", msg: "you can target your enemy", avatar: AVATAR_FST },
     { user: "Link", msg: "I already knew that", avatar: AVATAR_SND },
@@ -102,7 +103,7 @@ export default function Room({
       msg: "And next time you want to talk to me about the stupidest things please just forget it and don't make me waste my time.",
       avatar: AVATAR_SND,
     },
-    { user: "Link", msg: "Thanks", avatar: AVATAR_SND },
+    { user: "Link", msg: "Thanks", avatar: AVATAR_SND }, */
   ]);
   const csrf = {
     withCredentials: true,
@@ -159,6 +160,20 @@ export default function Room({
       .get("api/get-room-avatar" + "?room_code=" + roomCode)
       .then((response) => {
         setUserAvatar(response.data.image);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  async function getAvatar(username) {
+    await axios
+      .get("api/get-avatar" + "?user_id=" + userID + "&username=" + username)
+      .then((response) => {
+        const avatars_obj = avatars;
+        avatars_obj[username] = response.data.Data.images[0].url;
+        setAvatars(avatars_obj);
+        console.log(response.data.Data.images);
       })
       .catch((error) => {
         console.log(error);
@@ -315,6 +330,8 @@ export default function Room({
                   setMsgArray={setMsgArray}
                   socket={socket}
                   sessionUser={username}
+                  getAvatar={getAvatar}
+                  avatars={avatars}
                 ></Chatbox>
               </Grid>
             </Grid>
@@ -423,6 +440,8 @@ export default function Room({
           isHost={isHost}
           csrf={csrf}
           currentUser={username}
+          avatars={avatars}
+          getAvatar={getAvatar}
         ></UserList>
       )}
     </div>

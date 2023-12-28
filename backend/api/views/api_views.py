@@ -492,7 +492,7 @@ class GetUsers(APIView):
         list = []
         for i in range(queryset.count()):
             username = queryset[i].username
-            avatar = "https://i.pinimg.com/474x/48/9c/79/489c79244750f919f27723470813aa19.jpg"
+            avatar = ""
             list.append({"username":username, "avatar":avatar})
         return Response({'Data': list}, status=status.HTTP_200_OK)
 

@@ -41,4 +41,5 @@ urlpatterns = [
     path('start-next', StartNextSong.as_view()),
     path('start-song', StartSong.as_view()),
     path('pop-queue', PopQueue.as_view()),
+    path('get-avatar', GetAvatar.as_view()),
 ]
