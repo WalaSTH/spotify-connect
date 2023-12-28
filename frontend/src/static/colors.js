@@ -10,6 +10,8 @@ const greenApple = "#ECF4D6";
 const lightGray = "#f4f4f5";
 const whiteText = "#f0f8ea";
 const darkText = "#4e524e";
+const grayChat = "#fbfbfa";
+
 //Objects
 export const navbarSideColor = oceanBlue;
 export const fullBackground = greenApple;
@@ -22,3 +24,8 @@ export const chatTextUser = whiteText;
 export const chatTextOthers = darkText;
 export const miniplayerText = darkGreen;
 export const miniplayerSideText = greenApple;
+export const buttonPrim = lightGreen;
+export const buttonSecond = greenApple;
+export const buttonThird = lightGray;
+export const buttonFourth = darkGreen;
+export const chatBg = grayChat;
