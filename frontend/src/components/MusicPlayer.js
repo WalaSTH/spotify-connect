@@ -24,6 +24,7 @@ import { Alert } from "@mui/material";
 import axios from "axios";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import LinkIcon from "@mui/icons-material/Link";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import * as colors from "./../static/colors";
 
@@ -79,8 +80,9 @@ export default function MusicPlayer(props) {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
     };
-    axios.get("api/play" + "?user_id=" + props.userID)
-    .catch((error) => console.log(error));
+    axios
+      .get("api/play" + "?user_id=" + props.userID)
+      .catch((error) => console.log(error));
   };
 
   const renderButtons = () => {
@@ -93,29 +95,33 @@ export default function MusicPlayer(props) {
             TransitionProps={{ timeout: 600 }}
             enterNextDelay={500}
           >
-            {(props.room["guest_pause"] || props.isHost)&&(<IconButton
-              onClick={() => {
-                props.song.is_playing ? pauseSong() : playSong();
-              }}
-            >
-              {props.song.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
-            </IconButton>)}
+            {(props.room["guest_pause"] || props.isHost) && (
+              <IconButton
+                onClick={() => {
+                  props.song.is_playing ? pauseSong() : playSong();
+                }}
+              >
+                {props.song.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
+              </IconButton>
+            )}
           </Tooltip>
-          {(props.room["guest_skip"] || props.isHost)&&(<Tooltip
-            title={"Skip song"}
-            TransitionComponent={Fade}
-            TransitionProps={{ timeout: 600 }}
-            enterNextDelay={500}
-          >
-            <IconButton
-              onClick={() => {
-                skipSong();
-              }}
+          {(props.room["guest_skip"] || props.isHost) && (
+            <Tooltip
+              title={"Skip song"}
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              enterNextDelay={500}
             >
-              <SkipNextIcon />
-              {props.song.votes} {props.song.votes_required}
-            </IconButton>
-          </Tooltip>)}
+              <IconButton
+                onClick={() => {
+                  skipSong();
+                }}
+              >
+                <SkipNextIcon />
+                {props.song.votes} {props.song.votes_required}
+              </IconButton>
+            </Tooltip>
+          )}
           {!props.favorite && (
             <Tooltip
               title="Save to Spotify library"
@@ -154,7 +160,7 @@ export default function MusicPlayer(props) {
           )}
           {!props.isHost && (
             <Tooltip
-              title="Re-sync playback with host"
+              title="Sync playback with host"
               TransitionComponent={Fade}
               TransitionProps={{ timeout: 600 }}
               enterNextDelay={500}
@@ -196,19 +202,46 @@ export default function MusicPlayer(props) {
           <img src={props.song.image_url} height="100%" width="100%" />
         </Grid>
         <Grid item align="center" xs={8}>
-          {(props.song.title.length > 30) && (<Marquee style={{ maxWidth: 240, minWidth:240 }} >
-            <Typography component="h5" variant="h5">
-              {props.song.title}
-            </Typography>
-          </Marquee>)}
-          {(props.song.title.length <= 30) && (
-            <Typography component="h5" variant="h5" style={{maxWidth:240, minWidth:240}}>
+          {props.song.title.length > 30 && (
+            <Marquee style={{ maxWidth: 240, minWidth: 240 }}>
+              <Typography component="h5" variant="h5">
+                {props.song.title}
+              </Typography>
+            </Marquee>
+          )}
+          {props.song.title.length <= 30 && (
+            <Typography
+              component="h5"
+              variant="h5"
+              style={{ maxWidth: 240, minWidth: 240 }}
+            >
               {props.song.title}
             </Typography>
           )}
           <Typography color="textSecondary" variant="subtitle1">
             {props.song.artist}
           </Typography>
+          {props.song.no_song && props.isHost && (
+            <Grid
+              container
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Grid item>
+                <Button
+                  color="inherit"
+                  size="small"
+                  href="https://open.spotify.com/"
+                  target="_blank"
+                >
+                  Open Spotify
+                  <LinkIcon></LinkIcon>
+                </Button>
+              </Grid>
+            </Grid>
+          )}
           {!props.song.no_song ? renderButtons() : null}
         </Grid>
         <Grid item xs={12}></Grid>

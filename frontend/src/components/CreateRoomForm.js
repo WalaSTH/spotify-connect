@@ -26,6 +26,7 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
 import axios from "axios";
+import * as colors from "./../static/colors";
 import { useEffect, useState } from "react";
 
 const ROOM_NAME_MAX_LEN = 30;
