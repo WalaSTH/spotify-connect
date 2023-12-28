@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useLocation } from "react-router-dom";
 
 import axios from "axios";
 
@@ -24,6 +25,7 @@ export default function MainApp() {
   const [popped, setPopped] = useState(true);
   const [alradySkipped, setAlreadySkipped] = useState(false);
   const [poll, setPoll] = useState(0);
+  const [addedBy, setAddedBy] = useState("");
   const useIsMediumScreen = () => {
     const theme = useTheme();
     const isMediumScreen = useMediaQuery(theme.breakpoints.up("md"));
@@ -35,8 +37,11 @@ export default function MainApp() {
     title: "No song playing",
     image_url:
       "https://cdn0.iconfinder.com/data/icons/public-sign-part04/100/_-95-512.png",
-    artist: "Start playing on a device!",
+    artist: isHost
+      ? "Start playing on a device!"
+      : "Wait for host to start playing something",
     no_song: true,
+    added_by: "",
   };
   const [song, setSong] = useState(noSong);
   async function playNextSong(userID) {
@@ -147,6 +152,7 @@ export default function MainApp() {
         console.log(error);
       });
   }
+  const location = useLocation();
   async function checkUserInRoom(userID) {
     await axios
       .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
@@ -156,6 +162,10 @@ export default function MainApp() {
           setUserInRoom(true);
         } else {
           setUserInRoom(false);
+          console.log(location.pathname);
+          if (location.pathname == "/room") {
+            navigate("/");
+          }
         }
       })
       .catch((error) => {
@@ -168,7 +178,9 @@ export default function MainApp() {
       .then((response) => {
         if (response.status != 202) {
           console.log(response.status);
-          setSong(response.data);
+          const song = response.data;
+          song.added_by = addedBy;
+          setSong(song);
         }
         if (response.status == 202) {
           setSong(noSong);
@@ -185,6 +197,7 @@ export default function MainApp() {
     await axios
       .post("http://127.0.0.1:8000/api/pop-queue", formData)
       .then((response) => {
+        setAddedBy(response.data.Data);
         console.log(response);
       })
       .catch((error) => {

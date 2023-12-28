@@ -26,7 +26,12 @@ import {
   Switch,
   Box,
   Container,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
 import axios from "axios";
@@ -36,24 +41,24 @@ import MusicPlayer from "./MusicPlayer";
 import Search from "./singles/MusicSearch";
 import CommingNext from "./singles/CommingNext";
 import DefaultChatMsg from "./singles/DefaultChatMsg";
-
+import LinkIcon from "@mui/icons-material/Link";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
-//Sync
 import ContactlessIcon from "@mui/icons-material/Contactless";
 import WifiProtectedSetupOutlinedIcon from "@mui/icons-material/WifiProtectedSetupOutlined";
 import RssFeedOutlinedIcon from "@mui/icons-material/RssFeedOutlined";
 import ContactlessOutlinedIcon from "@mui/icons-material/ContactlessOutlined";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import LeakAddIcon from "@mui/icons-material/LeakAdd";
-
-//Settings
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CreateRoom from "../components/CreateRoom";
 import CreateRoomForm from "./CreateRoomForm";
 import Chatbox from "./singles/ChatboxTwo";
+import UserList from "./UserList";
+
 import * as colors from "./../static/colors";
+
 const AVATAR_FST =
   "https://upload.wikimedia.org/wikipedia/en/0/04/Navi_%28The_Legend_of_Zelda%29.png";
 const AVATAR_SND =
@@ -84,6 +89,8 @@ export default function Room({
   const [message, setMessage] = useState("");
   const [messageGot, setMessageGot] = useState("");
   const [socket, setSocket] = useState({});
+  const [showUsers, setShowUsers] = useState(false);
+  const [noActiveDevice, setNoActiveDevice] = useState(false);
   const [msgArray, setMsgArray] = useState([
     { user: "Navi", msg: "Hey, listen", avatar: AVATAR_FST },
     { user: "Navi", msg: "if you hold Z", avatar: AVATAR_FST },
@@ -104,6 +111,12 @@ export default function Room({
       "X-CSRFTOKEN": Cookies.get("csrftoken"),
     },
   };
+  const useIsMediumScreen = () => {
+    const theme = useTheme();
+    const isMediumScreen = useMediaQuery(theme.breakpoints.up("md"));
+    return isMediumScreen;
+  };
+  const isMediumScreen = useIsMediumScreen();
 
   useEffect(() => {
     getRoomData(userID);
@@ -136,7 +149,7 @@ export default function Room({
     getRoomAvatar(room["room_code"]);
     setRoom(room);
     const chatSocket = new WebSocket(
-      `ws://localhost:8000/ws/${room["room_code"]}/`
+      `ws://localhost:8000/ws/${room["room_code"]}/${userID}/`
     );
     setSocket(chatSocket);
   };
@@ -181,6 +194,7 @@ export default function Room({
       });
   }
   async function syncButton() {
+    setNoActiveDevice(false);
     const formData = new FormData();
     formData.append("user_id", userID);
     formData.append("track_id", song.id);
@@ -188,14 +202,21 @@ export default function Room({
     await axios
       .post("http://127.0.0.1:8000/api/sync", formData)
       .then((response) => {
+        console.log("SYNC");
         console.log(response);
       })
       .catch((error) => {
-        console.log(error);
+        const reason = JSON.parse(error.response.data.Msg).error.reason;
+        if (reason == "NO_ACTIVE_DEVICE") {
+          setNoActiveDevice(true);
+        }
       });
   }
   const changeRoomSettings = (value) => {
     setSettings(value);
+    if (value) {
+      setShowUsers(false);
+    }
   };
   return (
     <div>
@@ -233,8 +254,45 @@ export default function Room({
           }}
           spacing={10}
         >
-          <Grid item xs={6} align="center" justifyContent="center">
+          <Grid
+            item
+            xs={isMediumScreen ? 6 : 12}
+            align="center"
+            justifyContent="center"
+          >
             <Grid container spacing={4} justifyContent="center">
+              {noActiveDevice && (
+                <Alert
+                  className=""
+                  severity="warning"
+                  sx={{ width: 320 }}
+                  onClose={() => {
+                    setNoActiveDevice(false);
+                  }}
+                >
+                  <AlertTitle> No Device Found!</AlertTitle>
+                  Open Spotify, start playing something and try again!
+                  <Grid
+                    container
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Grid item>
+                      <Button
+                        color="inherit"
+                        size="small"
+                        href="https://open.spotify.com/"
+                        target="_blank"
+                      >
+                        Open Spotify
+                        <LinkIcon></LinkIcon>
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Alert>
+              )}
               <Grid item xs={12}>
                 <Typography>{}</Typography>
                 <MusicPlayer
@@ -263,7 +321,12 @@ export default function Room({
           </Grid>
 
           {!song.no_song && (
-            <Grid item name="Queue" xs={4} sx={{ minWidth: 400 }}>
+            <Grid
+              item
+              name="Queue"
+              xs={isMediumScreen ? 4 : 12}
+              sx={{ minWidth: 400 }}
+            >
               <CommingNext
                 queue={queue}
                 userQueue={userQueue}
@@ -277,24 +340,44 @@ export default function Room({
               ></CommingNext>
             </Grid>
           )}
-          <Grid item xs={12}>
+        </Grid>
+      )}
+      {!settings && (
+        <Grid
+          container
+          direction="column"
+          justifyContent="flex-end"
+          alignItems="flex-end"
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+          }}
+          spacing={0.5}
+        >
+          <Grid item>
             <Button
               color="secondary"
+              style={{ backgroundColor: colors.buttonThird }}
               component={Link}
-              onClick={leaveRoom}
+              onClick={() => {
+                setShowUsers(!showUsers);
+              }}
               sx={{
                 color: "black",
 
                 borderColor: "green",
               }}
             >
-              <ExitToAppIcon></ExitToAppIcon>
+              Users
+              <PeopleAltIcon></PeopleAltIcon>
             </Button>
           </Grid>
           {isHost && (
-            <Grid item xs={12}>
+            <Grid item>
               <Button
                 color="secondary"
+                style={{ backgroundColor: colors.buttonSecond }}
                 component={Link}
                 onClick={() => {
                   changeRoomSettings(true);
@@ -305,11 +388,42 @@ export default function Room({
                   borderColor: "green",
                 }}
               >
+                Settings
                 <SettingsIcon></SettingsIcon>
               </Button>
             </Grid>
           )}
+
+          <Grid item>
+            <Button
+              style={{
+                backgroundColor: isMediumScreen
+                  ? colors.buttonPrim
+                  : colors.buttonFourth,
+              }} //
+              color="secondary"
+              component={Link}
+              onClick={leaveRoom}
+              sx={{
+                color: "black",
+
+                borderColor: "green",
+              }}
+            >
+              Leave Room
+              <ExitToAppIcon></ExitToAppIcon>
+            </Button>
+          </Grid>
         </Grid>
+      )}
+      {showUsers && !settings && (
+        <UserList
+          isMediumScreen={isMediumScreen}
+          userId={userID}
+          isHost={isHost}
+          csrf={csrf}
+          currentUser={username}
+        ></UserList>
       )}
     </div>
   );
