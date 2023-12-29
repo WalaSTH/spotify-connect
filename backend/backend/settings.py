@@ -55,12 +55,14 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }
+#OLD REDIS 127.0.0.1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -68,7 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -109,10 +111,11 @@ DATABASES = {
         'NAME': 'spotifyconnect',
         'USER': 'wala',
         'PASSWORD': 'password',
-        'HOST': 'localhost',
+        'HOST': 'postgres',
         'PORT': '',
     }
 }
+#old host -> localhost
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -155,22 +158,23 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-CORS_ORIGIN_WHITELIST = [
-     'http://localhost:3000'
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'https://accounts.spotify.com',
-]
-
-
 CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',
+    'http://localhost:3000',
+    "http://localhost:3000",
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://accounts.spotify.com',
+    'http://frontend:3000',
+    'http://172.18.0.5:3000',
 ]
+CORS_ORIGIN_ALLOW_ALL = True
+
+
 
 CORS_ALLOWED_ORIGINS2 = ["*"]
+
+
 
 
 DEFAULT_AUTHENTICATION_CLASSES: [

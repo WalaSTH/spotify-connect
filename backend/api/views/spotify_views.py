@@ -16,7 +16,6 @@ class AuthURL(APIView):
     def get(self, request, format=None):
         user = request.GET.get(self.lookup_karg)
         scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing user-library-read user-library-modify user-read-private'
-
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
             'scope': scopes,
             'response_type': 'code',
@@ -149,7 +148,10 @@ class SyncUser(APIView):
         position = request.data.get("position")
         user = get_user_by_id(user_id)
         room_code = user.room
-        host_id = get_room_by_code(room_code).host
+        room = get_room_by_code(room_code)
+        if room == None:
+            return Response({"Msg":"No room"}, status=status.HTTP_404_NOT_FOUND)
+        host_id = room.host
         data ={
             "uris":["spotify:track:{}".format(track_id)],
             "position_ms": position
@@ -337,7 +339,7 @@ class GetQueue(APIView):
 
         if not res is None:
             if 'error' in res:
-                return Response({'Msg':'Error with request'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'Msg':res}, status=status.HTTP_400_BAD_REQUEST)
             res_queue = res.get('queue')
             size = min(max_queue, len(res_queue))
             for i in range(size):

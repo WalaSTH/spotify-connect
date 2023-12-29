@@ -133,6 +133,7 @@ class UserInRoom(APIView):
 class GetRooms(APIView):
     serializer_class = RoomSerializer
     def get(self, request, format=None):
+        print("I HAVE ENTERED GET ROOMS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         user_id = request.GET.get('user_id')
         page = request.GET.get('page')
         sort_field = request.GET.get('sort_field')
