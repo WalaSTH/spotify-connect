@@ -57,11 +57,13 @@ export default function CreateRoom({ userID, navigate, update, closefun }) {
   }
   async function authenticateSpotify(userID) {
     await axios
-      .get("/api/is-authenticated" + "?user_id=" + userID)
+      .get("http://localhost:8000/api/is-authenticated" + "?user_id=" + userID)
       .then(async function (data) {
         if (!data.data.status[0]) {
           await axios
-            .get("/api/get-auth-url" + "?user_id=" + userID)
+            .get(
+              "http://localhost:8000/api/get-auth-url" + "?user_id=" + userID
+            )
             .then((data) => {
               window.location.replace(data.data.url);
             });

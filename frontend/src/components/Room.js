@@ -157,7 +157,9 @@ export default function Room({
 
   async function getRoomAvatar(roomCode) {
     await axios
-      .get("api/get-room-avatar" + "?room_code=" + roomCode)
+      .get(
+        "http://localhost:8000/api/get-room-avatar" + "?room_code=" + roomCode
+      )
       .then((response) => {
         setUserAvatar(response.data.image);
       })
@@ -168,7 +170,13 @@ export default function Room({
 
   async function getAvatar(username) {
     await axios
-      .get("api/get-avatar" + "?user_id=" + userID + "&username=" + username)
+      .get(
+        "http://localhost:8000/api/get-avatar" +
+          "?user_id=" +
+          userID +
+          "&username=" +
+          username
+      )
       .then((response) => {
         const avatars_obj = avatars;
         avatars_obj[username] = response.data.Data.images[0].url;
@@ -182,7 +190,7 @@ export default function Room({
 
   async function getRoomData(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .get("http://localhost:8000/api/get-room" + "?id=" + userID)
       .then((response) => {
         if (response.status == 200) {
           setRoomInfo(response.data.room);
@@ -200,7 +208,7 @@ export default function Room({
     formData.append("user_id", userID);
     formData.append("csrfmiddlewaretoken", "{{csrf_token}}");
     await axios
-      .post("api/leave-room", formData, csrf)
+      .post("http://localhost:8000/api/leave-room", formData, csrf)
       .then((response) => {
         navigate("/");
       })
@@ -215,7 +223,7 @@ export default function Room({
     formData.append("track_id", song.id);
     formData.append("position", song.time);
     await axios
-      .post("http://127.0.0.1:8000/api/sync", formData)
+      .post("http://localhost:8000//api/sync", formData)
       .then((response) => {
         console.log("SYNC");
         console.log(response);

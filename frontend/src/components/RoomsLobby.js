@@ -47,7 +47,7 @@ import equalizer from "./equaliser.gif";
 import * as colors from "./../static/colors";
 import FilterRooms from "./FilterRooms";
 
-const joinRoomUrl = "http://127.0.0.1:8000/api/join-room";
+const joinRoomUrl = "http://localhost:8000/api/join-room";
 
 export default function RoomsLobby({ userId, navigate, username }) {
   const [roomsList, setRoomsList] = useState([]);
@@ -113,7 +113,7 @@ export default function RoomsLobby({ userId, navigate, username }) {
 
   async function getSong(songId) {
     const response = await fetch(
-      "http://127.0.0.1:8000/api/get-song" +
+      "http://localhost:8000/api/get-song" +
         "?user_id=" +
         userId +
         "&song_id=7sXEP1EMj0HrmfSSd5hOjH"
@@ -463,7 +463,7 @@ export default function RoomsLobby({ userId, navigate, username }) {
       JSON.stringify(filterOptions)
     );
     const response = await fetch(
-      "api/get-rooms" +
+      "http://localhost:8000/api/get-rooms/" +
         "?user_id=" +
         userId +
         "&page=" +

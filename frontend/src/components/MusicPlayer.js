@@ -45,7 +45,7 @@ export default function MusicPlayer(props) {
 
   async function skipSong() {
     await axios
-      .get("api/start-next" + "?user_id=" + props.userID)
+      .get("http://localhost:8000/api/start-next" + "?user_id=" + props.userID)
       .then(props.setPopped(false))
       .catch((error) => console.log(error));
   }
@@ -54,7 +54,7 @@ export default function MusicPlayer(props) {
     formData.append("user_id", props.userID);
     formData.append("song_id", props.song.id);
     await axios
-      .put("api/save", formData, props.csrf)
+      .put("http://localhost:8000/api/save", formData, props.csrf)
       .then((response) => {
         console.log(response);
       })
@@ -66,12 +66,12 @@ export default function MusicPlayer(props) {
     formData.append("user_id", props.userID);
     formData.append("song_id", props.song.id);
     await axios
-      .put("api/unsave", formData, props.csrf)
+      .put("http://localhost:8000/api/unsave", formData, props.csrf)
       .catch((error) => console.log(error));
   }
   async function pauseSong() {
     await axios
-      .get("api/pause" + "?user_id=" + props.userID)
+      .get("http://localhost:8000/api/pause" + "?user_id=" + props.userID)
       .catch((error) => console.log(error));
   }
 

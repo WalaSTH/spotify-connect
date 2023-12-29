@@ -69,7 +69,7 @@ export default function Search({ userID, csrf, socket }) {
     formData.append("csrfmiddlewaretoken", "{{csrf_token}}");
 
     await axios
-      .post("api/add-queue", formData, csrf)
+      .post("http://localhost:8000/api/add-queue", formData, csrf)
       .then((response) => {
         console.log(response);
         socket.send(
@@ -90,7 +90,13 @@ export default function Search({ userID, csrf, socket }) {
   }
   async function playNow(songId) {
     await axios
-      .get("api/start-song" + "?user_id=" + userID + "&song_id=" + songId)
+      .get(
+        "http://localhost:8000/api/start-song" +
+          "?user_id=" +
+          userID +
+          "&song_id=" +
+          songId
+      )
       .then((response) => {
         console.log(response);
       })
@@ -183,7 +189,13 @@ export default function Search({ userID, csrf, socket }) {
       console.log("ACTIVE");
     }
     await axios
-      .get("api/search" + "?user_id=" + userID + "&key=" + e.target.value)
+      .get(
+        "http://localhost:8000/api/search" +
+          "?user_id=" +
+          userID +
+          "&key=" +
+          e.target.value
+      )
       .then((response) => {
         const list = response.data.data;
         console.log(list);

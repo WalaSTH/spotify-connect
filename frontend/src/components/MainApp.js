@@ -45,14 +45,16 @@ export default function MainApp() {
   };
   const [song, setSong] = useState(noSong);
   async function playNextSong(userID) {
-    await axios.get("api/start-next" + "?user_id=" + userID).catch((error) => {
-      console.log(error);
-    });
+    await axios
+      .get("http://127.0.0.1:8000/api/start-next" + "?user_id=" + userID)
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   async function getQueue(userID) {
     await axios
-      .get("api/get-queue" + "?user_id=" + userID)
+      .get("http://127.0.0.1:8000/api/get-queue" + "?user_id=" + userID)
       .then((response) => {
         if (response.status == 200) {
           console.log(response.data.spot_queue);
@@ -70,7 +72,7 @@ export default function MainApp() {
   }
   async function isUserHost(userID) {
     await axios
-      .get("api/is-host" + "?user_id=" + userID)
+      .get("http://127.0.0.1:8000/api/is-host" + "?user_id=" + userID)
       .then((response) => {
         setIsHost(response.data.data);
         localStorage.setItem("isHost", isHost);
@@ -81,7 +83,13 @@ export default function MainApp() {
   }
   async function checkSaved(userID, songID) {
     await axios
-      .get("api/check-saved" + "?user_id=" + userID + "&song_id=" + songID)
+      .get(
+        "http://127.0.0.1:8000/api/check-saved" +
+          "?user_id=" +
+          userID +
+          "&song_id=" +
+          songID
+      )
       .then((response) => {
         const saved = response.data.data[0];
         setFavorite(saved);
@@ -124,11 +132,13 @@ export default function MainApp() {
 
   async function authenticateSpotify(userID) {
     await axios
-      .get("/api/is-authenticated" + "?user_id=" + userID)
+      .get("http://127.0.0.1:8000/api/is-authenticated" + "?user_id=" + userID)
       .then(async function (data) {
         if (!data.data.status[0]) {
           await axios
-            .get("/api/get-auth-url" + "?user_id=" + userID)
+            .get(
+              "http://127.0.0.1:8000/api/get-auth-url" + "?user_id=" + userID
+            )
             .then((data) => {
               window.location.replace(data.data.url);
             });
