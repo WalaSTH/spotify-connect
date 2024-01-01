@@ -1,0 +1,69 @@
+# pull official base image
+FROM  python:3.10.12 as builder
+
+# set work directory
+WORKDIR /backend
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED=1
+
+# install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc
+
+# lint
+RUN pip install --upgrade pip
+RUN pip install flake8==6.0.0
+COPY . /backend/
+#RUN flake8 --ignore=E501,F401 .
+
+
+COPY req.txt ./
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /backend/wheels -r req.txt
+
+COPY manage.py ./
+
+#########
+# FINAL #
+#########
+
+
+FROM  python:3.10.12
+
+RUN mkdir -p /home/backend
+
+# create the backend user
+RUN addgroup --system backend && adduser --system --group backend
+
+# create the appropriate directories
+ENV HOME=/home/backend
+ENV BACKEND_HOME=/home/backend/backend
+RUN mkdir $BACKEND_HOME
+RUN mkdir $BACKEND_HOME/staticfiles
+WORKDIR $BACKEND_HOME
+
+# install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends netcat-traditional
+COPY --from=builder /backend/wheels /wheels
+COPY --from=builder /backend/req.txt .
+RUN pip install --upgrade pip
+RUN pip install --no-cache /wheels/*
+
+# copy entrypoint.prod.sh
+COPY ./entrypoint.prod.sh .
+RUN sed -i 's/\r$//g'  $BACKEND_HOME/entrypoint.prod.sh
+RUN chmod +x  $BACKEND_HOME/entrypoint.prod.sh
+
+# copy project
+COPY . $BACKEND_HOME
+
+# chown all the files to the app user
+RUN chown -R backend:backend $BACKEND_HOME
+
+# change to the app user
+USER backend
+
+
+# run entrypoint.prod.sh
+ENTRYPOINT ["/home/backend/backend/entrypoint.prod.sh"]
