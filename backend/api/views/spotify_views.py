@@ -10,7 +10,7 @@ from ..serializers import *
 from ..models import *
 from ..credentials import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 import json
-from redirect import *
+
 
 class AuthURL(APIView):
     lookup_karg = 'user_id'
@@ -53,7 +53,7 @@ def spotify_callback(request, format=None):
 
     set_user_authenticated(user_id, True)
 
-    return redirect(FRONTEND_BASE + '/room')
+    return redirect( 'http://localhost:3000'+ '/room')
 
 
 class IsAuthenticated(APIView):

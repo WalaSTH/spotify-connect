@@ -25,6 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #SECRET_KEY = 'django-insecure-tkl@76c*j2qt$wk_^k16e2)(2))!xzma3lsla#kv&d9v#l3y6o'
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
