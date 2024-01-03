@@ -173,6 +173,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://frontend:3000',
     'http://172.18.0.5:3000',
     'http://18.223.74.214',
+    'https://main--musical-mermaid-a74f78.netlify.app/'
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 
