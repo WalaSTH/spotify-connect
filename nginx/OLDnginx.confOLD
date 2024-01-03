@@ -14,5 +14,6 @@ server {
     }
     location /static/ {
         alias /home/backend/backend/staticfiles/;
+        add_header Access-Control-Allow-Origin *;
     }
 }
