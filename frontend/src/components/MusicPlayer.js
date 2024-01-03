@@ -84,7 +84,7 @@ export default function MusicPlayer(props) {
       headers: { "Content-Type": "application/json" },
     };
     axios
-      .get("api/play" + "?user_id=" + props.userID)
+      .get(endpoints.BASE_BACKEND + "/api/play" + "?user_id=" + props.userID)
       .catch((error) => console.log(error));
   };
 
