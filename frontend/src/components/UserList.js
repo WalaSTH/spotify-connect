@@ -76,12 +76,12 @@ export default function UserList({
 
   async function getUsers() {
     await axios
-      .get("api/get-users" + "?user_id=" + userId)
+      .get(endpoints.BASE_BACKEND + "/api/get-users" + "?user_id=" + userId)
       .then((response) => {
         console.log(response);
         const list = response["data"]["Data"];
+        moveUserFront(list, currentUser);
         setUserList(list);
-        //moveUserFront(list, currentUser);
       })
       .catch((error) => console.log(error));
   }
