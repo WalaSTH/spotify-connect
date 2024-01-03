@@ -151,8 +151,9 @@ export default function Room({
     getRoomAvatar(room["room_code"]);
     setRoom(room);
     const chatSocket = new WebSocket(
-      `ws://localhost:8000/ws/${room["room_code"]}/${userID}/`
+      `wss://spotifyconnect.cordobadigital.com.ar/ws/${room["room_code"]}/${userID}/`
     );
+    //`ws://localhost:8000/ws/${room["room_code"]}/${userID}/`
     setSocket(chatSocket);
   };
 
