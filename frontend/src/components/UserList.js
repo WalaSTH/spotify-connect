@@ -79,8 +79,8 @@ export default function UserList({
       .get("api/get-users" + "?user_id=" + userId)
       .then((response) => {
         const list = response["data"]["Data"];
-        moveUserFront(list, currentUser);
         setUserList(list);
+        //moveUserFront(list, currentUser);
       })
       .catch((error) => console.log(error));
   }
