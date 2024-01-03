@@ -19,6 +19,7 @@ import {
 import DefaultChatMsg from "./DefaultChatMsg";
 import SendIcon from "@mui/icons-material/Send";
 import * as colors from "./../../static/colors";
+import * as endpoints from "./../../static/endpoints";
 
 import React, { useState, useEffect, useRef } from "react";
 

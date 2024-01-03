@@ -52,6 +52,7 @@ import Search from "./MusicSearch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import * as endpoints from "./../../static/endpoints";
 
 export default function CommingNext({
   song,
@@ -71,7 +72,7 @@ export default function CommingNext({
     formData.append("queue_id", queueId);
     formData.append("user_id", userID);
     await axios
-      .post("http://127.0.0.1:8000/api/remove-song", formData)
+      .post(endpoints.BASE_BACKEND + "/api/remove-song", formData)
       .then((response) => {
         socket.send(
           JSON.stringify({
@@ -93,7 +94,7 @@ export default function CommingNext({
     formData.append("position", position);
     formData.append("use_user", useUser);
     await axios
-      .post("http://127.0.0.1:8000/api/move-song", formData)
+      .post(endpoints.BASE_BACKEND + "/api/move-song", formData)
       .then((response) => {
         console.log(response);
         socket.send(

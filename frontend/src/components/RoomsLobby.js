@@ -45,9 +45,10 @@ import NotInterestedIcon from "@mui/icons-material/NotInterested";
 //Local
 import equalizer from "./equaliser.gif";
 import * as colors from "./../static/colors";
+import * as endpoints from "./../static/endpoints";
 import FilterRooms from "./FilterRooms";
 
-const joinRoomUrl = "http://localhost:8000/api/join-room";
+const joinRoomUrl = endpoints.BASE_BACKEND + "/api/join-room";
 
 export default function RoomsLobby({ userId, navigate, username }) {
   const [roomsList, setRoomsList] = useState([]);
@@ -113,7 +114,8 @@ export default function RoomsLobby({ userId, navigate, username }) {
 
   async function getSong(songId) {
     const response = await fetch(
-      "http://localhost:8000/api/get-song" +
+      endpoints.BASE_BACKEND +
+        "/api/get-song" +
         "?user_id=" +
         userId +
         "&song_id=7sXEP1EMj0HrmfSSd5hOjH"
@@ -123,7 +125,8 @@ export default function RoomsLobby({ userId, navigate, username }) {
 
     await axios
       .get(
-        "http://127.0.0.1:8000/api/get-song" +
+        endpoints.BASE_BACKEND +
+          "/api/get-song" +
           "?user_id=" +
           userId +
           "&song_id=" +
@@ -463,7 +466,8 @@ export default function RoomsLobby({ userId, navigate, username }) {
       JSON.stringify(filterOptions)
     );
     const response = await fetch(
-      "http://localhost:8000/api/get-rooms/" +
+      endpoints.BASE_BACKEND +
+        "/api/get-rooms/" +
         "?user_id=" +
         userId +
         "&page=" +

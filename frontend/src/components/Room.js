@@ -56,6 +56,7 @@ import CreateRoom from "../components/CreateRoom";
 import CreateRoomForm from "./CreateRoomForm";
 import Chatbox from "./singles/ChatboxTwo";
 import UserList from "./UserList";
+import * as endpoints from "./../static/endpoints";
 
 import * as colors from "./../static/colors";
 
@@ -158,7 +159,10 @@ export default function Room({
   async function getRoomAvatar(roomCode) {
     await axios
       .get(
-        "http://localhost:8000/api/get-room-avatar" + "?room_code=" + roomCode
+        endpoints.BASE_BACKEND +
+          "/api/get-room-avatar" +
+          "?room_code=" +
+          roomCode
       )
       .then((response) => {
         setUserAvatar(response.data.image);
@@ -171,7 +175,8 @@ export default function Room({
   async function getAvatar(username) {
     await axios
       .get(
-        "http://localhost:8000/api/get-avatar" +
+        endpoints.BASE_BACKEND +
+          "/api/get-avatar" +
           "?user_id=" +
           userID +
           "&username=" +
@@ -190,7 +195,7 @@ export default function Room({
 
   async function getRoomData(userID) {
     await axios
-      .get("http://localhost:8000/api/get-room" + "?id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {
         if (response.status == 200) {
           setRoomInfo(response.data.room);
@@ -208,7 +213,7 @@ export default function Room({
     formData.append("user_id", userID);
     formData.append("csrfmiddlewaretoken", "{{csrf_token}}");
     await axios
-      .post("http://localhost:8000/api/leave-room", formData, csrf)
+      .post(endpoints.BASE_BACKEND + "/api/leave-room", formData, csrf)
       .then((response) => {
         navigate("/");
       })
@@ -223,7 +228,7 @@ export default function Room({
     formData.append("track_id", song.id);
     formData.append("position", song.time);
     await axios
-      .post("http://localhost:8000//api/sync", formData)
+      .post(endpoints.BASE_BACKEND + "//api/sync", formData)
       .then((response) => {
         console.log("SYNC");
         console.log(response);

@@ -44,6 +44,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import * as endpoints from "./../../static/endpoints";
 
 export default function Search({ userID, csrf, socket }) {
   const [searchList, setSearchList] = useState([]);
@@ -69,7 +70,7 @@ export default function Search({ userID, csrf, socket }) {
     formData.append("csrfmiddlewaretoken", "{{csrf_token}}");
 
     await axios
-      .post("http://localhost:8000/api/add-queue", formData, csrf)
+      .post(endpoints.BASE_BACKEND + "/api/add-queue", formData, csrf)
       .then((response) => {
         console.log(response);
         socket.send(
@@ -91,7 +92,8 @@ export default function Search({ userID, csrf, socket }) {
   async function playNow(songId) {
     await axios
       .get(
-        "http://localhost:8000/api/start-song" +
+        endpoints.BASE_BACKEND +
+          "/api/start-song" +
           "?user_id=" +
           userID +
           "&song_id=" +
@@ -190,7 +192,8 @@ export default function Search({ userID, csrf, socket }) {
     }
     await axios
       .get(
-        "http://localhost:8000/api/search" +
+        endpoints.BASE_BACKEND +
+          "/api/search" +
           "?user_id=" +
           userID +
           "&key=" +

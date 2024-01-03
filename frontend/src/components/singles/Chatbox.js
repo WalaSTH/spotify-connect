@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import DefaultChatMsg from "./DefaultChatMsg";
 import React, { useState } from "react";
+import * as endpoints from "./../../static/endpoints";
 
 const AVATAR_FST =
   "https://upload.wikimedia.org/wikipedia/en/0/04/Navi_%28The_Legend_of_Zelda%29.png";

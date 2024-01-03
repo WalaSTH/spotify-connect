@@ -172,6 +172,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://accounts.spotify.com',
     'http://frontend:3000',
     'http://172.18.0.5:3000',
+    'http://18.223.74.214',
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 

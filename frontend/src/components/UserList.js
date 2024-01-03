@@ -49,8 +49,9 @@ import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import equalizer from "./equaliser.gif";
 import * as colors from "./../static/colors";
 import FilterRooms from "./FilterRooms";
+import * as endpoints from "./../static/endpoints";
 
-const joinRoomUrl = "http://127.0.0.1:8000/api/join-room";
+const joinRoomUrl = endpoints.BASE_BACKEND + "/api/join-room";
 
 export default function UserList({
   userId,

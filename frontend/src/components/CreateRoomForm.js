@@ -28,6 +28,7 @@ import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import * as colors from "./../static/colors";
 import { useEffect, useState } from "react";
+import * as endpoints from "./../static/endpoints";
 
 const ROOM_NAME_MAX_LEN = 30;
 const ROOM_NAME_MIN_LEN = 2;
@@ -45,7 +46,7 @@ export default function CreateRoomForm({
 }) {
   const username = localStorage.getItem("username");
   const user = userID;
-  const createRoomEndpoint = "http://127.0.0.1:8000/api/create-room/";
+  const createRoomEndpoint = endpoints.BASE_BACKEND + "/api/create-room/";
   const initialRoomName = username + "'s Room";
   const guest_pause = guestPause;
   let initialFormState = {

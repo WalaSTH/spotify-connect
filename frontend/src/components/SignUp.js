@@ -11,6 +11,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import axios from "axios";
+const BASE_BACKEND = "http://18.223.74.214";
 
 export default function SignUp({ navigate }) {
   const initialFormState = {
@@ -19,8 +20,8 @@ export default function SignUp({ navigate }) {
     password: "",
     repeatPassword: "",
   };
-  const createUserEndpoint = "http://127.0.0.1:8000/api/create-user";
-  const userTakenEndpoint = "http://127.0.0.1:8000/api/username-taken";
+  const createUserEndpoint = BASE_BACKEND + "/api/create-user";
+  const userTakenEndpoint = BASE_BACKEND + "/api/username-taken";
   const formValidation = Yup.object().shape({
     username: Yup.string()
       .min(4, "Username must be at least 3 characters long")

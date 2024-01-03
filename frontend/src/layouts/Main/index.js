@@ -4,6 +4,8 @@ import Drawer from "../Sidebar";
 import Navbar from "../Navbar";
 import { useEffect } from "react";
 import axios from "axios";
+import * as endpoints from "./../../static/endpoints";
+
 const drawerWidth = 250;
 
 export default function NavigationLayout({ navigate, avatar, song }) {
@@ -18,7 +20,7 @@ export default function NavigationLayout({ navigate, avatar, song }) {
 
   async function checkUserInRoom(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {
         if (response.status == 200) {
           setUserInRoom(true);
@@ -27,6 +29,7 @@ export default function NavigationLayout({ navigate, avatar, song }) {
         }
       })
       .catch((error) => {
+        /*  */
         setUserInRoom(false);
       });
   }
