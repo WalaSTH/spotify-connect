@@ -91,7 +91,7 @@ export default function UserList({
     formData.append("user_id", userId);
     formData.append("username_kick", username);
     await axios
-      .post("api/kick-user", formData, csrf)
+      .post(endpoints.BASE_BACKEND + "/api/kick-user", formData, csrf)
       .then((response) => {
         getUsers();
         console.log(response);
