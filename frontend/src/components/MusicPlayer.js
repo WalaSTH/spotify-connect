@@ -27,6 +27,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import LinkIcon from "@mui/icons-material/Link";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import * as colors from "./../static/colors";
+import * as endpoints from "./../static/endpoints";
 
 export default function MusicPlayer(props) {
   const [reVote, setRevote] = useState(false);
@@ -45,7 +46,9 @@ export default function MusicPlayer(props) {
 
   async function skipSong() {
     await axios
-      .get("http://localhost:8000/api/start-next" + "?user_id=" + props.userID)
+      .get(
+        endpoints.BASE_BACKEND + "/api/start-next" + "?user_id=" + props.userID
+      )
       .then(props.setPopped(false))
       .catch((error) => console.log(error));
   }
@@ -54,7 +57,7 @@ export default function MusicPlayer(props) {
     formData.append("user_id", props.userID);
     formData.append("song_id", props.song.id);
     await axios
-      .put("http://localhost:8000/api/save", formData, props.csrf)
+      .put(endpoints.BASE_BACKEND + "/api/save", formData, props.csrf)
       .then((response) => {
         console.log(response);
       })
@@ -66,12 +69,12 @@ export default function MusicPlayer(props) {
     formData.append("user_id", props.userID);
     formData.append("song_id", props.song.id);
     await axios
-      .put("http://localhost:8000/api/unsave", formData, props.csrf)
+      .put(endpoints.BASE_BACKEND + "/api/unsave", formData, props.csrf)
       .catch((error) => console.log(error));
   }
   async function pauseSong() {
     await axios
-      .get("http://localhost:8000/api/pause" + "?user_id=" + props.userID)
+      .get(endpoints.BASE_BACKEND + "/api/pause" + "?user_id=" + props.userID)
       .catch((error) => console.log(error));
   }
 

@@ -42,11 +42,12 @@ import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SendIcon from "@mui/icons-material/Send";
-import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 
 //Local
 import equalizer from "./equaliser.gif";
 import * as colors from "./../static/colors";
+import * as endpoints from "./../static/endpoints";
 
 //SWITCH
 import { styled } from "@mui/material/styles";
@@ -94,10 +95,18 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const joinRoomUrl = "http://127.0.0.1:8000/api/join-room";
+const joinRoomUrl = endpoints.BASE_BACKEND + "/api/join-room";
 
-export default function FilterRooms({ userId, loadData, pageOptions, sortOptions, 
-  filter, setFilter,  filterOptions, setFilterOptions }) {
+export default function FilterRooms({
+  userId,
+  loadData,
+  pageOptions,
+  sortOptions,
+  filter,
+  setFilter,
+  filterOptions,
+  setFilterOptions,
+}) {
   const [showFilter, setShowFilter] = useState(false);
   const [guest_pause, setGuestPause] = useState(false);
   const [includeOpac, setIncludeOpac] = useState(1);
@@ -106,7 +115,7 @@ export default function FilterRooms({ userId, loadData, pageOptions, sortOptions
   const handleCheckbox = (e, field) => {
     let filterProps = filterOptions;
     filterProps[field] = e.target.checked;
-    if(field == "include"){
+    if (field == "include") {
       filterProps[field] = !e.target.checked;
     }
     setFilterOptions(filterProps);
@@ -115,36 +124,40 @@ export default function FilterRooms({ userId, loadData, pageOptions, sortOptions
     <div>
       <Grid container direction="column" spacing={1}>
         <Grid item>
-{!showFilter && (          <IconButton onClick={() => setShowFilter(!showFilter)}>
-            <FilterAltIcon></FilterAltIcon>
-            <Typography variant="subtitle1">Filter Rooms</Typography>
-          </IconButton>)}
+          {!showFilter && (
+            <IconButton onClick={() => setShowFilter(!showFilter)}>
+              <FilterAltIcon></FilterAltIcon>
+              <Typography variant="subtitle1">Filter Rooms</Typography>
+            </IconButton>
+          )}
         </Grid>
         <Grid item>
-{showFilter && (<IconButton onClick={() => {
-              setShowFilter(!showFilter)
-              setFilter(false);
-              setFilterOptions(
-                {
+          {showFilter && (
+            <IconButton
+              onClick={() => {
+                setShowFilter(!showFilter);
+                setFilter(false);
+                setFilterOptions({
                   include: true,
                   guest_pause: false,
                   guest_add_queue: false,
                   guest_manage_queue: false,
                   guest_skip: false,
                   private_room: false,
-                }
-              )
-              loadData(
-                pageOptions["page"] + 1,
-                sortOptions["field"],
-                sortOptions["sort"],
-                false,
-                filterOptions
-              );
-            }}>
-            <FilterAltOffIcon></FilterAltOffIcon>
-            <Typography variant="subtitle1">Cancel Filter</Typography>
-          </IconButton>)}
+                });
+                loadData(
+                  pageOptions["page"] + 1,
+                  sortOptions["field"],
+                  sortOptions["sort"],
+                  false,
+                  filterOptions
+                );
+              }}
+            >
+              <FilterAltOffIcon></FilterAltOffIcon>
+              <Typography variant="subtitle1">Cancel Filter</Typography>
+            </IconButton>
+          )}
         </Grid>
         <Grid item>{showFilter && <Card></Card>}</Grid>
         <Grid item>
@@ -156,16 +169,16 @@ export default function FilterRooms({ userId, loadData, pageOptions, sortOptions
                     Rooms Include These
                   </Typography>
                   <FormControlLabel
-                    control={<MaterialUISwitch sx={{ m: 1 }}  />}
+                    control={<MaterialUISwitch sx={{ m: 1 }} />}
                     onChange={(e) => {
                       if (e.target.checked) {
                         setExactOpac(1);
                         setIncludeOpac(0.4);
-                        handleCheckbox(e, "include")
+                        handleCheckbox(e, "include");
                       } else {
                         setExactOpac(0.4);
                         setIncludeOpac(1);
-                        handleCheckbox(e, "include")
+                        handleCheckbox(e, "include");
                       }
                     }}
                   />
@@ -209,15 +222,19 @@ export default function FilterRooms({ userId, loadData, pageOptions, sortOptions
                   handleCheckbox(e, "private_room");
                 }}
               />
-              <IconButton onClick={() => {console.log(filterOptions)
-                              setFilter(true);
-                              loadData(
-                                pageOptions["page"] + 1,
-                                sortOptions["field"],
-                                sortOptions["sort"],
-                                true,
-                                filterOptions
-                              );}}>
+              <IconButton
+                onClick={() => {
+                  console.log(filterOptions);
+                  setFilter(true);
+                  loadData(
+                    pageOptions["page"] + 1,
+                    sortOptions["field"],
+                    sortOptions["sort"],
+                    true,
+                    filterOptions
+                  );
+                }}
+              >
                 <SendIcon></SendIcon>
               </IconButton>
             </Card>

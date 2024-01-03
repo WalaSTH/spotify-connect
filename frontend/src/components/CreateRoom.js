@@ -17,6 +17,7 @@ import Avatar from "@mui/material/Avatar";
 import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import * as endpoints from "./../static/endpoints";
 
 export default function CreateRoom({ userID, navigate, update, closefun }) {
   const [room, setRoom] = useState({
@@ -38,7 +39,7 @@ export default function CreateRoom({ userID, navigate, update, closefun }) {
 
   async function checkUserInRoom(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {
         console.log(response);
         if (response.status == 200 && update == false) {
@@ -57,12 +58,17 @@ export default function CreateRoom({ userID, navigate, update, closefun }) {
   }
   async function authenticateSpotify(userID) {
     await axios
-      .get("http://localhost:8000/api/is-authenticated" + "?user_id=" + userID)
+      .get(
+        endpoints.BASE_BACKEND + "/api/is-authenticated" + "?user_id=" + userID
+      )
       .then(async function (data) {
         if (!data.data.status[0]) {
           await axios
             .get(
-              "http://localhost:8000/api/get-auth-url" + "?user_id=" + userID
+              endpoints.BASE_BACKEND +
+                "/api/get-auth-url" +
+                "?user_id=" +
+                userID
             )
             .then((data) => {
               window.location.replace(data.data.url);

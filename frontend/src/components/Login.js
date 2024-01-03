@@ -16,6 +16,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import { Snackbar, Alert } from "@mui/material";
+import * as endpoints from "./../static/endpoints";
 
 const INVALID_CREDENTAILS_CODE = 406;
 const NOT_FOUND = 404;
@@ -25,14 +26,14 @@ const defaultTheme = createTheme();
 export default function Login({ navigate }) {
   const [badCredentials, setBadCredentials] = useState(false);
   const [userInRoom, setUserInRoom] = useState(false);
-  const loginEndpoint = "http://127.0.0.1:8000/api/login";
+  const loginEndpoint = endpoints.BASE_BACKEND + "/api/login";
   const initialFormState = {
     username: "",
     password: "",
   };
   async function checkUserInRoom(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {
         if (response.status == 200) {
           setUserInRoom(true);

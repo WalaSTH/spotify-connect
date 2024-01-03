@@ -20,6 +20,7 @@ import Login from "./Login";
 import SignUp from "./SignUp";
 import JoinCodeCard from "./singles/JoinCode";
 import axios from "axios";
+import * as endpoints from "./../static/endpoints";
 
 export default function HomePage({ navigate, userID, userInsideRoom }) {
   const [joinCode, setJoinCode] = useState(false);
@@ -36,7 +37,7 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
   });
   async function checkUserInRoom(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {
         if (response.status == 200) {
           setUserInRoom(true);

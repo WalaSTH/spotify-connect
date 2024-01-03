@@ -6,6 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useLocation } from "react-router-dom";
+import * as endpoints from "./../static/endpoints";
 
 import axios from "axios";
 
@@ -46,7 +47,7 @@ export default function MainApp() {
   const [song, setSong] = useState(noSong);
   async function playNextSong(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/start-next" + "?user_id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/start-next" + "?user_id=" + userID)
       .catch((error) => {
         console.log(error);
       });
@@ -54,7 +55,7 @@ export default function MainApp() {
 
   async function getQueue(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/get-queue" + "?user_id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/get-queue" + "?user_id=" + userID)
       .then((response) => {
         if (response.status == 200) {
           console.log(response.data.spot_queue);
@@ -72,7 +73,7 @@ export default function MainApp() {
   }
   async function isUserHost(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/is-host" + "?user_id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/is-host" + "?user_id=" + userID)
       .then((response) => {
         setIsHost(response.data.data);
         localStorage.setItem("isHost", isHost);
@@ -84,7 +85,8 @@ export default function MainApp() {
   async function checkSaved(userID, songID) {
     await axios
       .get(
-        "http://127.0.0.1:8000/api/check-saved" +
+        endpoints.BASE_BACKEND +
+          "/api/check-saved" +
           "?user_id=" +
           userID +
           "&song_id=" +
@@ -132,15 +134,21 @@ export default function MainApp() {
 
   async function authenticateSpotify(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/is-authenticated" + "?user_id=" + userID)
+      .get(
+        endpoints.BASE_BACKEND + "/api/is-authenticated" + "?user_id=" + userID
+      )
       .then(async function (data) {
         if (!data.data.status[0]) {
           await axios
             .get(
-              "http://127.0.0.1:8000/api/get-auth-url" + "?user_id=" + userID
+              endpoints.BASE_BACKEND +
+                "/api/get-auth-url" +
+                "?user_id=" +
+                userID
             )
             .then((data) => {
-              window.location.replace(data.data.url);
+              console.log(data.data.url);
+              //window.location.replace(data.data.url);
             });
         }
       })
@@ -154,7 +162,7 @@ export default function MainApp() {
     formData.append("track_id", id);
     formData.append("position", time);
     await axios
-      .post("http://127.0.0.1:8000/api/sync", formData)
+      .post(endpoints.BASE_BACKEND + "/api/sync", formData)
       .then((response) => {
         console.log(response);
       })
@@ -165,7 +173,7 @@ export default function MainApp() {
   const location = useLocation();
   async function checkUserInRoom(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/get-room" + "?id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {
         if (response.status == 200) {
           setRoom(response.data.data);
@@ -184,7 +192,7 @@ export default function MainApp() {
   }
   async function getCurrentSong(userID) {
     await axios
-      .get("http://127.0.0.1:8000/api/current-song" + "?user_id=" + userID)
+      .get(endpoints.BASE_BACKEND + "/api/current-song" + "?user_id=" + userID)
       .then((response) => {
         if (response.status != 202) {
           console.log(response.status);
@@ -205,7 +213,7 @@ export default function MainApp() {
     const formData = new FormData();
     formData.append("user_id", userId);
     await axios
-      .post("http://127.0.0.1:8000/api/pop-queue", formData)
+      .post(endpoints.BASE_BACKEND + "/api/pop-queue", formData)
       .then((response) => {
         setAddedBy(response.data.Data);
         console.log(response);
