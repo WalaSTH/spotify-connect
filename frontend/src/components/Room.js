@@ -56,8 +56,10 @@ import CreateRoom from "../components/CreateRoom";
 import CreateRoomForm from "./CreateRoomForm";
 import Chatbox from "./singles/ChatboxTwo";
 import UserList from "./UserList";
-import * as endpoints from "./../static/endpoints";
+import DragHandleIcon from "@mui/icons-material/DragHandle";
+import InfoIcon from "@mui/icons-material/Info";
 
+import * as endpoints from "./../static/endpoints";
 import * as colors from "./../static/colors";
 
 const AVATAR_FST =
@@ -93,6 +95,7 @@ export default function Room({
   const [showUsers, setShowUsers] = useState(false);
   const [noActiveDevice, setNoActiveDevice] = useState(false);
   const [avatars, setAvatars] = useState({});
+  const [miniMenu, setMiniMenu] = useState(false);
   const [msgArray, setMsgArray] = useState([
     /*     { user: "Navi", msg: "Hey, listen", avatar: AVATAR_FST },
     { user: "Navi", msg: "if you hold Z", avatar: AVATAR_FST },
@@ -386,68 +389,90 @@ export default function Room({
           }}
           spacing={0.5}
         >
-          <Grid item>
-            <Button
-              color="secondary"
-              style={{ backgroundColor: colors.buttonThird }}
-              component={Link}
-              onClick={() => {
-                setShowUsers(!showUsers);
-              }}
-              sx={{
-                color: "black",
+          {(miniMenu || isMediumScreen) && (
+            <div>
+              <Grid item>
+                <Button
+                  color="secondary"
+                  style={{ backgroundColor: colors.buttonThird }}
+                  component={Link}
+                  onClick={() => {
+                    setShowUsers(!showUsers);
+                  }}
+                  sx={{
+                    color: "black",
 
-                borderColor: "green",
-              }}
-            >
-              Users
-              <PeopleAltIcon></PeopleAltIcon>
-            </Button>
-          </Grid>
-          {isHost && (
-            <Grid item>
+                    borderColor: "green",
+                  }}
+                >
+                  Users
+                  <PeopleAltIcon></PeopleAltIcon>
+                </Button>
+              </Grid>
+              {isHost && (
+                <Grid item>
+                  <Button
+                    color="secondary"
+                    style={{ backgroundColor: colors.buttonSecond }}
+                    component={Link}
+                    onClick={() => {
+                      changeRoomSettings(true);
+                    }}
+                    sx={{
+                      color: "black",
+
+                      borderColor: "green",
+                    }}
+                  >
+                    Settings
+                    <SettingsIcon></SettingsIcon>
+                  </Button>
+                </Grid>
+              )}
+
+              <Grid item>
+                <Button
+                  style={{
+                    backgroundColor: isMediumScreen
+                      ? colors.buttonPrim
+                      : colors.buttonFourth,
+                  }} //
+                  color="secondary"
+                  component={Link}
+                  onClick={leaveRoom}
+                  sx={{
+                    color: "black",
+
+                    borderColor: "green",
+                  }}
+                >
+                  Leave Room
+                  <ExitToAppIcon></ExitToAppIcon>
+                </Button>
+              </Grid>
+            </div>
+          )}
+          {!isMediumScreen && (
+            <Grid item sx={{}}>
               <Button
-                color="secondary"
-                style={{ backgroundColor: colors.buttonSecond }}
                 component={Link}
                 onClick={() => {
-                  changeRoomSettings(true);
+                  if (miniMenu) {
+                    setShowUsers(false);
+                  }
+                  setMiniMenu(!miniMenu);
                 }}
                 sx={{
                   color: "black",
-
-                  borderColor: "green",
                 }}
               >
-                Settings
-                <SettingsIcon></SettingsIcon>
+                <InfoIcon></InfoIcon>
               </Button>
             </Grid>
           )}
-
-          <Grid item>
-            <Button
-              style={{
-                backgroundColor: isMediumScreen
-                  ? colors.buttonPrim
-                  : colors.buttonFourth,
-              }} //
-              color="secondary"
-              component={Link}
-              onClick={leaveRoom}
-              sx={{
-                color: "black",
-
-                borderColor: "green",
-              }}
-            >
-              Leave Room
-              <ExitToAppIcon></ExitToAppIcon>
-            </Button>
-          </Grid>
         </Grid>
       )}
-      {showUsers && !settings && (
+      {showUsers && !settings && (miniMenu || isMediumScreen) && (
         <UserList
           isMediumScreen={isMediumScreen}
           userId={userID}

@@ -155,7 +155,7 @@ export default function UserList({
                 bottom: 16,
                 right: 16,
                 marginRight: isMediumScreen ? 130 : 5,
-                marginBottom: isMediumScreen ? 0 : isHost ? 120 : 80,
+                marginBottom: isMediumScreen ? 0 : isHost ? 150 : 120,
               }}
             >
               {userList.map(({ username, id }) => {

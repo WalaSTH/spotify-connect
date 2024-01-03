@@ -269,13 +269,20 @@ export default function MainApp() {
 
   const navigate = useNavigate();
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        marginBottom: isMediumScreen ? "0px" : isHost ? "0px" : "0px",
+      }}
+    >
       <NavigationLayout navigate={navigate} avatar={null} song={song} />
       <div
         style={{
           flexGrow: 1,
-          padding: "20px",
-          marginLeft: isMediumScreen ? 240 : 0,
+          padding: userId ? "20px" : "0px",
+          marginLeft: userId && isMediumScreen ? 240 : 0,
         }}
       >
         <RoutesWrapper

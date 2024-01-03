@@ -5,6 +5,7 @@ import Navbar from "../Navbar";
 import { useEffect } from "react";
 import axios from "axios";
 import * as endpoints from "./../../static/endpoints";
+import * as colors from "./../../static/colors";
 
 const drawerWidth = 250;
 
@@ -48,6 +49,7 @@ export default function NavigationLayout({ navigate, avatar, song }) {
         sx={{
           display: token ? { xs: "block", md: "none" } : { xs: "block" },
           width: "100vw",
+          backgroundColor: colors.navbarSideColor,
         }}
       />
       {token && (

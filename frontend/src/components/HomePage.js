@@ -21,6 +21,7 @@ import SignUp from "./SignUp";
 import JoinCodeCard from "./singles/JoinCode";
 import axios from "axios";
 import * as endpoints from "./../static/endpoints";
+import * as colors from "./../static/colors";
 
 export default function HomePage({ navigate, userID, userInsideRoom }) {
   const [joinCode, setJoinCode] = useState(false);
@@ -51,8 +52,22 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
   }
   const renderHomePage = () => {
     return (
-      <div>
-        <Grid container spacing={3} align="center" className="">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+        }}
+      >
+        <Grid
+          container
+          spacing={3}
+          align="center"
+          className=""
+          alignItems="center"
+          direction="column"
+        >
           <Grid item xs={12}>
             <Typography variant="h3" component="h3">
               Spotify Connect
@@ -89,7 +104,7 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
               </Grid>
             )}
             {userID && (
-              <Grid container spacing={1} align="center">
+              <Grid container spacing={1} alignItems="center">
                 <Grid item xs={12}>
                   <ButtonGroup
                     disableElevation
@@ -98,7 +113,7 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
                   >
                     {!userInRoom && (
                       <Button
-                        color="primary"
+                        sx={{ backgroundColor: colors.buttonFourth }}
                         to="/create-room"
                         component={Link}
                       >
@@ -108,14 +123,12 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
 
                     {!joinCode && (
                       <Button
-                        color="secondary"
+                        sx={{ backgroundColor: colors.navbarSideColor }}
                         variant="contained"
+                        to="/rooms-lobby"
                         component={Link}
-                        onClick={() => {
-                          setJoinCode(true);
-                        }}
                       >
-                        Join Room With Code
+                        Join a Room
                       </Button>
                     )}
                   </ButtonGroup>

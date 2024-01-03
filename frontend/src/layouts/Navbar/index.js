@@ -3,6 +3,7 @@ import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
+import * as colors from "./../../static/colors";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
