@@ -78,6 +78,7 @@ export default function UserList({
     await axios
       .get("api/get-users" + "?user_id=" + userId)
       .then((response) => {
+        console.log(response);
         const list = response["data"]["Data"];
         setUserList(list);
         //moveUserFront(list, currentUser);
