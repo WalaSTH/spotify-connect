@@ -120,7 +120,7 @@ export default function CreateRoomForm({
         <Grid item xs={12} align="center">
           {!update && (
             <Button
-              color="primary"
+              sx={{ backgroundColor: colors.buttonFourth }}
               variant="contained"
               type="submit"
               onClick={handleSubmit}
@@ -131,7 +131,7 @@ export default function CreateRoomForm({
           )}
           {update && (
             <Button
-              color="primary"
+              sx={{ backgroundColor: colors.buttonFourth }}
               variant="contained"
               type="submit"
               onClick={handleSubmit}
@@ -144,7 +144,7 @@ export default function CreateRoomForm({
         {!update && (
           <Grid item xs={12} align="center">
             <Button
-              color="secondary"
+              sx={{ backgroundColor: colors.buttonFifth }}
               variant="contained"
               to="/"
               component={Link}
@@ -156,7 +156,7 @@ export default function CreateRoomForm({
         {update && (
           <Grid item xs={12} align="center">
             <Button
-              color="secondary"
+              sx={{ backgroundColor: colors.buttonFifth }}
               variant="contained"
               onClick={closefun}
               component={Link}
@@ -217,7 +217,6 @@ export default function CreateRoomForm({
                   <FormControlLabel
                     control={
                       <Checkbox
-                        color="secondary"
                         name="guestPause"
                         value={values.guestPause}
                         checked={values.guestPause}
@@ -234,7 +233,6 @@ export default function CreateRoomForm({
                   <FormControlLabel
                     control={
                       <Checkbox
-                        color="secondary"
                         name="guestAddQueue"
                         value={values.guestAddQueue}
                         checked={values.guestAddQueue}
@@ -251,7 +249,6 @@ export default function CreateRoomForm({
                   <FormControlLabel
                     control={
                       <Checkbox
-                        color="secondary"
                         name="guestManageQueue"
                         value={values.guestManageQueue}
                         checked={values.guestManageQueue}
@@ -269,7 +266,6 @@ export default function CreateRoomForm({
                   <FormControlLabel
                     control={
                       <Checkbox
-                        color="secondary"
                         name="guestSkip"
                         value={values.guestSkip}
                         checked={values.guestSkip}

@@ -42,13 +42,13 @@ DONE					filter options including include or exact
 DONE			Get filter options on backend and operate
 				Join Room frontend?
 DONE				No rooms on datagrid?
-	Arreglar Websockets con permisos
+DONE 	Arreglar Websockets con permisos
 
 	CSRF estudiar y romever linea al pedo en leaveRoom      formData.append("csrfmiddlewaretoken", "{{csrf_token}}");
 
 //CHAT
 DONE		Name of user
-			Fix avatar superposing
+DONE			Fix avatar superposing
 			Chat needs testing
 				-> Messages replacing, some users cant even talk.
 				If one of the ends refreshes, only he would talk normally. Still, others user's msgs wont come.
@@ -72,7 +72,7 @@ DONE		Check spotify without restart
 DONE		Tell who added which song
 
 //MUSIC
-?		Start with first song
+WHY		Start with first song
 		Check WHY when I refresh I play the song playing by host (which is good ngl)
 // Misc
 	You should always be at the top.
@@ -82,7 +82,7 @@ Tell when mobile res -> Need other string len for Marquee
 
 Listening to doesnt work when mobile sidebar
 
-Get avatar
+DONE Get avatar
 
 I send room directly to room page, should stop using queue and others
 
@@ -90,6 +90,7 @@ Not having to refresh when I play something
 
 Fix spong not always playing next
 
+FIX NAVBAR -> wrong color, wrong icons, App Title not displaying
 
 
 ##### ERROR LOGS #####

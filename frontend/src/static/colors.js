@@ -28,4 +28,5 @@ export const buttonPrim = lightGreen;
 export const buttonSecond = greenApple;
 export const buttonThird = lightGray;
 export const buttonFourth = darkGreen;
+export const buttonFifth = oceanBlue;
 export const chatBg = grayChat;

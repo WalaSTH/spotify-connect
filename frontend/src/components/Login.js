@@ -17,6 +17,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import { Snackbar, Alert } from "@mui/material";
 import * as endpoints from "./../static/endpoints";
+import * as colors from "./../static/colors";
 
 const INVALID_CREDENTAILS_CODE = 406;
 const NOT_FOUND = 404;
@@ -114,7 +115,7 @@ export default function Login({ navigate }) {
                 alignItems: "center",
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <Avatar sx={{ m: 1, bgcolor: colors.buttonFourth }}>
                 <LockOutlinedIcon />
               </Avatar>
               <Typography component="h1" variant="h5">
@@ -188,7 +189,7 @@ export default function Login({ navigate }) {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, backgroundColor: colors.buttonFourth }}
                 >
                   Log In
                 </Button>

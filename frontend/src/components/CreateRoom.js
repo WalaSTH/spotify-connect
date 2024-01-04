@@ -13,11 +13,15 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import CreateRoomForm from "./CreateRoomForm";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import AddIcon from "@mui/icons-material/Add";
+import SettingsIcon from "@mui/icons-material/Settings";
+import CreateIcon from "@mui/icons-material/Create";
 import Avatar from "@mui/material/Avatar";
 import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import * as endpoints from "./../static/endpoints";
+import * as colors from "./../static/colors";
 
 export default function CreateRoom({ userID, navigate, update, closefun }) {
   const [room, setRoom] = useState({
@@ -85,31 +89,41 @@ export default function CreateRoom({ userID, navigate, update, closefun }) {
           variant="outlined"
           sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
         >
-          <Grid item xs={12} align="center">
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            spacing={1}
+          >
+            <Grid item xs={12} align="center">
+              <Avatar sx={{ m: 0, bgcolor: colors.buttonFourth }}>
+                {update && <SettingsIcon />}
+                {!update && <AddIcon />}
+              </Avatar>
+            </Grid>
+            <Grid item>
+              {!update && (
+                <Typography component="h4" variant="h4" align="center">
+                  Create Room
+                </Typography>
+              )}
+              {update && (
+                <Typography component="h4" variant="h4" align="center">
+                  Room Settings
+                </Typography>
+              )}
+            </Grid>
+            <React.Fragment>
+              <CreateRoomForm
+                userID={userID}
+                navigate={navigate}
+                update={update}
+                closefun={closefun}
+                room={room}
+                guestPause={guestPause}
+              ></CreateRoomForm>
+            </React.Fragment>
           </Grid>
-          {!update && (
-            <Typography component="h4" variant="h4" align="center">
-              Create Room
-            </Typography>
-          )}
-          {update && (
-            <Typography component="h4" variant="h4" align="center">
-              Room Settings
-            </Typography>
-          )}
-          <React.Fragment>
-            <CreateRoomForm
-              userID={userID}
-              navigate={navigate}
-              update={update}
-              closefun={closefun}
-              room={room}
-              guestPause={guestPause}
-            ></CreateRoomForm>
-          </React.Fragment>
         </Paper>
       </Container>
     </React.Fragment>

@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import axios from "axios";
 import * as endpoints from "./../static/endpoints";
+import * as colors from "./../static/colors";
 
 export default function SignUp({ navigate }) {
   const initialFormState = {
@@ -89,7 +90,7 @@ export default function SignUp({ navigate }) {
                 alignItems: "center",
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <Avatar sx={{ m: 1, bgcolor: colors.buttonFourth }}>
                 <LockOutlinedIcon />
               </Avatar>
               <Typography component="h1" variant="h5">
@@ -188,7 +189,7 @@ export default function SignUp({ navigate }) {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, backgroundColor: colors.buttonFourth }}
                 >
                   Sign Up
                 </Button>

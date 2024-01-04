@@ -93,10 +93,18 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
                     variant="contained"
                     color="primary"
                   >
-                    <Button color="primary" to="/sign-up" component={Link}>
+                    <Button
+                      sx={{ backgroundColor: colors.buttonFourth }}
+                      to="/sign-up"
+                      component={Link}
+                    >
                       Sign Up
                     </Button>
-                    <Button color="secondary" to="/login" component={Link}>
+                    <Button
+                      sx={{ backgroundColor: colors.buttonFifth }}
+                      to="/login"
+                      component={Link}
+                    >
                       Log In
                     </Button>
                   </ButtonGroup>
@@ -123,7 +131,7 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
 
                     {!joinCode && (
                       <Button
-                        sx={{ backgroundColor: colors.navbarSideColor }}
+                        sx={{ backgroundColor: colors.buttonFifth }}
                         variant="contained"
                         to="/rooms-lobby"
                         component={Link}
