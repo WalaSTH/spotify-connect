@@ -5,6 +5,7 @@ import {
   ButtonGroup,
   Box,
   TextField,
+  IconButton,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
@@ -20,6 +21,7 @@ import Login from "./Login";
 import SignUp from "./SignUp";
 import JoinCodeCard from "./singles/JoinCode";
 import axios from "axios";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import * as endpoints from "./../static/endpoints";
 import * as colors from "./../static/colors";
 
@@ -77,8 +79,17 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
                 <Typography variant="h5" component="h5">
                   Currently in a Room
                 </Typography>
+                <Button
+                  to="/room"
+                  component={Link}
+                  sx={{
+                    color: "black",
 
-                <Button to="/room" component={Link}>
+                    borderColor: "green",
+                  }}
+                  style={{ backgroundColor: colors.buttonPrim }}
+                >
+                  <MeetingRoomIcon></MeetingRoomIcon>
                   Go to room
                 </Button>
               </div>
@@ -136,7 +147,7 @@ export default function HomePage({ navigate, userID, userInsideRoom }) {
                         to="/rooms-lobby"
                         component={Link}
                       >
-                        Join a Room
+                        {userInRoom ? "Join another Room" : "Join a Room"}
                       </Button>
                     )}
                   </ButtonGroup>

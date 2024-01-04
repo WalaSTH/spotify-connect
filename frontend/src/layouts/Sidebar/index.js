@@ -32,7 +32,7 @@ import axios from "axios";
 import equalizer from "./giphy.gif";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
-
+import HeadphonesIcon from "@mui/icons-material/Headphones";
 import ButtonBase from "@mui/material/ButtonBase";
 
 const theme = createTheme({
@@ -68,6 +68,21 @@ export default function DrawerWrapper({
             height: "100%",
           }}
         >
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="logo"
+              onClick={() => navigate("/")}
+            >
+              <HeadphonesIcon style={{ color: "white" }} />
+            </IconButton>
+
+            <Typography variant="h6" sx={{ my: 2 }} color="#fff">
+              Spotify Connect
+            </Typography>
+          </Box>
           <Divider />
           <List>
             <Box
