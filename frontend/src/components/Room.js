@@ -358,7 +358,7 @@ export default function Room({
             <Grid
               item
               name="Queue"
-              xs={isMediumScreen ? 6 : 12}
+              xs={isMediumScreen ? 4 : 12}
               sx={{ minWidth: 400 }}
             >
               <CommingNext
