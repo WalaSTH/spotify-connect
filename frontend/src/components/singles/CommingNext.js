@@ -53,6 +53,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import * as endpoints from "./../../static/endpoints";
+import MusicPlayer from "../MusicPlayer";
 
 export default function CommingNext({
   song,
@@ -64,6 +65,7 @@ export default function CommingNext({
   guestManage,
   room,
   csrf,
+  musicPlayerSize,
 }) {
   const [hovering, setHovering] = useState(-1);
   const [userHover, setUserHover] = useState(-1);
@@ -120,7 +122,9 @@ export default function CommingNext({
             <Search userID={userID} csrf={csrf} socket={socket}></Search>
           )}
         </Grid>
-        <Card style={{ maxHeight: 560, overflow: "auto" }}>
+        <Card
+          style={{ overflow: "auto", height: musicPlayerSize.height + 346 }}
+        >
           <Grid container direction="column" spacing={0}>
             <Grid item></Grid>
 

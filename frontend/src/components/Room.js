@@ -35,7 +35,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import userInRoomEndpoint from "../static/endpoints";
 import MusicPlayer from "./MusicPlayer";
 import Search from "./singles/MusicSearch";
@@ -122,6 +122,17 @@ export default function Room({
     return isMediumScreen;
   };
   const isMediumScreen = useIsMediumScreen();
+  const [musicPlayerSize, setMusicPlayerSize] = useState({
+    width: 0,
+    height: 0,
+  });
+  const musicPlayerRef = useRef(null);
+  useEffect(() => {
+    if (musicPlayerRef.current) {
+      const { width, height } = musicPlayerRef.current.getBoundingClientRect();
+      setMusicPlayerSize({ width, height });
+    }
+  });
 
   useEffect(() => {
     getRoomData(userID);
@@ -325,7 +336,7 @@ export default function Room({
                   </Grid>
                 </Alert>
               )}
-              <Grid item xs={12}>
+              <Grid item xs={12} ref={musicPlayerRef}>
                 <Typography>{}</Typography>
                 <MusicPlayer
                   align="center"
@@ -371,6 +382,7 @@ export default function Room({
                 csrf={csrf}
                 room={room}
                 guestManage={room["guest_manage_queue"]}
+                musicPlayerSize={musicPlayerSize}
               ></CommingNext>
             </Grid>
           )}
