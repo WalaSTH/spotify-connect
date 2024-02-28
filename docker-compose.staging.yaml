@@ -1,5 +1,4 @@
 services:
-
   backend:
     build:
       context: ./backend
@@ -19,7 +18,7 @@ services:
     volumes:
       - ~/apps/postgres:/var/lib/postgresql/data
     env_file:
-      - ./.env.prod.db
+      - ./.env.staging.db
 
   nginx-proxy:
     container_name: nginx-proxy
