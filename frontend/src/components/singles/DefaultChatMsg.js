@@ -84,7 +84,7 @@ export default function DefaultChatMsg({
               align: "left",
               color: fontColor,
               borderRadius: 4,
-              marginLeft: "5px",
+              marginLeft: "10px",
               marginRight: 1,
               marginBottom: 1,
               display: "inline-block",
