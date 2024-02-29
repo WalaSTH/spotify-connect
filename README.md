@@ -14,7 +14,7 @@ The same applies when joining a room.
 
 To get started, simply follow these steps:
 
-1. **Visit the App:** The project is deployed, and you can try it [here](#) (insert link to your deployed app).
+1. **Visit the App:** The project is deployed, and you can try it [here](https://musical-mermaid-a74f78.netlify.app/).
    
 2. **Create an Account:** If you're new to Spotify Connect, create an account by signing up. If you already have an account, log in to access the full features of the app.
 
@@ -22,7 +22,8 @@ To get started, simply follow these steps:
 
 4. **Enjoy Shared Music Experience:** Once inside a room, you can start enjoying music with friends or other users. Add your favorite tracks to the shared playlist queue, manage the queue by rearranging or removing songs, and talk with the other users in the room through the integrated chat.
 
-**Note:** A Spotify Premium account is required to fully utilize the app's features. While users with non-premium accounts can still use the app, certain functionalities may be limited.
+**Note:** A Spotify Premium account is required to fully utilize the app's features. While users with non-premium accounts can still use the app, certain functionalities may be limited.\
+Please remember that this app is still under development, and as such, some bugs and errors may be encountered. Expect fixes and improved functionality as developement goes on.
 
 
 ## Key Features:
