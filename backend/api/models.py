@@ -1,12 +1,15 @@
 from django.db import models
 import string, random
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.auth.hashers import make_password, check_password
+
 
 # User constraints
 USER_MIN_LEN = 4
 USER_MAX_LEN = 16
 PASSWORD_MIN_LEN = 8
 PASSWORD_MAX_LEN = 60
+PASSWORD_MAX_LEN_ENCODED = 600
 EMAIL_MIN_LEN = 4
 EMAIL_MAX_LEN = 60
 
@@ -16,7 +19,7 @@ ROOM_NAME_MIN_LEN = 2
 ROOM_CODE_LENGTH = 32
 ROOM_MIN_PASSOWRD = 3
 ROOM_MAX_PASSWORD = 16
-
+ROOM_MAX_PASSWORD_ENCODED = 600
 
 # Other
 SESSION_KEY_LENGHT = 32
@@ -47,7 +50,7 @@ def generate_unique_id():
 class Room(models.Model):
     code = models.CharField(max_length=ROOM_CODE_LENGTH, default=generate_unique_code, unique=True, primary_key=True)
     host = models.CharField(max_length=64, default=None)
-    password = models.CharField(max_length=ROOM_MAX_PASSWORD, null=True, blank=True)
+    password = models.CharField(max_length=ROOM_MAX_PASSWORD_ENCODED, null=True, blank=True)
     room_name = models.CharField(max_length=30, default="Music Room")
     guest_pause = models.BooleanField(null=False, default=False)
     guest_add_queue = models.BooleanField(null=False, default=False)
@@ -74,7 +77,7 @@ class User(models.Model):
     id = models.CharField(max_length=64, unique=True, primary_key=True, default=generate_unique_id)
     email = models.CharField(unique=True, max_length=EMAIL_MAX_LEN)
     username = models.CharField(max_length=USER_MAX_LEN)
-    password = models.CharField(max_length=PASSWORD_MAX_LEN)
+    password = models.CharField(max_length=PASSWORD_MAX_LEN_ENCODED)
     verified = models.BooleanField(default=False)
     authenticated = models.BooleanField(default=False)
     room = models.CharField(max_length=ROOM_CODE_LENGTH, default="", blank=True, null=True)
@@ -120,7 +123,8 @@ def get_user_by_username(username):
 def user_match_pass(username, password):
     res = None
     if user_name_exists(username):
-        res = password == User.objects.filter(username=username)[0].password
+        #res = password_hashed == User.objects.filter(username=username)[0].password
+        res = check_password(password, User.objects.filter(username=username)[0].password)
     return res
 
 def get_user_id(username):
@@ -153,7 +157,7 @@ def room_exists(room_code):
 def room_password_match(room_code, input_password):
     room = Room.objects.filter(code=room_code)[0]
     room_password = room.password
-    return input_password == room_password
+    return check_password(input_password, room_password)
 
 def join_user(room_code, user_id):
     user = get_user_by_id(user_id)

@@ -9,6 +9,7 @@ from ..serializers import *
 from ..models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.contrib.auth.hashers import make_password
 
 # Pagination
 from django.core.paginator import Paginator
@@ -66,9 +67,9 @@ class CreateUser(APIView):
             queryset = User.objects.filter(email=email)
             if (queryset.exists()):
                 return Response({'Bad Request': 'Email already registered'},status=status.HTTP_400_BAD_REQUEST)
-
+            password_hashed = make_password(password)
             # Create user
-            user = User(username=username, password=password, email=email, verified=False, authenticated=False, room="")
+            user = User(username=username, password=password_hashed, email=email, verified=False, authenticated=False, room="")
             user.save()
             return Response({'Msg':'User created successfully'}, status=status.HTTP_201_CREATED)
         else:
@@ -316,11 +317,12 @@ class CreateRoomView(generics.ListAPIView):
             if (not password) and private_room:
                 return Response({'Bad Request': 'Private rooms must include a password'}, status=status.HTTP_400_BAD_REQUEST)
 
+            password_encoded = make_password(password)
             if password and not private_room:
-                password = ""
+                password_encoded = ""
 
             if not password and not private_room:
-                password = ""
+                password_encoded = ""
 
             queryset = Room.objects.filter(host=host)
             if queryset.exists():
@@ -331,7 +333,7 @@ class CreateRoomView(generics.ListAPIView):
                 room.guest_manage_queue=guest_manage_queue
                 room.guest_skip=guest_skip
                 room.private_room=private_room
-                room.password=password
+                room.password=password_encoded
                 room.show_lobby=show_lobby
                 room.guest_add_queue=guest_add_queue
                 room.spot_queue = []
@@ -347,7 +349,7 @@ class CreateRoomView(generics.ListAPIView):
                 room = Room(host=host, room_name=room_name, guest_pause=guest_pause,
                             guest_skip=guest_skip,
                             guest_manage_queue=guest_manage_queue, private_room=private_room,
-                            password=password, guest_add_queue=guest_add_queue, show_lobby=show_lobby,
+                            password=password_encoded, guest_add_queue=guest_add_queue, show_lobby=show_lobby,
                             user_queue=[], spot_queue=[], last_id = 1, user_count = 1, banned_users = [])
                 user = get_user_by_id(host)
                 room.save()
