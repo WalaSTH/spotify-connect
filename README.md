@@ -4,6 +4,26 @@ Spotify Connect is an application that allows users to join virtual rooms and li
 
 ![](https://github.com/WalaSTH/spotify-connect/blob/main/images/room2.png)
 
+## Usage
+The project is deployed and you can try it here!\
+Once on the app, create an account and log in. After that you can fully start using the app.\
+When you create a room, you will need to first start playing a song on a device so the app can identify a running Spotify device.\
+The same applies when joining a room.
+
+## Usage
+
+To get started, simply follow these steps:
+
+1. **Visit the App:** The project is deployed, and you can try it [here](#) (insert link to your deployed app).
+   
+2. **Create an Account:** If you're new to Spotify Connect, create an account by signing up. If you already have an account, log in to access the full features of the app.
+
+3. **Create or Join a Room:** Once logged in, you can create a new room or join an existing one. When creating a room, make sure to start playing a song on your device. This allows the app to identify the active Spotify device for seamless playback synchronization. The same applies when joining a room.
+
+4. **Enjoy Shared Music Experience:** Once inside a room, you can start enjoying music with friends or other users. Add your favorite tracks to the shared playlist queue, manage the queue by rearranging or removing songs, and talk with the other users in the room through the integrated chat.
+
+**Note:** A Spotify Premium account is required to fully utilize the app's features. While users with non-premium accounts can still use the app, certain functionalities may be limited.
+
 
 ## Key Features:
 - **Real-Time Playback Synchronization:** Enjoy synchronized playback across all connected users, ensuring everyone hears the same song at the same time.
@@ -28,8 +48,8 @@ Spotify Connect is an application that allows users to join virtual rooms and li
 
 
 ## Installation
-The project is deployed and you can try it here!\
-But, if you wish to run it locally here are the instructions.
+The project is deployed and you can try it out without any installation needed (see Usage)
+However, if you wish to run it locally here are the instructions.
 
 ### Run Backend using Docker Compose
 To run the backend process locally the easiest way is to do it by using docker compose
