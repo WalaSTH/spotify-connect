@@ -9,9 +9,13 @@ Spotify Connect is an application that allows users to join virtual rooms and li
 - **Real-Time Playback Synchronization:** Enjoy synchronized playback across all connected users, ensuring everyone hears the same song at the same time.
 - **Create and Join Rooms:** Users can create or join virtual rooms to listen to music with friends, family, or fellow music enthusiasts.
   When creating a room, you can set its default values and rules, i.e wheter or not guests can pause, add tracks or skip the current track. You can set a password to the room, and even decide if you want your room to be visible for everyone.
-![](https://github.com/WalaSTH/spotify-connect/blob/main/images/create-room2.gif)
+
+<img src="https://github.com/WalaSTH/spotify-connect/blob/main/images/create-room2.gif" height="500">
+
 - **Track Search and Queue Management:** Search for any available track in Spotify and add it to the shared playlist queue. Delete, or rearrange the queue.\
-![](https://github.com/WalaSTH/spotify-connect/blob/main/images/queue-use2.gif)  
+
+
+<img src="https://github.com/WalaSTH/spotify-connect/blob/main/images/queue-use2.gif" height="600">
 
 - **Interactive Chat:** Engage in conversations with other users through the built-in chat feature, sharing thoughts, recommendations, and reactions in real-time.\
 - **Room Search:** Explore the available rooms. Many sorting options and filters can be applied: sort by room name, or users in the room. Filter rooms by permissions and wheter you want them private or not.
