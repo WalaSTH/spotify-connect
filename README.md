@@ -14,7 +14,7 @@ The same applies when joining a room.
 
 To get started, simply follow these steps:
 
-1. **Visit the App:** The project is deployed, and you can try it [here](https://musical-mermaid-a74f78.netlify.app/).
+1. **Visit the App:** The project is deployed, and you can try it [here](https://spotifyconnect.netlify.app/).
    
 2. **Create an Account:** If you're new to Spotify Connect, create an account by signing up. If you already have an account, log in to access the full features of the app.
 
