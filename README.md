@@ -14,7 +14,8 @@ Spotify Connect is an application that allows users to join virtual rooms and li
 ![](https://github.com/WalaSTH/spotify-connect/blob/main/images/queue-use2.gif)  
 
 - **Interactive Chat:** Engage in conversations with other users through the built-in chat feature, sharing thoughts, recommendations, and reactions in real-time.\
-- **Room Search:**
+- **Room Search:** Explore the available rooms. Many sorting options and filters can be applied: sort by room name, or users in the room. Filter rooms by permissions and wheter you want them private or not.
+![](https://github.com/WalaSTH/spotify-connect/blob/main/images/search-room2.gif)
 
 
 
