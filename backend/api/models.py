@@ -65,6 +65,9 @@ class Room(models.Model):
     user_queue = ArrayField(
         models.JSONField(null=True, blank=True)
     )
+    last_queue = ArrayField(
+        models.JSONField(null=True, blank=True)
+    )
     last_id = models.IntegerField()
     user_count = models.IntegerField()
     banned_users = ArrayField(

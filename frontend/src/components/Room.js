@@ -165,7 +165,7 @@ export default function Room({
     getRoomAvatar(room["room_code"]);
     setRoom(room);
     const chatSocket = new WebSocket(
-      `wss://spotifyconnect.cordobadigital.com.ar/ws/${room["room_code"]}/${userID}/`
+      `ws://localhost:8000/ws/${room["room_code"]}/${userID}/`
     );
     //`ws://localhost:8000/ws/${room["room_code"]}/${userID}/`
     setSocket(chatSocket);
@@ -243,7 +243,7 @@ export default function Room({
     formData.append("track_id", song.id);
     formData.append("position", song.time);
     await axios
-      .post(endpoints.BASE_BACKEND + "//api/sync", formData)
+      .post(endpoints.BASE_BACKEND + "/api/sync", formData)
       .then((response) => {
         console.log("SYNC");
         console.log(response);

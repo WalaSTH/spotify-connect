@@ -367,11 +367,13 @@ class GetQueue(APIView):
                 
                 db_queue.append(song)
                 queue.append(song)
-        if queue[0].get('id') != queue[1].get('id'):
+        if room.last_queue != db_queue and queue[0].get('id') != queue[1].get('id'):
+        #if queue[0].get('id') != queue[1].get('id'):
             #Valid new queue, replace
             room.spot_queue = db_queue
             room.last_id=size
-            room.save(update_fields=["spot_queue", "last_id"])
+            room.last_queue = db_queue
+            room.save(update_fields=["spot_queue", "last_id", "last_queue"])
         #if queue[0].get('id') == queue[1].get('id'):
             #Not valid queue
 

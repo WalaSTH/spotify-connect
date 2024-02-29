@@ -117,7 +117,7 @@ export default function MainApp() {
     // Timer for alert
     const timeId = setTimeout(() => {
       polling();
-    }, 1000);
+    }, 500);
 
     return () => {
       clearTimeout(timeId);
@@ -161,6 +161,7 @@ export default function MainApp() {
     formData.append("user_id", userId);
     formData.append("track_id", id);
     formData.append("position", time);
+    console.log("SYNCQYUBNG");
     await axios
       .post(endpoints.BASE_BACKEND + "/api/sync", formData)
       .then((response) => {
