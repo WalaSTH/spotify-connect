@@ -8,7 +8,8 @@ from django.http import JsonResponse
 from ..spotify_utils import *
 from ..serializers import *
 from ..models import *
-from ..credentials import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
+from ..credentials import CLIENT_ID, CLIENT_SECRET
+from ..redirect import REDIRECT_URI, APP_REDIRECT
 import json
 
 
@@ -53,7 +54,7 @@ def spotify_callback(request, format=None):
 
     set_user_authenticated(user_id, True)
 
-    return redirect( 'http://localhost:3000'+ '/room')
+    return redirect(APP_REDIRECT)
 
 
 class IsAuthenticated(APIView):
