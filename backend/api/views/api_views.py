@@ -336,11 +336,9 @@ class CreateRoomView(generics.ListAPIView):
                 room.password=password_encoded
                 room.show_lobby=show_lobby
                 room.guest_add_queue=guest_add_queue
-                room.spot_queue = []
-                room.user_queue = []
                 room.save(update_fields=['room_name', 'guest_pause','guest_manage_queue',
                                          'guest_skip', 'private_room',
-                                        'guest_add_queue', 'show_lobby', 'password', 'spot_queue', 'user_queue'])
+                                        'guest_add_queue', 'show_lobby', 'password'])
                 return Response({"Msg":"Room succesfully updated"}, status=status.HTTP_200_OK)
             else:
                 # Create room if not in a room as guest
@@ -350,7 +348,7 @@ class CreateRoomView(generics.ListAPIView):
                             guest_skip=guest_skip,
                             guest_manage_queue=guest_manage_queue, private_room=private_room,
                             password=password_encoded, guest_add_queue=guest_add_queue, show_lobby=show_lobby,
-                            user_queue=[], spot_queue=[], last_id = 1, user_count = 1, banned_users = [])
+                            user_queue=[], spot_queue=[], last_queue=[], last_id = 1, user_count = 1, banned_users = [])
                 user = get_user_by_id(host)
                 room.save()
                 user.room=room.code
