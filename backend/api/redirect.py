@@ -1,2 +1,2 @@
-REDIRECT_URI = "http://127.0.0.1:8000/api/spotify-redirect"
-APP_REDIRECT = 'http://localhost:3000/room'
+REDIRECT_URI = "https://spotifyconnect.cordobadigital.com.ar/api/spotify-redirect"
+APP_REDIRECT = "https://spotifyconnect.netlify.app/create-room"
