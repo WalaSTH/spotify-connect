@@ -52,18 +52,48 @@ Please remember that this app is still under development, and as such, some bugs
 The project is deployed and you can try it out without any installation needed (see Usage)
 However, if you wish to run it locally here are the instructions.
 
+First you need to set the spotify redirect uri to localhost\
+go to ```backend/api/redirect.py```
+and set the values as follows:
+```
+REDIRECT_URI = "http://127.0.0.1:8000/api/spotify-redirect"
+APP_REDIRECT = 'http://localhost:3000/room'
+```
+
 ### Run Backend using Docker Compose
-To run the backend process locally the easiest way is to do it by using docker compose
+To run the backend process locally the easiest way is to do it by using docker compose.\
 Simply run:\
 ```docker compose -f docker-compose.yaml up --build```
 ### Run Backend without Docker Compose
 If you don't want to use Docker Compose you can run it as follows.
 For the backend, you will need:
-- Python 3.10.12 and pip to install all the required dependencies.
-- Redis server v=6.0.16
-- PostgreSQL 15.4 for the database.
+- Python 3.10.12 or higher and pip to install all the required dependencies.
+- Redis server v=6.0.16 or higher
+- PostgreSQL 15.4 or higher for the database.
 
-First, move to the _backend_ directory:
+
+
+Init your PostgreSQL database:
+Spotify Connect uses PostgreSQL, so you will have to get it running on your computer.\
+After doing so, go to ```backend/backend/settings.py``` and modify the value of DATABASES to match your PostgreSQL database.
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': ‘<db_name>’,
+        'USER': '<db_username>',
+        'PASSWORD': '<password>',
+        'HOST': '<db_hostname_or_ip>',
+        'PORT': '<db_port>',
+    }
+}
+```
+Start Redis:
+
+```/etc/init.d/redis-server start```
+
+After the database and redis are ready, move to the _backend_ directory:
 
 ```cd backend```
 
@@ -78,8 +108,6 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 ```
-
-
 
 
 
