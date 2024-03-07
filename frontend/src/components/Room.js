@@ -162,7 +162,7 @@ export default function Room({
   const setRoomInfo = (room) => {
     setRoomCode(room["room_code"]);
     setRoomName(room["room_name"]);
-    getRoomAvatar(room["room_code"]);
+    //getRoomAvatar(room["room_code"]);
     setRoom(room);
     const chatSocket = new WebSocket(
       `ws://spotifyconnect.verymad.net/ws/${room["room_code"]}/${userID}/`
