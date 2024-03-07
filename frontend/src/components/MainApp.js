@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import * as endpoints from "./../static/endpoints";
 
 import axios from "axios";
+import { number } from "yup";
 
 export default function MainApp() {
   const [userId, setUserId] = useState(localStorage.getItem("userID"));
@@ -24,9 +25,10 @@ export default function MainApp() {
   const [room, setRoom] = useState({ room_code: "code", guest_pause: false });
   const [changed, setChanged] = useState(false);
   const [popped, setPopped] = useState(true);
-  const [alradySkipped, setAlreadySkipped] = useState(false);
+  const [alreadySkipped, setAlreadySkipped] = useState(false);
   const [poll, setPoll] = useState(0);
   const [addedBy, setAddedBy] = useState("");
+  const location = useLocation();
   const useIsMediumScreen = () => {
     const theme = useTheme();
     const isMediumScreen = useMediaQuery(theme.breakpoints.up("md"));
@@ -45,6 +47,8 @@ export default function MainApp() {
     added_by: "",
   };
   const [song, setSong] = useState(noSong);
+
+  // Server functions
   async function playNextSong(userID) {
     await axios
       .get(endpoints.BASE_BACKEND + "/api/start-next" + "?user_id=" + userID)
@@ -58,7 +62,7 @@ export default function MainApp() {
       .get(endpoints.BASE_BACKEND + "/api/get-queue" + "?user_id=" + userID)
       .then((response) => {
         if (response.status == 200) {
-          console.log(response.data.spot_queue);
+          //console.log(response.data.spot_queue);
           setQueue(response.data.spot_queue);
           setUserQueue(response.data.user_queue);
         } else if (response.status == 204) {
@@ -71,6 +75,7 @@ export default function MainApp() {
         console.log(error);
       });
   }
+
   async function isUserHost(userID) {
     await axios
       .get(endpoints.BASE_BACKEND + "/api/is-host" + "?user_id=" + userID)
@@ -82,6 +87,7 @@ export default function MainApp() {
         console.log(error);
       });
   }
+
   async function checkSaved(userID, songID) {
     await axios
       .get(
@@ -100,37 +106,6 @@ export default function MainApp() {
         console.log(error);
       });
   }
-
-  useEffect(() => {
-    if (userId) {
-      isUserHost(userId).then(() => {
-        console.log(isHost);
-      });
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    setUserId(localStorage.getItem("userID"));
-  });
-
-  useEffect(() => {
-    // Timer for alert
-    const timeId = setTimeout(() => {
-      polling();
-    }, 500);
-
-    return () => {
-      clearTimeout(timeId);
-    };
-  });
-
-  const polling = () => {
-    if (userId) {
-      checkUserInRoom(userId);
-      getCurrentSong(userId).then(checkNew(song, prevSong));
-      authenticateSpotify(userId);
-    }
-  };
 
   async function authenticateSpotify(userID) {
     await axios
@@ -156,6 +131,7 @@ export default function MainApp() {
         console.log(error);
       });
   }
+
   async function syncButton(id, time) {
     const formData = new FormData();
     formData.append("user_id", userId);
@@ -165,13 +141,13 @@ export default function MainApp() {
     await axios
       .post(endpoints.BASE_BACKEND + "/api/sync", formData)
       .then((response) => {
-        console.log(response);
+        //console.log(response);
       })
       .catch((error) => {
         console.log(error);
       });
   }
-  const location = useLocation();
+
   async function checkUserInRoom(userID) {
     await axios
       .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
@@ -181,7 +157,7 @@ export default function MainApp() {
           setUserInRoom(true);
         } else {
           setUserInRoom(false);
-          console.log(location.pathname);
+          //console.log(location.pathname);
           if (location.pathname == "/room") {
             navigate("/");
           }
@@ -191,15 +167,17 @@ export default function MainApp() {
         setUserInRoom(false);
       });
   }
+
   async function getCurrentSong(userID) {
     await axios
       .get(endpoints.BASE_BACKEND + "/api/current-song" + "?user_id=" + userID)
       .then((response) => {
         if (response.status != 202) {
-          console.log(response.status);
+          //console.log(response.status);
           const song = response.data;
           song.added_by = addedBy;
           setSong(song);
+          checkNew(song);
         }
         if (response.status == 202) {
           setSong(noSong);
@@ -209,7 +187,9 @@ export default function MainApp() {
       .catch((error) => {
         console.log(error);
       });
+    return song;
   }
+
   async function popQueue(userId) {
     const formData = new FormData();
     formData.append("user_id", userId);
@@ -217,36 +197,73 @@ export default function MainApp() {
       .post(endpoints.BASE_BACKEND + "/api/pop-queue", formData)
       .then((response) => {
         setAddedBy(response.data.Data);
-        console.log(response);
       })
       .catch((error) => {
         console.log(error);
       });
   }
-  function checkNew(song, prevSong) {
-    if (song.duration - song.time < 2000 && !changed) {
+
+  // Hooks
+
+  useEffect(() => {
+    if (userId) {
+      isUserHost(userId).then(() => {
+        console.log(isHost);
+      });
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    setUserId(localStorage.getItem("userID"));
+  }, []);
+
+  const [isPolling, setIsPolling] = useState(false);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (!isPolling) {
+        setIsPolling(true);
+        checkUserInRoom(userId);
+        getCurrentSong(userId);
+        authenticateSpotify(userId);
+        console.log("##############");
+        setIsPolling(false);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [prevSong, alreadySkipped, changed]);
+
+  // Calls
+
+  const polling2 = () => {
+    checkUserInRoom(userId);
+    getCurrentSong(userId).then((song) => {
+      checkNew(song);
+    });
+    authenticateSpotify(userId);
+  };
+
+  function checkNew(song) {
+    console.log("Checking");
+    console.log("Prev ong is " + prevSong);
+    console.log("Song is " + song.id);
+    if (
+      (song.duration - song.time < 1000 && !changed) ||
+      (song.time == 0 && !song.is_playing)
+    ) {
       console.log("Song time is" + song.time);
       console.log("Duration time is" + song.duration);
       console.log("Difference is: " + (song.duration - song.time));
       setChanged(true);
-      if (isHost) {
-        setPopped(false);
-        console.log("NEEDS POPPING");
-      }
-      if (!alradySkipped) {
-        console.log("Skipping");
+      if (!alreadySkipped) {
+        console.log("Skipping n popping");
         playNextSong(userId);
+        popQueue(userId);
         setAlreadySkipped(true);
       }
     }
-    if (!popped && isHost) {
-      //Pop first of queue
-      setPopped(true);
-      popQueue(userId);
-      console.log("POPPED");
-      console.log(popped);
-      //pop element
-    } else if (song.id != prevSong && !prevSong) {
+
+    if (song.id != prevSong && !prevSong) {
       // First Song
       console.log(prevSong);
       console.log("First song");
@@ -254,7 +271,7 @@ export default function MainApp() {
       setPrevSong(song.id);
       getQueue(userId);
       checkSaved(userId, song.id);
-      console.log(favorite);
+      //console.log(favorite);
       setChanged(false);
     } else if (song.id != prevSong && prevSong != "") {
       // New Song

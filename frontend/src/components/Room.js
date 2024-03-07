@@ -165,7 +165,7 @@ export default function Room({
     getRoomAvatar(room["room_code"]);
     setRoom(room);
     const chatSocket = new WebSocket(
-      `ws://localhost:8000/ws/${room["room_code"]}/${userID}/`
+      `ws://spotifyconnect.verymad.net/ws/${room["room_code"]}/${userID}/`
     );
     //`ws://localhost:8000/ws/${room["room_code"]}/${userID}/`
     setSocket(chatSocket);
