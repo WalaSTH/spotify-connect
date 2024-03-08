@@ -201,7 +201,6 @@ export default function Room({
         const avatars_obj = avatars;
         avatars_obj[username] = response.data.Data.images[0].url;
         setAvatars(avatars_obj);
-        console.log(response.data.Data.images);
       })
       .catch((error) => {
         console.log(error);
@@ -245,7 +244,6 @@ export default function Room({
     await axios
       .post(endpoints.BASE_BACKEND + "/api/sync", formData)
       .then((response) => {
-        console.log("SYNC");
         console.log(response);
       })
       .catch((error) => {
