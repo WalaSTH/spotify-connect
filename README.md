@@ -9,9 +9,9 @@ Spotify Connect is an application that allows users to join virtual rooms and li
 The app is currently in development mode, meaning that Spotify is granting access to a select group of users. To be included in this group, please provide the email associated with your Spotify account in the following form. That way it can be added to the list of permitted accounts for Spotify Connect:\
 https://forms.gle/AMuwczoAuwSS5YgU7
 
-**Note:** A Spotify Premium account is required to fully utilize the app's features. While users with non-premium accounts can still use the app, certain functionalities may be limited.\
+**Note:** A Spotify Premium account is required to fully utilize the app's features. While users with non-premium accounts can still use the app, certain functionalities may be limited.
 
-A test account is also provided to try the app before waiting for your email to be added to the app's allowed emails. However, it is not a premium account for security reasons, and as such, functionality will be limited.\
+A test account is also provided to try the app before waiting for your email to be added to the app's allowed emails. However, it is not a premium account for security reasons, and as such, functionality will be limited.
 
 Spotify Connect test account:\
 Email: ```spotifyconnecttry@gmail.com```\
