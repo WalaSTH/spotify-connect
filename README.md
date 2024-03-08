@@ -5,12 +5,15 @@ Spotify Connect is an application that allows users to join virtual rooms and li
 ![](https://github.com/WalaSTH/spotify-connect/blob/main/images/room2.png)
 
 ## Usage
+Important:
+The app is currently in development mode, meaning that Spotify is granting access to a select group of users. To be included in this group, kindly provide the email associated with your Spotify account in the following form. That way it can be added to the list of permitted accounts for Spotify Connect:\
+https://forms.gle/AMuwczoAuwSS5YgU7
+
+
 The project is deployed and you can try it here!\
 Once on the app, create an account and log in. After that you can fully start using the app.\
 When you create a room, you will need to first start playing a song on a device so the app can identify a running Spotify device.\
 The same applies when joining a room.
-
-## Usage
 
 To get started, simply follow these steps:
 
