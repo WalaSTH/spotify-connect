@@ -62,12 +62,9 @@ export default function MainApp() {
       .get(endpoints.BASE_BACKEND + "/api/get-queue" + "?user_id=" + userID)
       .then((response) => {
         if (response.status == 200) {
-          //console.log(response.data.spot_queue);
           setQueue(response.data.spot_queue);
           setUserQueue(response.data.user_queue);
         } else if (response.status == 204) {
-          console.log("queue is");
-          console.log(queue);
           setQueue(queue.slice(1));
         }
       })
@@ -122,8 +119,8 @@ export default function MainApp() {
                 userID
             )
             .then((data) => {
-              console.log(data.data.url);
-              //window.location.replace(data.data.url);
+              ///console.log(data.data.url);
+              window.location.replace(data.data.url);
             });
         }
       })
@@ -137,7 +134,7 @@ export default function MainApp() {
     formData.append("user_id", userId);
     formData.append("track_id", id);
     formData.append("position", time);
-    console.log("SYNCQYUBNG");
+
     await axios
       .post(endpoints.BASE_BACKEND + "/api/sync", formData)
       .then((response) => {
@@ -206,16 +203,13 @@ export default function MainApp() {
   // Hooks
 
   useEffect(() => {
-    if (userId) {
-      isUserHost(userId).then(() => {
-        console.log(isHost);
-      });
-    }
-  }, [userId]);
+    isUserHost(userId);
+    //setIsHost(localStorage.getItem("isHost"));
+  });
 
   useEffect(() => {
     setUserId(localStorage.getItem("userID"));
-  }, []);
+  });
 
   const [isPolling, setIsPolling] = useState(false);
   useEffect(() => {
@@ -225,7 +219,7 @@ export default function MainApp() {
         checkUserInRoom(userId);
         getCurrentSong(userId);
         authenticateSpotify(userId);
-        console.log("##############");
+        //console.log("##############");
         setIsPolling(false);
       }
     }, 1000);
@@ -244,19 +238,12 @@ export default function MainApp() {
   };
 
   function checkNew(song) {
-    console.log("Checking");
-    console.log("Prev ong is " + prevSong);
-    console.log("Song is " + song.id);
     if (
       (song.duration - song.time < 1000 && !changed) ||
       (song.time == 0 && !song.is_playing)
     ) {
-      console.log("Song time is" + song.time);
-      console.log("Duration time is" + song.duration);
-      console.log("Difference is: " + (song.duration - song.time));
       setChanged(true);
       if (!alreadySkipped) {
-        console.log("Skipping n popping");
         playNextSong(userId);
         popQueue(userId);
         setAlreadySkipped(true);
@@ -265,18 +252,16 @@ export default function MainApp() {
 
     if (song.id != prevSong && !prevSong) {
       // First Song
-      console.log(prevSong);
-      console.log("First song");
+
       syncButton(song.id, song.time);
       setPrevSong(song.id);
       getQueue(userId);
       checkSaved(userId, song.id);
-      //console.log(favorite);
       setChanged(false);
     } else if (song.id != prevSong && prevSong != "") {
       // New Song
       setAlreadySkipped(false);
-      console.log("New song");
+
       //syncButton(song.id, 0);
       setPrevSong(song.id);
       getQueue(userId);

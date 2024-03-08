@@ -45,14 +45,12 @@ export default function CreateRoom({ userID, navigate, update, closefun }) {
     await axios
       .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {
-        console.log(response);
         if (response.status == 200 && update == false) {
           navigate("/room");
         } else if (update) {
           const room = response.data.room;
           setGuestPause(room["guest_pause"]);
           setRoom(room);
-          console.log(room);
         }
       })
       .catch((error) => {
