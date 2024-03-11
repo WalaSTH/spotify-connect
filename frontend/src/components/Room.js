@@ -83,6 +83,7 @@ export default function Room({
   isHost,
   setPopped,
   getQueue,
+  popQueue,
 }) {
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
@@ -348,6 +349,7 @@ export default function Room({
                   isHost={isHost}
                   setPopped={setPopped}
                   room={room}
+                  popQueue={popQueue}
                 />
               </Grid>
               <Grid item xs={12}>

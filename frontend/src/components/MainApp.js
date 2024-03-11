@@ -304,6 +304,7 @@ export default function MainApp() {
           isHost={isHost}
           username={username}
           getQueue={getQueue}
+          popQueue={popQueue}
         />
       </div>
     </div>

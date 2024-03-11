@@ -118,6 +118,7 @@ export default function MusicPlayer(props) {
               <IconButton
                 onClick={() => {
                   skipSong();
+                  props.popQueue(props.userID);
                 }}
               >
                 <SkipNextIcon />

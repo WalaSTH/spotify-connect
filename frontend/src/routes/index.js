@@ -24,6 +24,7 @@ export default function RoutesWrapper({
   setUserQueue,
   setPopped,
   getQueue,
+  popQueue,
 }) {
   return (
     <Routes>
@@ -73,6 +74,7 @@ export default function RoutesWrapper({
               setUserQueue={setUserQueue}
               setPopped={setPopped}
               getQueue={getQueue}
+              popQueue={popQueue}
             />
           ) : (
             <Navigate to="/login" />
