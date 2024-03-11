@@ -203,7 +203,9 @@ export default function MainApp() {
   // Hooks
 
   useEffect(() => {
-    isUserHost(userId);
+    if (userId) {
+      isUserHost(userId);
+    }
     //setIsHost(localStorage.getItem("isHost"));
   });
 
@@ -214,7 +216,7 @@ export default function MainApp() {
   const [isPolling, setIsPolling] = useState(false);
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (!isPolling) {
+      if (!isPolling && userId) {
         setIsPolling(true);
         checkUserInRoom(userId);
         getCurrentSong(userId);
@@ -225,7 +227,7 @@ export default function MainApp() {
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [prevSong, alreadySkipped, changed]);
+  }, [prevSong, alreadySkipped, changed, userId]);
 
   // Calls
 
