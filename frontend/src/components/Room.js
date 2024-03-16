@@ -136,8 +136,7 @@ export default function Room({
   });
 
   useEffect(() => {
-    getRoomData(userID);
-
+    //getRoomData(userID);
     //authenticateSpotify(userID);
   }, []);
 
@@ -209,6 +208,7 @@ export default function Room({
   }
 
   async function getRoomData(userID) {
+    console.log("gettng");
     await axios
       .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {

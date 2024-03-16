@@ -145,7 +145,8 @@ export default function MainApp() {
       });
   }
 
-  async function checkUserInRoom(userID) {
+  async function checkUserInRoom(userID, pathname) {
+    console.log("Getting room");
     await axios
       .get(endpoints.BASE_BACKEND + "/api/get-room" + "?id=" + userID)
       .then((response) => {
@@ -155,8 +156,8 @@ export default function MainApp() {
           getCurrentSong(userId);
         } else {
           setUserInRoom(false);
-          //console.log(location.pathname);
-          if (location.pathname == "/room") {
+          if (pathname == "/room") {
+            console.log("Al lobby puto");
             navigate("/");
           }
         }
@@ -219,16 +220,16 @@ export default function MainApp() {
     const intervalId = setInterval(() => {
       if (!isPolling && userId) {
         setIsPolling(true);
-        checkUserInRoom(userId);
+        checkUserInRoom(userId, location.pathname);
 
         authenticateSpotify(userId);
         //console.log("##############");
         setIsPolling(false);
       }
-    }, 1000);
+    }, 2000);
 
     return () => clearInterval(intervalId);
-  }, [prevSong, alreadySkipped, changed, userId]);
+  }, [prevSong, alreadySkipped, changed, userId, location.pathname]);
 
   // Calls
 

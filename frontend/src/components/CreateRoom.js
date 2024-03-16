@@ -37,7 +37,7 @@ export default function CreateRoom({ userID, navigate, update, closefun }) {
   const [guestPause, setGuestPause] = useState(false);
   useEffect(() => {
     checkUserInRoom(userID).then(() => {
-      authenticateSpotify(userID);
+      //authenticateSpotify(userID);
     });
   }, []);
 
