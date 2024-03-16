@@ -152,6 +152,7 @@ export default function MainApp() {
         if (response.status == 200) {
           setRoom(response.data.data);
           setUserInRoom(true);
+          getCurrentSong(userId);
         } else {
           setUserInRoom(false);
           //console.log(location.pathname);
@@ -219,7 +220,7 @@ export default function MainApp() {
       if (!isPolling && userId) {
         setIsPolling(true);
         checkUserInRoom(userId);
-        getCurrentSong(userId);
+
         authenticateSpotify(userId);
         //console.log("##############");
         setIsPolling(false);
